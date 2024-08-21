@@ -1,0 +1,413 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>&nbsp </title>
+  <link rel="icon" href="../images/logoo.png">
+
+  <!-- Custom fonts for this template-->
+  <link href="../../Projection/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="../../Projection/css/sb-admin.css" rel="stylesheet">
+  
+  
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
+	<style type="text/css" class="init"> </style>
+  
+	<script type="text/javascript" src="/media/js/site.js?_=09b203e247031aa5935209252694085f"></script>
+	<script type="text/javascript" src="/media/js/dynamic.php?comments-page=extensions%2Fbuttons%2Fexamples%2Fhtml5%2FtitleMessage.html" async></script>
+	<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+	<script type="text/javascript" language="javascript" src="../../../../examples/resources/demo.js"></script>
+	<script type="text/javascript" class="init">
+	
+	
+
+	
+	$(document).ready(function() {
+	var printCounter = 0;
+	// Append a caption to the table before the DataTables initialisation
+	$('#example').append('<caption style="caption-side: top"></caption>');
+
+	$('#example').DataTable( {
+		stateSave: true,
+		dom: 'Bfrtip',
+		buttons: [
+			'copy',
+			{
+				extend: 'excel',
+				
+			},
+			{
+				extend: 'pdf',
+				messageBottom: null
+			},
+			{
+				extend: 'print',
+				messageTop:	'<center class="text-uppercase">' + 'COSOLIDATED DTR-REPORT <?php
+                            $Today=date('y:m:d');
+                            $new=date('F d, Y',strtotime($Today));
+                            echo $new; ?>' + '</center>'
+				
+			}
+		]
+	} );
+	} );
+
+	</script>
+	
+ 
+	
+	<style type="text/css">
+
+
+	@page {size:landscape}  
+		body {
+		page-break-before: avoid;
+		font-size: 15px;
+   
+		}
+	
+
+	@media print {
+
+    .table td {
+      background-color: transparent !important;
+    }
+
+        .table th {
+		background-color: transparent !important;
+		}
+	}
+	</style>
+	
+	<style>
+	.myTable { 
+	  width: 100%;
+	  font-size: 15px;
+	  text-align: center;	
+	  background-color: white;
+	  border-collapse: collapse; 
+	  }
+	.myTable th { 
+	  text-transform:uppercase;
+	  background-color: secondary;
+	  color: black; 
+	  }
+	.myTable td,   	
+	.myTable th {	
+		padding: 5px;
+		border: 1px solid black;
+		
+	  }
+	</style>
+  
+</head>
+
+<body>
+<br>	
+	<div class="container-fluid ">
+		
+		<select name="cars" class="custom-select mb-3">
+		  <option>SELECT CAFE</option>
+		  <option value="volvo">Volvo</option>
+		  <option value="fiat">Fiat</option>
+		  <option value="audi">Audi</option>
+		</select>
+	
+			<!-- DataTables Example -->
+		<div class="card mb-3 ">		
+			<div class="card-header">
+				<i class="fa fa-clock" aria-hidden="true"></i> Consolidation CAFE- <a href="#"><?php
+							$Today=date('y:m:d');
+							$new=date('F d, Y',strtotime($Today));
+							echo $new; ?></a>
+			</div>
+				
+			<div class="card-body">
+				<div class="table-responsive ">
+					<table class="myTable" id="example" width="100%" cellspacing="0">
+					
+						<thead class="table-secondary">
+							<tr>
+								<th><center>IDNO</center></th>
+								<th><center>NAME</center></th>
+								<th><center>BRANCH</center></th>
+								<th><center>DaysWorked</center></th>
+								<th><center>REGULAR_OT</center></th>
+								<th><center>WORKING_DAY_OFF</center></th>
+								<th><center>LEGAL_HOLIDAY_OT</center></th>
+								<th><center>SPECIAL_HOLIDAY_OT</center></th>
+								<th><center>NIGHT_DIFFERENTIAL</center></th>
+								<th><center>LEGAL_HOLIDAY</center></th>
+								<th><center>SPECIAL_HOLIDAY_OT</center></th>
+								<th><center>LEAVE_WPAY</center></th>
+								<th><center>SLEAVE_WPAY</center></th>
+								<th><center>LATE_OVERBREAK</center></th>
+								<th><center>UNDERTIME</center></th>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<tr>
+								<td><center>1093</center></td>
+								<td><center>Campos, Aaron Presaldo</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>2664</center></td>
+								<td><center>Diesta, Mark Angelo Paja</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>2248</center></td>
+								<td><center>Franco, Ryan Tugade</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>2248</center></td>
+								<td><center>Franco, Ryan Tugade</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>2525</center></td>
+								<td><center>Lucendo, Wilfredo Jr. III Cajaban</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>1906</center></td>
+								<td><center>Matiga, John Paulo Moldez</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>2234</center></td>
+								<td><center>Miranda, Maricel Advento</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>2405</center></td>
+								<td><center>Pariolan, Ranier Zulueta</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>2008</center></td>
+								<td><center>Pedrosa Jr., Quirino Orellano</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>1529</center></td>
+								<td><center>Tagadtad, Jhim Paracale</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>1979</center></td>
+								<td><center>Tagubar, Jaypee Estares</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>
+							
+							<tr>
+								<td><center>2550</center></td>
+								<td><center>Vinuya, Richard Lambino</center></td>
+								<td><center>I.T</center></td>
+								<td><center>13</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0</center></td>
+								<td><center>0</center></td>
+								<td><center>0.00</center></td>
+								<td><center>0.00</center></td>
+							</tr>											
+						</tbody>
+					</table>		
+				</div>
+			</div>		
+			<div class="card-body">
+				<a href="../viewsched.php" class="btn btn-secondary btn-user ">BACK</a> 
+			</div>
+		</div>
+	</div>
+ 
+ 
+ <!-- Bootstrap core JavaScript-->
+  
+  <script src="../../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="../../vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Page level plugin JavaScript-->
+  <script src="../../vendor/chart.js/Chart.min.js"></script>
+  
+  <!-- Custom scripts for all pages-->
+  <script src="../../js/sb-admin.min.js"></script>
+
+  <!-- Demo scripts for this page-->
+  <script src="../../js/demo/datatables-demo.js"></script>
+  <script src="../../js/demo/chart-area-demo.js"></script>
+
+</body>
+
+</html>

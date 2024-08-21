@@ -1,0 +1,173 @@
+@import url(https://fonts.googleapis.com/css?family=Dosis:300,400);
+
+.ensaymada-bg{
+    background: url("/images/ensay.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.gradient-red{
+    background: rgb(125,20,36);
+    /* background: linear-gradient(281deg, rgba(125,20,36,1) 65%, rgba(63,13,18,1) 100%); */
+    background: linear-gradient(281deg, rgba(89,15,26,1) 0%, rgba(150,39,53,1) 53%, rgba(89,15,26,1) 100%);
+}
+.maroon{
+    background: #7E0000;
+}
+.text-maroon{
+    color: #7E0000;
+}
+.light-gray{
+    background: #F1F0F0;
+}
+.card-white-bg{
+    background: url("../images/white_background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center; 
+}
+.box-shadow{
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.small-font{
+    font-size: 90%;
+}
+select {
+    text-align-last:center;
+    width: 140px;
+    height: 35px;
+    padding: 4px;
+    border-radius: 20px;
+    box-shadow: 2px 2px 8px #999;
+    background: #eee;
+    border: none;
+    outline: none;
+    display: inline-block;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+label {
+    position: relative;
+}
+label:after {
+    content: '<>';
+    font: 11px "Consolas", monospace;
+    color: #666;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    transform: rotate(90deg);
+    right: 8px;
+    top: 10px;
+    padding: 0 0 2px;
+    border-bottom: 1px solid #ddd;
+    position: absolute;
+    pointer-events: none;
+}
+label:before {
+    content: '';
+    right: 6px;
+    top: 0px;
+    width: 20px;
+    height: 20px;
+    background: #eee;
+    position: absolute;
+    pointer-events: none;
+    display: block;
+}
+
+
+@media screen and (max-width: 991px) {
+    .ensaymada-bg{
+        background-position: top -80px left;
+        background-size: cover;
+    }
+}
+@media screen and (max-width: 767px) {
+    .ensaymada-bg{
+        background-position: top -60px left;
+        background-size: cover;
+    }
+    #title-login{
+        transition: .3s;
+        opacity: 1;
+    }
+}
+@media screen and (max-width: 480px) {
+    .ensaymada-bg{
+        background-position: top -90px left -50px;
+        background-size: 150%;
+    }
+    #title-login{
+        transition: .3s;
+        opacity: 0.9;
+    }
+}
+@media screen and (max-width: 800px) {
+    table {
+        border: 0;
+    }
+
+    table caption {
+        font-size: 1.3em;
+    }
+    
+    table thead {
+        border: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+    
+    table tr {
+        border-bottom: 5px solid #ddd;
+        display: block;
+        margin-bottom: .625em;
+    }
+    
+    table td {
+        border-bottom: 1px solid #ddd;
+        display: block;
+        font-size: .8em;
+        text-align: right;
+    }
+    
+    table td::before {
+        /*
+        * aria-label has no advantage, it won't be read inside a table
+        content: attr(aria-label);
+        */
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    
+    table td:last-child {
+        border-bottom: 0;
+    }
+}
+
+
+
+/* effect-shine */
+a.effect-shine:hover {
+    -webkit-mask-image: linear-gradient(-75deg, rgba(0,0,0,.6) 30%, #000 50%, rgba(0,0,0,.6) 70%);
+    -webkit-mask-size: 200%;
+    animation: shine 2s infinite;
+}
+
+@-webkit-keyframes shine {
+    from {
+    -webkit-mask-position: 150%;
+    }
+    
+    to {
+    -webkit-mask-position: -50%;
+    }
+}
