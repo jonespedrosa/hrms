@@ -388,7 +388,7 @@ $HRconnect->close();
             const empno = "<?php echo htmlspecialchars($empno); ?>"; // Adjust according to your server-side variables
             const name = "<?php echo htmlspecialchars($name); ?>";
             const position = "<?php echo htmlspecialchars($position); ?>";
-            const type_concern = 1; // type_concern = 1 is for Forgot/Wrong to time in or time out
+            let type_concern;
 
             if (!concernDate) {
                 Swal.fire({
@@ -408,9 +408,17 @@ $HRconnect->close();
                 return;
             }
 
+            // Determine type_concern based on selectedConcern value
             if (selectedConcern === "Forgot/Wrong to time in or time out") {
-                // Construct the URL with additional parameters
-                const url = `forgot-wrong-time-in-out.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${type_concern}`;
+                type_concern = 1;
+            } else if (selectedConcern === "Forgot/Wrong to break in or break out") {
+                type_concern = 2;
+            }
+
+            // Construct the URL with additional parameters
+            const url = `forgot-wrong-time-in-out.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${type_concern}`;
+
+            if (selectedConcern === "Forgot/Wrong to time in or time out" || selectedConcern === "Forgot/Wrong to break in or break out") {
 
                 fetch(url)
                     .then(response => response.text())
@@ -541,14 +549,13 @@ $HRconnect->close();
                                             icon: 'success',
                                             title: 'Success',
                                             text: 'Concern successfully submitted!',
-                                            timer: 2000, // 3 seconds timer
+                                            timer: 2000,
                                             timerProgressBar: true,
-                                            showConfirmButton: false, // Remove the OK button
+                                            showConfirmButton: false,
                                             customClass: {
                                                 confirmButton: 'swal-button-green'
                                             },
                                             willClose: () => {
-                                                // Redirect after the timer ends
                                                 const empno = "<?php echo $empno; ?>";
                                                 const mindate = "<?php echo $mindate; ?>";
                                                 const maxdate = "<?php echo $maxdate; ?>";
@@ -560,7 +567,7 @@ $HRconnect->close();
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Error',
-                                            text: 'There was an issue submitting the concern.',
+                                            text: result.message || 'There was an issue submitting the concern.',
                                             confirmButtonText: 'OK',
                                             customClass: {
                                                 confirmButton: 'swal-button-green'
