@@ -68,12 +68,17 @@ $M_breakout = isset($timeInputs['M_timeout']) ? $timeInputs['M_timeout'] : null;
 $A_breakin = isset($timeInputs['A_timein']) ? $timeInputs['A_timein'] : null;
 $A_timeout = isset($timeInputs['A_timeout']) ? $timeInputs['A_timeout'] : null;
 
+$timein4 = isset($timeInputs['timein4']) ? $timeInputs['timein4'] : null; // broken schedule in
+$timeout4 = isset($timeInputs['timeout4']) ? $timeInputs['timeout4'] : null; // broken schedule out
+
 // Embed PHP variables into JavaScript
 echo "<script>
     const M_timein = '$M_timein';
     const M_breakout = '$M_breakout';
     const A_breakin = '$A_breakin';
     const A_timeout = '$A_timeout';
+    const timein4 = '$timein4';
+    const timeout4 = '$timeout4';
 </script>";
 
 
@@ -306,22 +311,87 @@ $HRconnect->close();
     <script src="js/sb-admin-2.min.js"></script>
 
     <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            // Get the URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Extract the parameters
+            const concernDate = urlParams.get('date');
+            const dtrConcern = urlParams.get('dtrconcern');
+            const typeErrors = urlParams.get('type_errors');
+
+            // Flag to check if conditions are met
+            let shouldProceed = true;
+
+            // Set the values in the form fields
+            if (concernDate) {
+                document.getElementById('concernDate').value = concernDate;
+            } else {
+                shouldProceed = false;
+            }
+
+            if (typeErrors) {
+                const typeErrorValue =
+                    typeErrors === 'User Error' ? 'userError' :
+                    typeErrors === 'System Error' ? 'systemError' :
+                    typeErrors === 'Others' ? 'others' : '';
+
+                if (typeErrorValue) {
+                    document.getElementById('concernType').value = typeErrorValue;
+                } else {
+                    shouldProceed = false;
+                }
+            } else {
+                shouldProceed = false;
+            }
+
+            if (dtrConcern) {
+                const specificConcernDropdown = document.getElementById('specificConcern');
+                let optionExists = false;
+                for (let i = 0; i < specificConcernDropdown.options.length; i++) {
+                    if (specificConcernDropdown.options[i].value === dtrConcern) {
+                        optionExists = true;
+                        break;
+                    }
+                }
+
+                if (!optionExists) {
+                    const newOption = document.createElement('option');
+                    newOption.value = dtrConcern;
+                    newOption.text = decodeURIComponent(dtrConcern);
+                    newOption.selected = true;
+                    specificConcernDropdown.appendChild(newOption);
+                } else {
+                    specificConcernDropdown.value = dtrConcern;
+                }
+            } else {
+                shouldProceed = false;
+            }
+
+            // Only trigger the button click if all conditions are met
+            if (shouldProceed) {
+                document.getElementById('btnProceed').click();
+            }
+        });
+
+
         // Define concerns data
         const concerns = {
             userError: [
-                "Forgot/Wrong to time in or time out",
-                "Forgot/Wrong to break in or break out",
-                "Forgot to click broken schedule",
+                "Failure/Forgot to time in or time out",
+                "Failure/Forgot to break in or break out",
+                "Failure/Forgot to click broken schedule",
+                "Failure/Forgot to click half day",
                 "Wrong filing of overtime",
                 "Wrong filing of leave",
                 "Wrong filing of OBP",
-                "Wrong time in or time out of broken schedule",
-                "Not following break out and in interval",
-                "Remove Time inputs"
+                "Not following break out and break in interval",
+                "Remove time inputs"
             ],
             systemError: [
                 "Time inputs did not sync",
                 "Misaligned time inputs",
+                "Broken Schedule did not sync",
                 "Persona error",
                 "Hardware malfunction"
             ],
@@ -350,45 +420,22 @@ $HRconnect->close();
             }
         });
 
-        // Helper function to extract time from datetime
-        function extractTime(datetime) {
-            if (!datetime || datetime === "No Break") return datetime; // Return "No Break" if it's not a valid datetime
-            const date = new Date(datetime);
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            return `${hours}:${minutes}`;
-        }
-
-        // Fetch and display time data based on concernDate
-        function fetchTimeData(concernDate) {
-            const empno = "<?php echo htmlspecialchars($empno); ?>";
-
-            if (concernDate) {
-                fetch('fetch-time-inputs.php?empno=' + encodeURIComponent(empno) + '&date=' + encodeURIComponent(concernDate))
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Fetched data:', data); // Log the entire fetched data object
-
-                        if (data) {
-                            document.getElementById('capturedTimeIn').value = extractTime(data.M_timein);
-                            document.getElementById('capturedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
-                            document.getElementById('capturedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
-                            document.getElementById('capturedTimeOut').value = extractTime(data.A_timeout);
-                        }
-                    })
-                    .catch(error => console.error('Error fetching time inputs:', error));
-            }
-        }
-
         // Handle displaying selected concern and fetching time data
         document.getElementById('btnProceed').addEventListener('click', function() {
             const selectedConcern = document.getElementById('specificConcern').value;
             const concernDate = document.getElementById('concernDate').value;
+            const type_error = document.getElementById('concernType').value;
             const displayDiv = document.getElementById('displayConcernSelected');
             const empno = "<?php echo htmlspecialchars($empno); ?>"; // Adjust according to your server-side variables
             const name = "<?php echo htmlspecialchars($name); ?>";
             const position = "<?php echo htmlspecialchars($position); ?>";
             let type_concern;
+
+            // Map concernType to its descriptive label
+            let type_errors =
+                type_error === 'userError' ? 'User Error' :
+                type_error === 'systemError' ? 'System Error' :
+                type_error === 'others' ? 'Others' : '';
 
             if (!concernDate) {
                 Swal.fire({
@@ -408,17 +455,312 @@ $HRconnect->close();
                 return;
             }
 
-            // Determine type_concern based on selectedConcern value
-            if (selectedConcern === "Forgot/Wrong to time in or time out") {
-                type_concern = 1;
-            } else if (selectedConcern === "Forgot/Wrong to break in or break out") {
-                type_concern = 2;
+            // Helper function to extract time from datetime
+            function extractTime(datetime) {
+                if (!datetime || datetime === "No Break") return datetime; // Return "No Break" if it's not a valid datetime
+                const date = new Date(datetime);
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
             }
 
-            // Construct the URL with additional parameters
-            const url = `forgot-wrong-time-in-out.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${type_concern}`;
+            // Determine type_concern based on selectedConcern value
+            if (selectedConcern === "Failure/Forgot to time in or time out") {
+                type_concern = 1;
+            } else if (selectedConcern === "Failure/Forgot to break in or break out") {
+                type_concern = 2;
+            } else if (selectedConcern === "Failure/Forgot to click broken schedule") {
+                type_concern = 3;
+            } else if (selectedConcern === "Failure/Forgot to click half day") {
+                type_concern = 4;
+            } else if (selectedConcern === "Wrong filing of overtime") {
+                type_concern = 5;
+            } else if (selectedConcern === "Wrong filing of leave") {
+                type_concern = 6;
+            } else if (selectedConcern === "Wrong filing of OBP") {
+                type_concern = 7;
+            } else if (selectedConcern === "Not following break out and break in interval") {
+                type_concern = 8;
+            } else if (selectedConcern === "Remove time inputs") {
+                type_concern = 9;
+            }
 
-            if (selectedConcern === "Forgot/Wrong to time in or time out" || selectedConcern === "Forgot/Wrong to break in or break out") {
+            if (selectedConcern === "Failure/Forgot to time in or time out" || selectedConcern === "Failure/Forgot to break in or break out" || selectedConcern === "Failure/Forgot to click half day" || selectedConcern === "Not following break out and break in interval") {
+                // Construct the URL with additional parameters
+                const url = `forgot-wrong-time-in-out-or-break-out-in.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        displayDiv.innerHTML = html;
+
+                        // Check if the concern is "Not following break out and in interval" and update the <p> tag text
+                        if (selectedConcern === "Not following break out and break in interval") {
+                            const pTag = displayDiv.querySelector('p');
+                            if (pTag) {
+                                pTag.textContent = "The employee did not observe the required interval between break out and break in times. "; // Update the text
+                            }
+
+                            // Check if the concern is "Failure/Forgot to click half day" and update the <p> tag text
+                        } else if (selectedConcern === "Failure/Forgot to click half day") {
+                            const pTag = displayDiv.querySelector('p');
+                            if (pTag) {
+                                pTag.textContent = "The employee did not follow the requirement to click the half-day button when taking a half day. "; // Update the text
+                            }
+                        }
+
+                        document.querySelectorAll('.time-inputs input').forEach(input => {
+                            input.addEventListener('input', function() {
+                                let value = this.value;
+                                // Remove all non-numeric characters except colon
+                                value = value.replace(/[^0-9:]/g, '');
+
+                                // Format the input to match "00:00"
+                                if (value.length > 2 && value[2] !== ':') {
+                                    value = value.slice(0, 2) + ':' + value.slice(2);
+                                }
+
+                                // Limit length to "00:00"
+                                value = value.slice(0, 5);
+
+                                // Validate the time format
+                                if (value.length === 5) {
+                                    const [hours, minutes] = value.split(':').map(num => parseInt(num, 10));
+                                    if (hours >= 24 || minutes >= 60) {
+                                        // Invalid time; reset the value
+                                        this.value = '';
+                                        return;
+                                    }
+
+                                    if (hours > 23 || (hours === 23 && minutes > 59)) {
+                                        // Adjust hours and minutes to be within valid range
+                                        if (hours > 23) {
+                                            this.value = '23:' + value.slice(3);
+                                        } else if (minutes > 59) {
+                                            this.value = value.slice(0, 3) + '59';
+                                        }
+                                        return;
+                                    }
+                                }
+
+                                // Set the cleaned and validated value
+                                this.value = value;
+                            });
+                        });
+
+                        // Fetch and display time data based on concernDate
+                        function fetchTimeData(concernDate) {
+                            const empno = "<?php echo htmlspecialchars($empno); ?>";
+
+                            if (concernDate) {
+                                fetch('fetch-time-inputs.php?empno=' + encodeURIComponent(empno) + '&date=' + encodeURIComponent(concernDate))
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Fetched data:', data); // Log the entire fetched data object
+
+                                        if (data) {
+                                            document.getElementById('capturedTimeIn').value = extractTime(data.M_timein);
+                                            document.getElementById('capturedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
+                                            document.getElementById('capturedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
+                                            document.getElementById('capturedTimeOut').value = extractTime(data.A_timeout);
+                                            if (selectedConcern === "Failure/Forgot to time in or time out") {
+                                                // Display data on proposedBreakIn and proposedBreakOut
+                                                document.getElementById('proposedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
+                                                document.getElementById('proposedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
+                                            } else if (selectedConcern === "Failure/Forgot to break in or break out") {
+                                                // Display data on proposedTimeIn and proposedTimeOut
+                                                document.getElementById('proposedTimeIn').value = extractTime(data.M_timein);
+                                                document.getElementById('proposedTimeOut').value = extractTime(data.A_timeout);
+                                            }
+                                        }
+                                    })
+                                    .catch(error => console.error('Error fetching time inputs:', error));
+                            }
+                        }
+                        // Fetch and set the time data based on the selected concern date
+                        fetchTimeData(concernDate);
+
+                        // Add event listener for the checkbox in the loaded content
+                        document.getElementById('oneHourBreakCheckbox').addEventListener('change', function() {
+                            const oneHourBreakChecked = this.checked;
+                            const proposedBreakOut = document.getElementById('proposedBreakOut');
+                            const proposedBreakIn = document.getElementById('proposedBreakIn');
+                            const value = oneHourBreakChecked ? "No Break" : "";
+                            proposedBreakOut.value = value;
+                            proposedBreakIn.value = value;
+                        });
+
+                        // Disable inputs based on selectedConcern
+                        if (selectedConcern === "Failure/Forgot to time in or time out") {
+                            // Disable proposedBreakIn and proposedBreakOut
+                            document.getElementById('proposedBreakIn').disabled = true;
+                            document.getElementById('proposedBreakOut').disabled = true;
+
+                        } else if (selectedConcern === "Failure/Forgot to break in or break out" || selectedConcern === "Not following break out and break in interval") {
+                            // Disable proposedTimeIn and proposedTimeOut
+                            document.getElementById('proposedTimeIn').disabled = true;
+                            document.getElementById('proposedTimeOut').disabled = true;
+                        } else if (selectedConcern === "Failure/Forgot to click half day") {
+                            // Disable proposedBreakIn and proposedBreakOut
+                            document.getElementById('proposedBreakIn').disabled = true;
+                            document.getElementById('proposedBreakOut').disabled = true;
+                            // Automatically check the oneHourBreakCheckbox
+                            document.getElementById('oneHourBreakCheckbox').checked = true;
+                            // Trigger the change event manually to update the proposedBreakIn and proposedBreakOut values
+                            document.getElementById('oneHourBreakCheckbox').dispatchEvent(new Event('change'));
+
+                            // Disable the oneHourBreakCheckbox
+                            oneHourBreakCheckbox.disabled = true;
+                        }
+
+                        document.getElementById('btnSubmit').addEventListener('click', function() {
+                            // Gather data from form fields
+                            const concernDate = document.getElementById('concernDate').value;
+                            const selectedConcern = document.getElementById('specificConcern').value;
+                            const concernType = document.getElementById('concernType').value; // e.g., userError
+                            const M_timein = document.getElementById('capturedTimeIn').value;
+                            const M_timeout = document.getElementById('capturedBreakOut').value;
+                            const A_timein = document.getElementById('capturedBreakIn').value;
+                            const A_timeout = document.getElementById('capturedTimeOut').value;
+                            const proposedTimeIn = document.getElementById('proposedTimeIn').value; // New input
+                            const proposedBreakOut = document.getElementById('proposedBreakOut').value; // New input
+                            const proposedBreakIn = document.getElementById('proposedBreakIn').value; // New input
+                            const proposedTimeOut = document.getElementById('proposedTimeOut').value; // New input
+                            const agreementCheckbox = document.getElementById('agreementCheckbox').checked;
+
+                            // Check if any of the proposed time inputs are empty based on selectedConcern
+                            if (selectedConcern === "Failure/Forgot to time in or time out") {
+                                if (!proposedTimeIn || !proposedTimeOut) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Missing Inputs',
+                                        text: 'Please enter the proposed Time In and Time Out before submitting.',
+                                        confirmButtonText: 'OK',
+                                        customClass: {
+                                            confirmButton: 'swal-button-green'
+                                        },
+                                    });
+                                    return; // Prevent form submission
+                                }
+                            } else if (selectedConcern === "Failure/Forgot to break in or break out") {
+                                if (!proposedBreakOut || !proposedBreakIn) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Missing Inputs',
+                                        text: 'Please enter the proposed Break Out and Break In before submitting.',
+                                        confirmButtonText: 'OK',
+                                        customClass: {
+                                            confirmButton: 'swal-button-green'
+                                        },
+                                    });
+                                    return; // Prevent form submission
+                                }
+                            }
+
+                            // Check if the agreement checkbox is not checked
+                            if (!agreementCheckbox) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Agreement Required',
+                                    text: 'You must agree to the terms before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+
+                            // Map concernType to its descriptive label
+                            let concernTypeLabel =
+                                concernType === 'userError' ? 'User Error' :
+                                concernType === 'systemError' ? 'System Error' :
+                                concernType === 'others' ? 'Others' : '';
+
+                            // Map userlevel to its descriptive label
+                            let userlevelMapped;
+                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
+
+                            if (userlevel === 'master') {
+                                userlevelMapped = 'staff';
+                            } else {
+                                userlevelMapped = userlevel;
+                            }
+
+                            const data = {
+                                empno: "<?php echo htmlspecialchars($empno); ?>",
+                                name: "<?php echo htmlspecialchars($name); ?>",
+                                userlevel: userlevelMapped, // Use the mapped userlevel
+                                branch: "<?php echo htmlspecialchars($branch); ?>",
+                                userid: "<?php echo htmlspecialchars($userid); ?>",
+                                area: "<?php echo htmlspecialchars($area_type); ?>",
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                actualIN: M_timein,
+                                actualbOUT: M_timeout,
+                                actualBIN: A_timein,
+                                actualOUT: A_timeout,
+                                proposedTimeIn: proposedTimeIn,
+                                proposedBreakOut: proposedBreakOut,
+                                proposedBreakIn: proposedBreakIn,
+                                proposedTimeOut: proposedTimeOut,
+                                status: "Pending"
+                            };
+
+                            // Log the data to the console
+                            console.log('Submitting data:', data);
+
+                            fetch('insert-concerns.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(data)
+                                })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern successfully submitted!',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                            willClose: () => {
+                                                const empno = "<?php echo $empno; ?>";
+                                                const mindate = "<?php echo $mindate; ?>";
+                                                const maxdate = "<?php echo $maxdate; ?>";
+                                                const redirectUrl = `/hrms/pdf/print_concerns.php?dtr=filedconcerns&filed=&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                window.location.href = redirectUrl;
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: result.message || 'There was an issue submitting the concern.',
+                                            confirmButtonText: 'OK',
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                        });
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+
+                    })
+                    .catch(error => console.error('Error fetching content:', error));
+
+            } else if (selectedConcern === "Failure/Forgot to click broken schedule") {
+                // Handle loading the "Failure/Forgot to click broken schedule" form
+                const url = `forgot-to-click-broken-schedule.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
 
                 fetch(url)
                     .then(response => response.text())
@@ -430,14 +772,646 @@ $HRconnect->close();
                                 let value = this.value;
                                 // Remove all non-numeric characters except colon
                                 value = value.replace(/[^0-9:]/g, '');
+
                                 // Format the input to match "00:00"
                                 if (value.length > 2 && value[2] !== ':') {
                                     value = value.slice(0, 2) + ':' + value.slice(2);
                                 }
-                                this.value = value.slice(0, 5); // Limit length to "00:00"
+
+                                // Limit length to "00:00"
+                                value = value.slice(0, 5);
+
+                                // Validate the time format
+                                if (value.length === 5) {
+                                    const [hours, minutes] = value.split(':').map(num => parseInt(num, 10));
+                                    if (hours >= 24 || minutes >= 60) {
+                                        // Invalid time; reset the value
+                                        this.value = '';
+                                        return;
+                                    }
+
+                                    if (hours > 23 || (hours === 23 && minutes > 59)) {
+                                        // Adjust hours and minutes to be within valid range
+                                        if (hours > 23) {
+                                            this.value = '23:' + value.slice(3);
+                                        } else if (minutes > 59) {
+                                            this.value = value.slice(0, 3) + '59';
+                                        }
+                                        return;
+                                    }
+                                }
+
+                                // Set the cleaned and validated value
+                                this.value = value;
                             });
                         });
 
+                        // Fetch and display time data based on concernDate
+                        function fetchTimeData(concernDate) {
+                            const empno = "<?php echo htmlspecialchars($empno); ?>";
+
+                            if (concernDate) {
+                                fetch('fetch-time-inputs.php?empno=' + encodeURIComponent(empno) + '&date=' + encodeURIComponent(concernDate))
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Fetched data:', data); // Log the entire fetched data object
+
+                                        if (data) {
+                                            // Set the broken schedule inputs
+                                            document.getElementById('capturedBrokenSchedIn').value = data.timein4 ? extractTime(data.timein4) : "";
+                                            document.getElementById('capturedBrokenSchedOut').value = data.timeout4 ? extractTime(data.timeout4) : "";
+                                        }
+                                    })
+                                    .catch(error => console.error('Error fetching time inputs:', error));
+                            }
+                        }
+
+                        // Call the fetchTimeData function immediately after defining it
+                        fetchTimeData(concernDate);
+
+                        document.getElementById('btnSubmit').addEventListener('click', function() {
+                            // Gather data from form fields
+                            const concernDate = document.getElementById('concernDate').value;
+                            const selectedConcern = document.getElementById('specificConcern').value;
+                            const concernType = document.getElementById('concernType').value; // e.g., userError
+                            const agreementCheckbox = document.getElementById('agreementCheckbox').checked;
+                            const capturedBrokenSchedIn = document.getElementById('capturedBrokenSchedIn');
+                            const capturedBrokenSchedOut = document.getElementById('capturedBrokenSchedOut');
+                            const proposedBrokenSchedIn = document.getElementById('proposedBrokenSchedIn').value; // New input
+                            const proposedBrokenSchedOut = document.getElementById('proposedBrokenSchedOut').value; // New input
+
+                            const timein4 = capturedBrokenSchedIn ? capturedBrokenSchedIn.value : 'No Logs';
+                            const timeout4 = capturedBrokenSchedOut ? capturedBrokenSchedOut.value : 'No Logs';
+
+                            // Handle timein4 and timeout4 values
+                            const timein4Processed = timein4 !== '' ? timein4 : 'No Logs';
+                            const timeout4Processed = timeout4 !== '' ? timeout4 : 'No Logs';
+
+                            // Check if any of the proposed time inputs are empty
+                            if (!proposedBrokenSchedIn || !proposedBrokenSchedOut) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Missing Inputs',
+                                    text: 'Please enter all proposed time inputs before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Check if the agreement checkbox is not checked
+                            if (!agreementCheckbox) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Agreement Required',
+                                    text: 'You must agree to the terms before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Map concernType to its descriptive label
+                            let concernTypeLabel =
+                                concernType === 'userError' ? 'User Error' :
+                                concernType === 'systemError' ? 'System Error' :
+                                concernType === 'others' ? 'Others' : '';
+
+                            // Map userlevel to its descriptive label
+                            let userlevelMapped;
+                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
+
+                            if (userlevel === 'master') {
+                                userlevelMapped = 'staff';
+                            } else {
+                                userlevelMapped = userlevel;
+                            }
+
+                            const data = {
+                                empno: "<?php echo htmlspecialchars($empno); ?>",
+                                name: "<?php echo htmlspecialchars($name); ?>",
+                                userlevel: userlevelMapped, // Use the mapped userlevel
+                                branch: "<?php echo htmlspecialchars($branch); ?>",
+                                userid: "<?php echo htmlspecialchars($userid); ?>",
+                                area: "<?php echo htmlspecialchars($area_type); ?>",
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                capturedBrokenSchedIn: timein4Processed,
+                                capturedBrokenSchedOut: timeout4Processed,
+                                proposedBrokenSchedIn: proposedBrokenSchedIn,
+                                proposedBrokenSchedOut: proposedBrokenSchedOut,
+                                status: "Pending"
+                            };
+                            // Log the data to the console
+                            console.log('Submitting data:', data);
+
+                            fetch('insert-concerns.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(data)
+                                })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern successfully submitted!',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                            willClose: () => {
+                                                const empno = "<?php echo $empno; ?>";
+                                                const mindate = "<?php echo $mindate; ?>";
+                                                const maxdate = "<?php echo $maxdate; ?>";
+                                                const redirectUrl = `/hrms/pdf/print_concerns.php?dtr=filedconcerns&filed=&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                window.location.href = redirectUrl;
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: result.message || 'There was an issue submitting the concern.',
+                                            confirmButtonText: 'OK',
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                        });
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+
+                    })
+                    .catch(error => console.error('Error fetching content:', error));
+
+            } else if (selectedConcern === "Wrong filing of overtime") {
+                // Handle loading the "Wrong filing of overtime" form
+                const url = `wrong-filing-of-overtime.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        displayDiv.innerHTML = html;
+
+                        // Fetch and display time data based on concernDate
+                        function fetchTimeData(concernDate) {
+                            const empno = "<?php echo htmlspecialchars($empno); ?>";
+
+                            if (concernDate) {
+                                fetch('fetch-time-inputs.php?empno=' + encodeURIComponent(empno) + '&date=' + encodeURIComponent(concernDate))
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Fetched data:', data); // Log the entire fetched data object
+
+                                        if (data) {
+                                            // Display the fetched data in the input fields
+                                            document.getElementById('othours').value = data.othours || ''; // Set to empty string if null/undefined
+                                            document.getElementById('otstatus').value = data.otstatus || '';
+                                            document.getElementById('otreason').value = data.otreason || '';
+                                            document.getElementById('partial-approver').value = data.p_approver || ''; // Assuming p_approver is partial approver
+                                            document.getElementById('final-approver').value = data.approver || ''; // Assuming approver is final approver
+                                            // Check if othours is empty after setting the value
+                                            if (document.getElementById('othours').value === "" || document.getElementById('otstatus').value == 'pending') {
+                                                Swal.fire({
+                                                    icon: 'warning',
+                                                    title: 'You don\'t have a filed overtime on this date',
+                                                    text: 'Ensure all overtime submissions are approved before proceeding.',
+                                                    confirmButtonText: 'OK',
+                                                    customClass: {
+                                                        confirmButton: 'swal-button-green'
+                                                    },
+                                                }).then(function() {
+                                                    // Redirect to the specific page with dynamic parameters
+                                                    const empno = "<?php echo $empno; ?>";
+                                                    const mindate = "<?php echo $mindate; ?>";
+                                                    const maxdate = "<?php echo $maxdate; ?>";
+                                                    window.location.href = `filing-concerns.php?concern=concern&dtrconcern&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                });
+                                                return; // Prevent further processing
+                                            }
+                                        }
+                                    })
+                                    .catch(error => console.error('Error fetching time inputs:', error));
+                            }
+                        }
+
+                        // Call the fetchTimeData function immediately after defining it
+                        fetchTimeData(concernDate);
+
+                        document.getElementById('btnSubmit').addEventListener('click', function() {
+                            // Gather data from form fields
+                            const concernDate = document.getElementById('concernDate').value;
+                            const selectedConcern = document.getElementById('specificConcern').value;
+                            const concernType = document.getElementById('concernType').value; // e.g., userError
+                            const agreementCheckbox = document.getElementById('agreementCheckbox').checked;
+                            const othours = document.getElementById('othours').value;
+                            const otstatus = document.getElementById('otstatus').value;
+                            const otreason = document.getElementById('otreason').value;
+                            const partialApprover = document.getElementById('partial-approver').value;
+                            const finalApprover = document.getElementById('final-approver').value;
+                            const concern_reason = document.getElementById('concern_reason').value;
+
+                            // Check if the agreement checkbox is not checked
+                            if (!agreementCheckbox) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Agreement Required',
+                                    text: 'You must agree to the terms before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Check if concern_reason is empty or null
+                            if (!concern_reason || concern_reason.trim() === "") {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Reason Required',
+                                    text: 'You must provide a reason for the concern before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Map concernType to its descriptive label
+                            let concernTypeLabel =
+                                concernType === 'userError' ? 'User Error' :
+                                concernType === 'systemError' ? 'System Error' :
+                                concernType === 'others' ? 'Others' : '';
+
+                            // Map userlevel to its descriptive label
+                            let userlevelMapped;
+                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
+
+                            if (userlevel === 'master') {
+                                userlevelMapped = 'staff';
+                            } else {
+                                userlevelMapped = userlevel;
+                            }
+
+                            const data = {
+                                empno: "<?php echo htmlspecialchars($empno); ?>",
+                                name: "<?php echo htmlspecialchars($name); ?>",
+                                userlevel: userlevelMapped, // Use the mapped userlevel
+                                branch: "<?php echo htmlspecialchars($branch); ?>",
+                                userid: "<?php echo htmlspecialchars($userid); ?>",
+                                area: "<?php echo htmlspecialchars($area_type); ?>",
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                status: "Pending",
+                                othours: othours,
+                                otstatus: otstatus,
+                                otreason: otreason,
+                                partialApprover: partialApprover,
+                                finalApprover: finalApprover,
+                                concern_reason: concern_reason
+                            };
+
+                            // Log the data to the console
+                            console.log('Submitting data:', data);
+
+                            fetch('insert-concerns.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(data)
+                                })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern successfully submitted!',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                            willClose: () => {
+                                                const empno = "<?php echo $empno; ?>";
+                                                const mindate = "<?php echo $mindate; ?>";
+                                                const maxdate = "<?php echo $maxdate; ?>";
+                                                const redirectUrl = `/hrms/pdf/print_concerns.php?dtr=filedconcerns&filed=&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                window.location.href = redirectUrl;
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: result.message || 'There was an issue submitting the concern.',
+                                            confirmButtonText: 'OK',
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                        });
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+
+                    })
+                    .catch(error => console.error('Error fetching content:', error));
+
+            } else if (selectedConcern === "Wrong filing of leave") {
+                // Handle loading the "Wrong filing of overtime" form
+                const url = `wrong-filing-of-leave.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        displayDiv.innerHTML = html;
+
+                        // Fetch and display time data based on concernDate
+                        function fetchTimeData(concernDate) {
+                            const empno = "<?php echo htmlspecialchars($empno); ?>";
+
+                            if (concernDate) {
+                                fetch('fetch-time-inputs.php?empno=' + encodeURIComponent(empno) + '&date=' + encodeURIComponent(concernDate))
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Fetched data:', data); // Log the entire fetched data object
+
+                                        if (data) {
+                                            // Display the fetched data in the input fields
+                                            document.getElementById('vltype').value = data.vltype || ''; // Set to empty string if null/undefined
+                                            document.getElementById('vlstatus').value = data.vlstatus || '';
+                                            document.getElementById('vlreason').value = data.vlreason || '';
+                                            document.getElementById('final-approver').value = data.vl_approver || ''; // Assuming vl_approver is final approver
+                                            // Check if vltype is empty after setting the value
+                                            if (document.getElementById('vltype').value === "" || document.getElementById('vlstatus').value == 'pending') {
+                                                Swal.fire({
+                                                    icon: 'warning',
+                                                    title: 'You don\'t have a filed leave on this date',
+                                                    text: 'Ensure all leave submissions are approved before proceeding.',
+                                                    confirmButtonText: 'OK',
+                                                    customClass: {
+                                                        confirmButton: 'swal-button-green'
+                                                    },
+                                                }).then(function() {
+                                                    // Redirect to the specific page with dynamic parameters
+                                                    const empno = "<?php echo $empno; ?>";
+                                                    const mindate = "<?php echo $mindate; ?>";
+                                                    const maxdate = "<?php echo $maxdate; ?>";
+                                                    window.location.href = `filing-concerns.php?concern=concern&dtrconcern&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                });
+                                                return; // Prevent further processing
+                                            }
+                                        }
+                                    })
+                                    .catch(error => console.error('Error fetching time inputs:', error));
+                            }
+                        }
+
+                        // Call the fetchTimeData function immediately after defining it
+                        fetchTimeData(concernDate);
+
+                        document.getElementById('btnSubmit').addEventListener('click', function() {
+                            // Gather data from form fields
+                            const concernDate = document.getElementById('concernDate').value;
+                            const selectedConcern = document.getElementById('specificConcern').value;
+                            const concernType = document.getElementById('concernType').value; // e.g., userError
+                            const agreementCheckbox = document.getElementById('agreementCheckbox').checked;
+                            const vltype = document.getElementById('vltype').value;
+                            const vlstatus = document.getElementById('vlstatus').value;
+                            const finalApprover = document.getElementById('final-approver').value;
+                            const concern_reason = document.getElementById('concern_reason').value;
+
+                            // Check if the agreement checkbox is not checked
+                            if (!agreementCheckbox) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Agreement Required',
+                                    text: 'You must agree to the terms before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Check if concern_reason is empty or null
+                            if (!concern_reason || concern_reason.trim() === "") {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Reason Required',
+                                    text: 'You must provide a reason for the concern before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Map concernType to its descriptive label
+                            let concernTypeLabel =
+                                concernType === 'userError' ? 'User Error' :
+                                concernType === 'systemError' ? 'System Error' :
+                                concernType === 'others' ? 'Others' : '';
+
+                            // Map userlevel to its descriptive label
+                            let userlevelMapped;
+                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
+
+                            if (userlevel === 'master') {
+                                userlevelMapped = 'staff';
+                            } else {
+                                userlevelMapped = userlevel;
+                            }
+
+                            const data = {
+                                empno: "<?php echo htmlspecialchars($empno); ?>",
+                                name: "<?php echo htmlspecialchars($name); ?>",
+                                userlevel: userlevelMapped, // Use the mapped userlevel
+                                branch: "<?php echo htmlspecialchars($branch); ?>",
+                                userid: "<?php echo htmlspecialchars($userid); ?>",
+                                area: "<?php echo htmlspecialchars($area_type); ?>",
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                status: "Pending",
+                                vltype: vltype,
+                                vlstatus: vlstatus,
+                                concern_reason: concern_reason,
+                                finalApprover: finalApprover,
+                            };
+
+                            // Log the data to the console
+                            console.log('Submitting data:', data);
+
+                            fetch('insert-concerns.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(data)
+                                })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern successfully submitted!',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                            willClose: () => {
+                                                const empno = "<?php echo $empno; ?>";
+                                                const mindate = "<?php echo $mindate; ?>";
+                                                const maxdate = "<?php echo $maxdate; ?>";
+                                                const redirectUrl = `/hrms/pdf/print_concerns.php?dtr=filedconcerns&filed=&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                window.location.href = redirectUrl;
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: result.message || 'There was an issue submitting the concern.',
+                                            confirmButtonText: 'OK',
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                        });
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+                    })
+                    .catch(error => console.error('Error fetching content:', error));
+
+            } else if (selectedConcern === "Wrong filing of OBP") {
+
+                // Construct the URL with additional parameters
+                const url = `wrong-filing-of-obp.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        displayDiv.innerHTML = html;
+
+                        document.querySelectorAll('.time-inputs input').forEach(input => {
+                            input.addEventListener('input', function() {
+                                let value = this.value;
+                                // Remove all non-numeric characters except colon
+                                value = value.replace(/[^0-9:]/g, '');
+
+                                // Format the input to match "00:00"
+                                if (value.length > 2 && value[2] !== ':') {
+                                    value = value.slice(0, 2) + ':' + value.slice(2);
+                                }
+
+                                // Limit length to "00:00"
+                                value = value.slice(0, 5);
+
+                                // Validate the time format
+                                if (value.length === 5) {
+                                    const [hours, minutes] = value.split(':').map(num => parseInt(num, 10));
+                                    if (hours >= 24 || minutes >= 60) {
+                                        // Invalid time; reset the value
+                                        this.value = '';
+                                        return;
+                                    }
+
+                                    if (hours > 23 || (hours === 23 && minutes > 59)) {
+                                        // Adjust hours and minutes to be within valid range
+                                        if (hours > 23) {
+                                            this.value = '23:' + value.slice(3);
+                                        } else if (minutes > 59) {
+                                            this.value = value.slice(0, 3) + '59';
+                                        }
+                                        return;
+                                    }
+                                }
+
+                                // Set the cleaned and validated value
+                                this.value = value;
+                            });
+                        });
+
+                        // Helper function to extract time from datetime
+                        function extractTime(datetime) {
+                            if (!datetime || datetime === "No Break") return datetime; // Return "No Break" if it's not a valid datetime
+                            const date = new Date(datetime);
+                            const hours = String(date.getHours()).padStart(2, '0');
+                            const minutes = String(date.getMinutes()).padStart(2, '0');
+                            return `${hours}:${minutes}`;
+                        }
+
+                        // Fetch and display time data based on concernDate
+                        function fetchTimeData(concernDate) {
+                            const empno = "<?php echo htmlspecialchars($empno); ?>";
+
+                            if (concernDate) {
+                                fetch('fetch-time-inputs.php?empno=' + encodeURIComponent(empno) + '&date=' + encodeURIComponent(concernDate))
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Fetched data:', data); // Log the entire fetched data object
+
+                                        if (data) {
+                                            document.getElementById('capturedTimeIn').value = extractTime(data.M_timein);
+                                            document.getElementById('capturedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
+                                            document.getElementById('capturedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
+                                            document.getElementById('capturedTimeOut').value = extractTime(data.A_timeout);
+
+                                            // Check if obp_status is null or pending directly from the fetched data
+                                            if (!data.obp_status || data.obp_status === 'pending') {
+                                                Swal.fire({
+                                                    icon: 'warning',
+                                                    title: 'You don\'t have a filed OBP on this date',
+                                                    text: 'Ensure all OBP submissions are approved before proceeding.',
+                                                    confirmButtonText: 'OK',
+                                                    customClass: {
+                                                        confirmButton: 'swal-button-green'
+                                                    },
+                                                }).then(function() {
+                                                    // Redirect to the specific page with dynamic parameters
+                                                    const empno = "<?php echo $empno; ?>";
+                                                    const mindate = "<?php echo $mindate; ?>";
+                                                    const maxdate = "<?php echo $maxdate; ?>";
+                                                    window.location.href = `filing-concerns.php?concern=concern&dtrconcern&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                });
+                                                return; // Prevent further processing
+                                            }
+                                        }
+                                    })
+                                    .catch(error => console.error('Error fetching time inputs:', error));
+                            }
+                        }
                         // Fetch and set the time data based on the selected concern date
                         fetchTimeData(concernDate);
 
@@ -580,6 +1554,416 @@ $HRconnect->close();
 
                     })
                     .catch(error => console.error('Error fetching content:', error));
+
+            } else if (selectedConcern === "Remove time inputs") {
+                // Handle loading the "Wrong filing of overtime" form
+                const url = `remove-timeinputs.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        displayDiv.innerHTML = html;
+
+                        // Fetch and display time data based on concernDate
+                        function fetchTimeData(concernDate) {
+                            const empno = "<?php echo htmlspecialchars($empno); ?>";
+
+                            if (concernDate) {
+                                fetch('fetch-time-inputs.php?empno=' + encodeURIComponent(empno) + '&date=' + encodeURIComponent(concernDate))
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Fetched data:', data); // Log the entire fetched data object
+
+                                        if (data) {
+                                            document.getElementById('capturedTimeIn').value = extractTime(data.M_timein);
+                                            document.getElementById('capturedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
+                                            document.getElementById('capturedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
+                                            document.getElementById('capturedTimeOut').value = extractTime(data.A_timeout);
+                                        }
+                                    })
+                                    .catch(error => console.error('Error fetching time inputs:', error));
+                            }
+                        }
+
+                        // Call the fetchTimeData function immediately after defining it
+                        fetchTimeData(concernDate);
+
+                        document.getElementById('btnSubmit').addEventListener('click', function() {
+                            // Gather data from form fields
+                            const concernDate = document.getElementById('concernDate').value;
+                            const selectedConcern = document.getElementById('specificConcern').value;
+                            const concernType = document.getElementById('concernType').value; // e.g., userError
+                            const agreementCheckbox = document.getElementById('agreementCheckbox').checked;
+                            const concern_reason = document.getElementById('concern_reason').value;
+                            const removeTimeinputs = document.getElementById('removeTimeinputs').value;
+
+
+                            // Check if the agreement checkbox is not checked
+                            if (!agreementCheckbox) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Agreement Required',
+                                    text: 'You must agree to the terms before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Check if reason is empty or null
+                            if (!concern_reason || concern_reason.trim() === "") {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Reason Required',
+                                    text: 'You must provide a reason for the concern before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Check if removeTimeinputs is not selected
+                            if (!removeTimeinputs) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Selection Required',
+                                    text: 'You must select a time input to remove before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Map removeTimeinputs to its descriptive label
+                            let removeTimeinputsLabel =
+                                removeTimeinputs === 'timeIn' ? 'Time In' :
+                                removeTimeinputs === 'breakOut' ? 'Break Out' :
+                                removeTimeinputs === 'breakIn' ? 'Break In' :
+                                removeTimeinputs === 'timeOut' ? 'Time Out' :
+                                removeTimeinputs === 'brokenSchedIn' ? 'Broken Sched In' :
+                                removeTimeinputs === 'brokenSchedOut' ? 'Broken Sched Out' :
+                                removeTimeinputs === 'allRegularInputs' ? 'All Regular Inputs' :
+                                removeTimeinputs === 'allBrokenSchedInputs' ? 'All Broken Sched Inputs' : '';
+
+                            // Map concernType to its descriptive label
+                            let concernTypeLabel =
+                                concernType === 'userError' ? 'User Error' :
+                                concernType === 'systemError' ? 'System Error' :
+                                concernType === 'others' ? 'Others' : '';
+
+                            // Map userlevel to its descriptive label
+                            let userlevelMapped;
+                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
+
+                            if (userlevel === 'master') {
+                                userlevelMapped = 'staff';
+                            } else {
+                                userlevelMapped = userlevel;
+                            }
+
+                            const data = {
+                                empno: "<?php echo htmlspecialchars($empno); ?>",
+                                name: "<?php echo htmlspecialchars($name); ?>",
+                                userlevel: userlevelMapped, // Use the mapped userlevel
+                                branch: "<?php echo htmlspecialchars($branch); ?>",
+                                userid: "<?php echo htmlspecialchars($userid); ?>",
+                                area: "<?php echo htmlspecialchars($area_type); ?>",
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                removeTimeinputs: removeTimeinputsLabel, // Use the mapped label
+                                concern_reason: concern_reason,
+                                status: "Pending",
+                            };
+
+                            // Log the data to the console
+                            console.log('Submitting data:', data);
+
+                            fetch('insert-concerns.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(data)
+                                })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern successfully submitted!',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                            willClose: () => {
+                                                const empno = "<?php echo $empno; ?>";
+                                                const mindate = "<?php echo $mindate; ?>";
+                                                const maxdate = "<?php echo $maxdate; ?>";
+                                                const redirectUrl = `/hrms/pdf/print_concerns.php?dtr=filedconcerns&filed=&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                window.location.href = redirectUrl;
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: result.message || 'There was an issue submitting the concern.',
+                                            confirmButtonText: 'OK',
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                        });
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+                    })
+                    .catch(error => console.error('Error fetching content:', error));
+
+            } else if (selectedConcern === "Time inputs did not sync") {
+                // Construct the URL with additional parameters
+                const url = `time-inputs-did-not-sync.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        displayDiv.innerHTML = html;
+
+                        document.querySelectorAll('.time-inputs input').forEach(input => {
+                            input.addEventListener('input', function() {
+                                let value = this.value;
+                                // Remove all non-numeric characters except colon
+                                value = value.replace(/[^0-9:]/g, '');
+
+                                // Format the input to match "00:00"
+                                if (value.length > 2 && value[2] !== ':') {
+                                    value = value.slice(0, 2) + ':' + value.slice(2);
+                                }
+
+                                // Limit length to "00:00"
+                                value = value.slice(0, 5);
+
+                                // Validate the time format
+                                if (value.length === 5) {
+                                    const [hours, minutes] = value.split(':').map(num => parseInt(num, 10));
+                                    if (hours >= 24 || minutes >= 60) {
+                                        // Invalid time; reset the value
+                                        this.value = '';
+                                        return;
+                                    }
+
+                                    if (hours > 23 || (hours === 23 && minutes > 59)) {
+                                        // Adjust hours and minutes to be within valid range
+                                        if (hours > 23) {
+                                            this.value = '23:' + value.slice(3);
+                                        } else if (minutes > 59) {
+                                            this.value = value.slice(0, 3) + '59';
+                                        }
+                                        return;
+                                    }
+                                }
+
+                                // Set the cleaned and validated value
+                                this.value = value;
+                            });
+                        });
+
+                        // Fetch and display time data based on concernDate
+                        function fetchTimeData(concernDate) {
+                            const empno = "<?php echo htmlspecialchars($empno); ?>";
+
+                            if (concernDate) {
+                                fetch('fetch-time-inputs.php?empno=' + encodeURIComponent(empno) + '&date=' + encodeURIComponent(concernDate))
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Fetched data:', data); // Log the entire fetched data object
+
+                                        if (data) {
+                                            document.getElementById('capturedTimeIn').value = extractTime(data.M_timein);
+                                            document.getElementById('capturedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
+                                            document.getElementById('capturedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
+                                            document.getElementById('capturedTimeOut').value = extractTime(data.A_timeout);
+                                            // Display on proposed time inputs
+                                            document.getElementById('proposedTimeIn').value = extractTime(data.M_timein);
+                                            document.getElementById('proposedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break";
+                                            document.getElementById('proposedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break";
+                                            document.getElementById('proposedTimeOut').value = extractTime(data.A_timeout);
+
+                                            // Disable the input fields if they are not empty or not "No Break"
+                                            if (proposedTimeIn.value) proposedTimeIn.disabled = true;
+                                            if (proposedBreakOut.value && proposedBreakOut.value !== "No Break") proposedBreakOut.disabled = true;
+                                            if (proposedBreakIn.value && proposedBreakIn.value !== "No Break") proposedBreakIn.disabled = true;
+                                            if (proposedTimeOut.value) proposedTimeOut.disabled = true;
+
+                                        }
+                                    })
+                                    .catch(error => console.error('Error fetching time inputs:', error));
+                            }
+                        }
+                        // Fetch and set the time data based on the selected concern date
+                        fetchTimeData(concernDate);
+
+                        // Add event listener for the checkbox in the loaded content
+                        document.getElementById('oneHourBreakCheckbox').addEventListener('change', function() {
+                            const oneHourBreakChecked = this.checked;
+                            const proposedBreakOut = document.getElementById('proposedBreakOut');
+                            const proposedBreakIn = document.getElementById('proposedBreakIn');
+                            const value = oneHourBreakChecked ? "No Break" : "";
+                            proposedBreakOut.value = value;
+                            proposedBreakIn.value = value;
+                        });
+
+                        document.getElementById('oneHourBreakCheckbox').disabled = true;
+
+                        document.getElementById('btnSubmit').addEventListener('click', function() {
+                            // Gather data from form fields
+                            const concernDate = document.getElementById('concernDate').value;
+                            const selectedConcern = document.getElementById('specificConcern').value;
+                            const concernType = document.getElementById('concernType').value; // e.g., userError
+                            const M_timein = document.getElementById('capturedTimeIn').value;
+                            const M_timeout = document.getElementById('capturedBreakOut').value;
+                            const A_timein = document.getElementById('capturedBreakIn').value;
+                            const A_timeout = document.getElementById('capturedTimeOut').value;
+                            const proposedTimeIn = document.getElementById('proposedTimeIn').value; // New input
+                            const proposedBreakOut = document.getElementById('proposedBreakOut').value; // New input
+                            const proposedBreakIn = document.getElementById('proposedBreakIn').value; // New input
+                            const proposedTimeOut = document.getElementById('proposedTimeOut').value; // New input
+                            const agreementCheckbox = document.getElementById('agreementCheckbox').checked;
+
+                            // Capture the file name from the file input field
+                            const attachmentFile = document.getElementById('attachment1').files[0];
+                            const attachmentFileName = attachmentFile ? attachmentFile.name : '';
+
+                            // Check if the agreement checkbox is not checked
+                            if (!agreementCheckbox) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Agreement Required',
+                                    text: 'You must agree to the terms before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Check if any of the proposed time inputs are empty
+                            if (!proposedTimeIn || !proposedBreakOut || !proposedBreakIn || !proposedTimeOut) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Missing Inputs',
+                                    text: 'Please enter all proposed time inputs before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Map concernType to its descriptive label
+                            let concernTypeLabel =
+                                concernType === 'userError' ? 'User Error' :
+                                concernType === 'systemError' ? 'System Error' :
+                                concernType === 'others' ? 'Others' : '';
+
+                            // Map userlevel to its descriptive label
+                            let userlevelMapped;
+                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
+
+                            if (userlevel === 'master') {
+                                userlevelMapped = 'staff';
+                            } else {
+                                userlevelMapped = userlevel;
+                            }
+
+                            const data = {
+                                empno: "<?php echo htmlspecialchars($empno); ?>",
+                                name: "<?php echo htmlspecialchars($name); ?>",
+                                userlevel: userlevelMapped, // Use the mapped userlevel
+                                branch: "<?php echo htmlspecialchars($branch); ?>",
+                                userid: "<?php echo htmlspecialchars($userid); ?>",
+                                area: "<?php echo htmlspecialchars($area_type); ?>",
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                actualIN: M_timein,
+                                actualbOUT: M_timeout,
+                                actualBIN: A_timein,
+                                actualOUT: A_timeout,
+                                proposedTimeIn: proposedTimeIn,
+                                proposedBreakOut: proposedBreakOut,
+                                proposedBreakIn: proposedBreakIn,
+                                proposedTimeOut: proposedTimeOut,
+                                attachment1: attachmentFileName, // Include the file name here
+                                status: "Pending"
+                            };
+
+                            // Log the form data to console
+                            console.log('Submitting data:', data);
+
+                            fetch('insert-concerns.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(data)
+                                })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern successfully submitted!',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                            willClose: () => {
+                                                const empno = "<?php echo $empno; ?>";
+                                                const mindate = "<?php echo $mindate; ?>";
+                                                const maxdate = "<?php echo $maxdate; ?>";
+                                                const redirectUrl = `/hrms/pdf/print_concerns.php?dtr=filedconcerns&filed=&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                window.location.href = redirectUrl;
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: result.message || 'There was an issue submitting the concern.',
+                                            confirmButtonText: 'OK',
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                        });
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+
+                    })
+                    .catch(error => console.error('Error fetching content:', error));
+                {
+
+                }
             }
         });
     </script>

@@ -213,6 +213,7 @@
                 position: getQueryParam('position'),
                 concern_date: getQueryParam('ConcernDate'),
                 type_concern: getQueryParam('type_concern'),
+                type_errors: getQueryParam('type_errors'),
                 type_of_employment: $('input[name="typeEmployment"]:checked').val() || 'Not Specified',
                 concern_category: getQueryParam('Concern'),
                 place_of_incident: $('#placeIncident').val(),
@@ -311,7 +312,7 @@
                         timerProgressBar: true // Show progress bar
                     }).then(() => {
                         // Ensure the redirect happens after the Swal closes
-                        var redirectUrl = `/hrms/filing-concerns.php?concern=concern&empno=${encodeURIComponent(employeeDetails.empno)}&date=${encodeURIComponent(employeeDetails.concern_date)}&dtrconcern=${encodeURIComponent(employeeDetails.concern_category)}`;
+                        var redirectUrl = `/hrms/filing-concerns.php?concern=concern&empno=${encodeURIComponent(employeeDetails.empno)}&date=${encodeURIComponent(employeeDetails.concern_date)}&dtrconcern=${encodeURIComponent(employeeDetails.concern_category)}&type_errors=${encodeURIComponent(employeeDetails.type_errors)}`;
                         window.location.href = redirectUrl;
                     });
                 },

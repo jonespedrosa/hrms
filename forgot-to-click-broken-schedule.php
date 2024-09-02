@@ -8,6 +8,7 @@ $name = isset($_GET['name']) ? $_GET['name'] : null;
 $position = isset($_GET['position']) ? $_GET['position'] : null;
 $selectedConcern = isset($_GET['Concern']) ? $_GET['Concern'] : null;
 $type_concern = isset($_GET['type_concern']) ? $_GET['type_concern'] : null;
+$type_errors = isset($_GET['type_errors']) ? $_GET['type_errors'] : null;
 $btnDisabled = false; // Default value
 
 if ($empno && $concernDate) {
@@ -25,9 +26,13 @@ if ($empno && $concernDate) {
     // Construct the URL based on whether the form was submitted or not
     if ($formSubmitted) {
         $hearYouOutUrl = "hear-you-out-view-only.php?empno=$empno&type_concern=" . urlencode($type_concern) . "&ConcernDate=" . urlencode($concernDate);
+        $linkText = "You already submitted HYO form, click to review";
+        $linkAction = "window.open('$hearYouOutUrl', '_blank'); return false;";
     } else {
-        $hearYouOutUrl = "hear-you-out.php?empno=$empno&name=" . urlencode($name) . "&position=" . urlencode($position) . "&ConcernDate=" . urlencode($concernDate) . "&type_concern=" . urlencode($type_concern) . "&Concern=" . urlencode($selectedConcern);
-        $btnDisabled = true; // Disable the button if form has not been submitted
+        $hearYouOutUrl = "hear-you-out.php?empno=$empno&name=" . urlencode($name) . "&position=" . urlencode($position) . "&ConcernDate=" . urlencode($concernDate) . "&type_concern=" . urlencode($type_concern) . "&Concern=" . urlencode($selectedConcern) . "&type_errors=" . urlencode($type_errors);
+        $linkText = "Click here to create and submit your HYO form";
+        $linkAction = "window.location.href='$hearYouOutUrl'; return false;";
+        $btnDisabled = true; // Disable the button if the form has not been submitted
     }
 }
 ?>
@@ -35,9 +40,9 @@ if ($empno && $concernDate) {
 <div class="card border-0 shadow-sm mt-3">
     <div class="card-body p-0 ml-4 mr-4">
         <h5 class="mt-4" style="margin-bottom: 0;">
-            <strong><?php echo htmlspecialchars($selectedConcern ?? 'Forgot/Wrong to time in or time out'); ?></strong>
+            <strong><?php echo htmlspecialchars($selectedConcern ?? 'Forgot to click broken schedule'); ?></strong>
         </h5>
-        <p style="margin-top: 0;">The employee forgot to use their fingerprint for one of their time entries.</p>
+        <p style="margin-top: 0;">The staff forgot to check Broken Schedule for Gen Meet/Gen Cleaning. It is only applicable if you already completed 4 time inputs for that shift.</p>
         <hr>
         <div class="form-group">
             <!-- Table-like structure for time inputs -->
@@ -45,17 +50,13 @@ if ($empno && $concernDate) {
                 <p style="font-weight:bold; margin-bottom: 0;">Captured Time Inputs</p>
                 <!-- Header Row -->
                 <div class="time-inputs-header">
-                    <div class="header-item">TIME IN</div>
-                    <div class="header-item">BREAK OUT</div>
-                    <div class="header-item">BREAK IN</div>
-                    <div class="header-item">TIME OUT</div>
+                    <div class="header-item">BROKEN SCHEDULE IN</div>
+                    <div class="header-item">BROKEN SCHEDULE OUT</div>
                 </div>
                 <!-- Input Row -->
                 <div class="time-inputs captured-inputs d-flex justify-content-center align-items-center">
-                    <input type="text" id="capturedTimeIn" class="form-control text-center mx-2" disabled>
-                    <input type="text" id="capturedBreakOut" class="form-control text-center mx-2" disabled>
-                    <input type="text" id="capturedBreakIn" class="form-control text-center mx-2" disabled>
-                    <input type="text" id="capturedTimeOut" class="form-control text-center mx-2" disabled>
+                    <input type="text" id="capturedBrokenSchedIn" name="capturedBrokenSchedIn" class="form-control text-center" disabled>
+                    <input type="text" id="capturedBrokenSchedOut" name="capturedBrokenSchedOut" class="form-control text-center" disabled>
                 </div>
             </div>
             <!-- Table-like structure for proposed inputs -->
@@ -63,42 +64,25 @@ if ($empno && $concernDate) {
                 <!-- Container for checkbox with proper spacing -->
                 <div class="checkbox-section" style="display: flex; justify-content: space-between; align-items: center;">
                     <p style="font-weight:bold; margin-bottom: 0;">Proposed Time Inputs <span style="color:red;">*</span></p>
-                    <!-- Checkbox with text "With 1 hour break" -->
-                    <div class="checkbox-container">
-                        <label style="font-weight:bold;">
-                            <input type="checkbox" id="oneHourBreakCheckbox">
-                            Check If No Break
-                        </label>
-                    </div>
                 </div>
                 <!-- Header Row -->
                 <div class="time-inputs-header">
-                    <div class="header-item">TIME IN</div>
-                    <div class="header-item">BREAK OUT</div>
-                    <div class="header-item">BREAK IN</div>
-                    <div class="header-item">TIME OUT</div>
+                    <div class="header-item">BROKEN SCHEDULE IN</div>
+                    <div class="header-item">BROKEN SCHEDULE OUT</div>
                 </div>
                 <!-- Input Row -->
                 <div class="time-inputs proposed-inputs">
-                    <input type="text" id="proposedTimeIn" class="form-control" placeholder="00:00">
-                    <input type="text" id="proposedBreakOut" class="form-control" placeholder="00:00">
-                    <input type="text" id="proposedBreakIn" class="form-control" placeholder="00:00">
-                    <input type="text" id="proposedTimeOut" class="form-control" placeholder="00:00">
+                    <input type="text" id="proposedBrokenSchedIn" class="form-control" placeholder="00:00">
+                    <input type="text" id="proposedBrokenSchedOut" class="form-control" placeholder="00:00">
                 </div>
             </div>
             <!-- Attachments Section -->
             <div class="attachments-container">
                 <p style="font-weight:bold; margin-bottom: 0;">Attachments <span style="color:red;">*</span></p>
                 <div class="input-group mt-3 d-flex justify-content-center">
-                    <a href="<?php echo $hearYouOutUrl; ?>" target="_blank"
+                    <a href="#" onclick="<?php echo $linkAction; ?>"
                         style="color: <?php echo (isset($formSubmitted) && $formSubmitted) ? '#6c757d' : '#007bff'; ?>; text-decoration: underline; font-size: 20px;">
-                        <?php
-                        if (isset($formSubmitted) && $formSubmitted) {
-                            echo "You already submitted HYO form, click to review";
-                        } else {
-                            echo "Click here to create and submit your HYO form";
-                        }
-                        ?>
+                        <?php echo $linkText; ?>
                     </a>
                 </div>
             </div>

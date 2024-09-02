@@ -1,5 +1,5 @@
 <!-- Begin Page Content --> <!-- Search -->
-<?php  
+<?php
 	$ORconnect = mysqli_connect("localhost", "root", "", "db");
 	$HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 
@@ -9,7 +9,7 @@
 		$empno = $_GET['empno'];
 	}
 
-	$getDateSQL = "SELECT si.datefrom, si.dateto FROM user_info ui LEFT JOIN sched_info si 
+	$getDateSQL = "SELECT si.datefrom, si.dateto FROM user_info ui LEFT JOIN sched_info si
 	ON si.empno = ui.empno
 	WHERE si.status = 'Pending' AND ui.empno = $empno;";
 	$querybuilder=$HRconnect->query($getDateSQL);
@@ -23,7 +23,7 @@ if(isset($_GET['cancel']) == 'yes') {
 	$empid = $_GET['empno'];
 
 
-	$updatecancel=" UPDATE dtr_concerns 
+	$updatecancel=" UPDATE dtr_concerns
 			SET status = 'Cancelled'
             WHERE id = '$concernID'";
 	$HRconnect->query($updatecancel);
@@ -42,7 +42,7 @@ if(isset($_GET['cancel']) == 'yes') {
 
 
 	<meta charset="utf-8">
- 
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Mary Grace Foods Inc.</title>
     <link rel="icon" href="../images/logoo.png">
@@ -60,11 +60,11 @@ if(isset($_GET['cancel']) == 'yes') {
 <style type="text/css">
 
 
- @page {size:portrait}  
+ @page {size:portrait}
 body {
     page-break-before: avoid;
-   
-   
+
+
      }
 
 
@@ -84,37 +84,37 @@ body {
 
 
 <style>
-.myTable { 
+.myTable {
   width: 100%;
   text-align: left;
   background-color: white;
-  border-collapse: collapse; 
+  border-collapse: collapse;
   }
-.myTable th { 
+.myTable th {
   background-color: secondary;
-  color: black; 
+  color: black;
   }
-.myTable td, 
-.myTable th { 
+.myTable td,
+.myTable th {
   padding: 5px;
   border: 2px solid black;
-    
+
   }
-  
- 
+
+
 </style>
 
 
 </head>
 
 
-<?php  
-	if(isset($_GET["ot"]) == "ot")  
-	{  
+<?php
+	if(isset($_GET["ot"]) == "ot")
+	{
 	?>
 
 <body>
-	<?php 
+	<?php
 	@$empno = $_GET['empno'];
 	@$datefrom = $_GET['cutfrom'];
 	@$dateto = $_GET['cutto'];
@@ -123,86 +123,86 @@ body {
     $query=$HRconnect->query($sql);
     $row=$query->fetch_array()
 
-	
+
 	?>
 
 <p style="page-break-before: always">
 
 	<div class="col-12">
-		<center><h5><small>Human Resource Department</small><br>Overtime Request</h5></center>		
-			
-			<div class="row">								
+		<center><h5><small>Human Resource Department</small><br>Overtime Request</h5></center>
+
+			<div class="row">
 				<div class="col-12">
-					<p class="text-uppercase">									
+					<p class="text-uppercase">
 						Fullname: <b><?php echo $row['name']; ?></b> <br/>
 						Employee ID :  <b><?php echo $row['empno']; ?></b>  <br/>
 						Dept/Branch: <b><?php echo $row['branch']; ?></b> <br/>
 					</p>
 				</div>
-			
-							  
+
+
 			</div>
-		<div class="table-responsive">	
+		<div class="table-responsive">
 			<table class="myTable">
 					<tr class="text-uppercase">
-						<th><center><b>Date Overtime</b></center></th>						  
-						<th><center><b>Reason</b></center></th>   
+						<th><center><b>Date Overtime</b></center></th>
+						<th><center><b>Reason</b></center></th>
 						<th><center><b>Status</b></center></th>
 						<th><center><b>Approver</b></center></th>
-						<th><center><b>Number of Hours</b></center></th>	
+						<th><center><b>Number of Hours</b></center></th>
 					</tr>
-									
+
 				</thead>
-				
-				
+
+
 				<tbody>
-		
 
 
-  			 <?php 
+
+  			 <?php
 
                  $sql1 = "SELECT * FROM overunder where empno = $empno AND otdatefrom BETWEEN '$datestart' AND '$dateend' ORDER BY otdatefrom DESC ";
                  $query1=$HRconnect->query($sql1);
                  while($row1=$query1->fetch_array())
                                                 {
 						@$totalovertime += $row1['othours'];
-						$otstatus = $row1['otstatus'];	
+						$otstatus = $row1['otstatus'];
                       ?>
 					<tr>
-						<td><center><?php echo $row1['otdatefrom']; ?><center></td>						
+						<td><center><?php echo $row1['otdatefrom']; ?><center></td>
 						<td><center><?php echo $row1['otreason']; ?></center></td>
-						<?php 
+						<?php
 							if($otstatus == 'pending2'){
 							?>
 							<td><center>Partially Approved</center></td>
-						<?php    
+						<?php
 							}else{
 							?>
 							<td><center><?php echo $row1['otstatus']; ?></center></td>
 						<?php
 							}
 							?>
-							
-						<?php 
+
+						<?php
 							if($otstatus == 'pending2'){
 							?>
 							<td><center><?php echo $row1['p_approver']; ?></center></td>
-						<?php    
+						<?php
 							}else{
 							?>
 							<td><center><?php echo $row1['approver']; ?></center></td>
 						<?php
 							}
-							?>	
-						
+							?>
+
 						<td><center><?php echo $row1['othours']; ?><center></td>
 					</tr>
-			<?php 
+			<?php
 				}
 				?>
-					
+
 				</tbody>
-				
+
 				<tfoot>
 					<tr>
 						<td colspan="3"><center></center></td>
@@ -210,34 +210,34 @@ body {
 						<td><center><?php echo @$totalovertime; ?></center></td>
 					</tr>
 				</tfoot>
-			</table>				
+			</table>
 		</div>
 		<hr>
 		<center><p class="text-muted"><i>I CERTIFY that the above information provided is correct. Any falsification of information in this
 			regard may form ground for disciplinary action up to and including dismissal.</i></p></center>
-		
-		<div class="d-sm-flex align-items-center justify-content-between mb-4">													
-			<div class="text-center">          
+
+		<div class="d-sm-flex align-items-center justify-content-between mb-4">
+			<div class="text-center">
 				<a href="../createovertime.php?ot=ot&empno=<?php echo $row['empno']; ?>"> <button class="btn btn-primary btn-block">
 				Back</button></a>
-			</div>	
+			</div>
 		</div>
 	</div>
-		
-		
+
+
 </p>
 </body>
 
-<?php  
+<?php
 	}
 	?>
-	
-<?php  
-	if(isset($_GET["ut"]) == "ut")  
-	{  
+
+<?php
+	if(isset($_GET["ut"]) == "ut")
+	{
 	?>
 <body>
-	<?php 
+	<?php
 
 
 	@$empno = $_GET['empno'];
@@ -253,45 +253,45 @@ body {
 <p style="page-break-before: always">
 
 	<div class="col-12">
-		<center><h5><small>Human Resource Department</small><br>Official Bussiness Permit</h5></center>		
-			
-			<div class="row">								
+		<center><h5><small>Human Resource Department</small><br>Official Bussiness Permit</h5></center>
+
+			<div class="row">
 				<div class="col-12">
-					<p class="text-uppercase">									
+					<p class="text-uppercase">
 						Fullname: <b><?php echo $row['name']; ?></b> <br/>
 						Employee ID :  <b><?php echo $row['empno']; ?></b>  <br/>
 						Dept/Branch: <b><?php echo $row['branch']; ?></b>
 					</p>
 				</div>
-			
-						
-			</div>		
-		<div class="table-responsive">	
-			<table class="myTable">					
-				<thead>									
+
+
+			</div>
+		<div class="table-responsive">
+			<table class="myTable">
+				<thead>
 					<tr class="text-uppercase">
 						<th><center><b>Date</b></center></th>
 						<th><center><b>Time In</b></center></th>
-						<th><center><b>Break Out</b></center></th>  
+						<th><center><b>Break Out</b></center></th>
 						<th><center><b>Break In</b></center></th>
 						<th><center><b>Time Out</b></center></th>
 						<th><center><b>Status</b></center></th>
-						<th><center><b>Approver</b></center></th>	
+						<th><center><b>Approver</b></center></th>
 					</tr>
-									
+
 				</thead>
-				
-				
+
+
 				<tbody>
 
-		
-				<?php 
-					
+
+				<?php
+
                 $sql2 = "SELECT * FROM obp WHERE empno = '$empno' AND datefromto BETWEEN '$datestart' AND '$dateend' ORDER BY datefromto DESC";
                 $query2=$HRconnect->query($sql2);
                 while($row2=$query2->fetch_array())
                 {
-				$status = $row2['status'];	
+				$status = $row2['status'];
                 ?>
 					<tr>
 						<td><center><?php echo $row2['datefromto']; ?><center></td>
@@ -299,11 +299,11 @@ body {
 						<td><center><?php echo $row2['breakout']; ?></center></td>
 						<td><center><?php echo $row2['breakin']; ?></center></td>
 						<td><center><?php echo $row2['timeout']; ?></center></td>
-						<?php 
+						<?php
 							if($status == 'Pending2'){
 							?>
 							<td><center>Partially Approved</center></td>
-						<?php    
+						<?php
 							}else{
 							?>
 							<td><center><?php echo $row2['status']; ?></center></td>
@@ -311,53 +311,53 @@ body {
 							}
 							?>
 
-						<?php 
+						<?php
 							if($status == 'Pending2'){
 							?>
 							<td><center><?php echo $row2['p_approval']; ?></center></td>
-						<?php    
+						<?php
 							}else{
 							?>
 							<td><center><?php echo $row2['approval']; ?></center></td>
 						<?php
 							}
-							?>								
+							?>
 					</tr>
-			<?php 
+			<?php
 				}
 				?>
-					
+
 				</tbody>
 			</table>
-			<br>				
+			<br>
 		</div>
 		<hr>
 		<center><p class="text-muted"><i>I CERTIFY that the above inforamtion provided is correct. Any falsification of information in this
-						regard may form ground for disciplinary action up to and including dismissal.</i></p></center>	
-		
-		<div class="d-sm-flex align-items-center justify-content-between mb-4">													
-			<div class="text-center">          
+						regard may form ground for disciplinary action up to and including dismissal.</i></p></center>
+
+		<div class="d-sm-flex align-items-center justify-content-between mb-4">
+			<div class="text-center">
 				<a href="../createovertime.php?ut=ut&empno=<?php echo $row['empno']; ?>"> <button class="btn btn-primary btn-block">
 				Back</button></a>
-			</div>	
+			</div>
 		</div>
 	</div>
-	
+
 </p>
 </body>
 
 
-<?php  
+<?php
 }
 
 
-	if(isset($_GET["leave"]) == "leave")  
-	{  
+	if(isset($_GET["leave"]) == "leave")
+	{
 	?>
-	
+
 <body>
 
-	<?php 
+	<?php
 
 
 	@$empno = $_GET['empno'];
@@ -373,34 +373,34 @@ body {
 <p style="page-break-before: always">
 
 	<div class="col-12">
-			<center><h5><small>Human Resource Department</small><br>Filed Leave</h5></center>		
-			
-			<div class="row">								
+			<center><h5><small>Human Resource Department</small><br>Filed Leave</h5></center>
+
+			<div class="row">
 				<div class="col-12">
-					<p class="text-uppercase">									
+					<p class="text-uppercase">
 						Fullname: <b><?php echo $row['name']; ?></b> <br/>
 						Employee ID :  <b><?php echo $row['empno']; ?></b>  <br/>
 						Dept/Branch: <b><?php echo $row['branch']; ?></b>
-					</p> 
+					</p>
 				</div>
-			
-							  
+
+
 			</div>
-		<div class="table-responsive">	
+		<div class="table-responsive">
 			<table class="myTable">
-				<thead>									
+				<thead>
 					<tr class="text-uppercase">
 						<th><center><b>Date</b></center></th>
-						<th><center><b>Reason/Purpose</b></center></th>  
+						<th><center><b>Reason/Purpose</b></center></th>
 						<th><center><b>Status</b></center></th>
-						<th><center><b>Approver</b></center></th>	
+						<th><center><b>Approver</b></center></th>
 					</tr>
-									
+
 				</thead>
-				
-				
+
+
 				<tbody>
-			<?php 
+			<?php
 
 
                  $sql1 = "SELECT * FROM vlform
@@ -416,35 +416,35 @@ body {
 						<td><center><?php echo $row1['vlstatus']; ?></center></td>
 						<td><center><?php echo $row1['approver']; ?></center></td>
 					</tr>
-			<?php 
+			<?php
 				}
 					?>
 				</tbody>
-			</table>	
+			</table>
 		</div>
 		<hr>
 		<center><p class="text-muted"><i>I CERTIFY that the above inforamtion provided is correct. Any falsification of information in this
 			regard may form ground for disciplinary action up to and including dismissal.</i></p></center>
-		
-		<div class="d-sm-flex align-items-center justify-content-between mb-4">													
-			<div class="text-center">          
+
+		<div class="d-sm-flex align-items-center justify-content-between mb-4">
+			<div class="text-center">
 				<a href="../createovertime.php?leave=leave&empno=<?php echo $row['empno']; ?>"> <button class="btn btn-primary btn-block">
 				Back</button></a>
-			</div>	
+			</div>
 		</div>
-	</div>	
+	</div>
 </p>
 </body>
 
 <?php
 	}
-	?>	
+	?>
 
-<?php if(@$_GET['m'] == 1){ ?>              
+<?php if(@$_GET['m'] == 1){ ?>
 	<script>
 		$(function() {
 	  $(".thanks").delay(2500).fadeOut();
-	  
+
 	});
 	</script>
 
@@ -459,64 +459,64 @@ body {
 			</div>
 		</div>
 	</div>
-                       
-<?php } ?>	
-	
-<?php if(@$_GET['m'] == 2){ ?>              
+
+<?php } ?>
+
+<?php if(@$_GET['m'] == 2){ ?>
 	<script>
 		$(function() {
 	  $(".thanks").delay(2500).fadeOut();
-	  
+
 	});
 	</script>
 
 	<div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
 		<div class="thanks toast fade show" style="position: fixed; bottom: 20px; right: 5px;">
-			<div class="toast-header bg-success">	
+			<div class="toast-header bg-success">
 				<h4 class="mr-auto my-0 text-light"><i class="fa fa-check-circle" aria-hidden="true"></i> OBP</h5>
 			 <small class="text-light">just now</small>
-			 
+
 			</div>
 			<div class="toast-body">
 			  You have <b class="text-success">Successfully</b> file your official bussiness permit. Thank you!
 			</div>
 		</div>
 	</div>
-                       
+
 <?php } ?>
 
-<?php if(@$_GET['m'] == 3){ ?>              
+<?php if(@$_GET['m'] == 3){ ?>
 	<script>
 		$(function() {
 	  $(".thanks").delay(2500).fadeOut();
-	  
+
 	});
 	</script>
 
 	<div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
 		<div class="thanks toast fade show" style="position: fixed; bottom: 20px; right: 5px;">
-			<div class="toast-header bg-success">	
+			<div class="toast-header bg-success">
 				<h4 class="mr-auto my-0 text-light"><i class="fa fa-check-circle" aria-hidden="true"></i> Leave</h5>
 			 <small class="text-light">just now</small>
-			 
+
 			</div>
 			<div class="toast-body">
 			  You have <b class="text-success">Successfully</b> file your leave. Thank you!
 			</div>
 		</div>
 	</div>
-                       
-	<?php } ?>	
 
-		
-	<?php  
-	if(isset($_POST["dtr"]) == "concerns")  
-	{  
+	<?php } ?>
+
+
+	<?php
+	if(isset($_POST["dtr"]) == "concerns")
+	{
 	?>
 <body>
-	<?php 
+	<?php
 	//IF DTR CONCERNS WAS SUBMITTED
-	//GET DATA FROM CONCERNS	
+	//GET DATA FROM CONCERNS
 	$empNUM = $_POST['empNUM'];
 	$empNAME = $_POST['empNAME'];
 	$cdate = $_POST['date'];
@@ -533,7 +533,7 @@ body {
 	$newbrkOUT = $_POST['newbrkOUT'];
 	$newbrkIN = $_POST['newbrkIN'];
 	$othours = $_POST['othours'];
-	
+
 	if($newbrkOUT == 'No Break' AND $newbrkIN == 'No Break'){
 		$newbrkOUT = 'No Break';
 		$newbrkIN = 'No Break';
@@ -596,91 +596,91 @@ body {
 	$echo6 = $row20['COUNT(*)'];
 
 
-	if($row8['COUNT(*)'] >= 1 AND $echo1 >= 1 AND $echo2 >= 1 AND $echo3 >= 1 AND $echo4 >= 1 AND $echo5 >= 1){		
+	if($row8['COUNT(*)'] >= 1 AND $echo1 >= 1 AND $echo2 >= 1 AND $echo3 >= 1 AND $echo4 >= 1 AND $echo5 >= 1){
 
     echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
-        </script>";    	
-  
-  }else	if($dtrconcern == 'Forgot to click Halfday' AND $echo0 >= 1 ){		
+        </script>";
+
+  }else	if($dtrconcern == 'Forgot to click Halfday' AND $echo0 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Forgot/Wrong time IN/OUT or break OUT/IN' AND $echo0 >= 1 ){		
+  }else	if($dtrconcern == 'Forgot/Wrong time IN/OUT or break OUT/IN' AND $echo0 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-   }else	if($dtrconcern == 'Forgot/Wrong inputs of broken sched' AND $echo6 >= 1 ){		
+   }else	if($dtrconcern == 'Forgot/Wrong inputs of broken sched' AND $echo6 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Wrong format/filing of OBP' AND $echo0 >= 1 ){		
+  }else	if($dtrconcern == 'Wrong format/filing of OBP' AND $echo0 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Not following time interval' AND $echo0 >= 1 ){		
+  }else	if($dtrconcern == 'Not following time interval' AND $echo0 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Sync/Network error' AND $echo0 >= 1 ){		
+  }else	if($dtrconcern == 'Sync/Network error' AND $echo0 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Emergency time out' AND $echo0 >= 1 ){		
+  }else	if($dtrconcern == 'Emergency time out' AND $echo0 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Hardware/Persona Malfunction' AND $echo0 >= 1 ){		
+  }else	if($dtrconcern == 'Hardware/Persona Malfunction' AND $echo0 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Fingerprint problem' AND $echo0 >= 1 ){		
+  }else	if($dtrconcern == 'Fingerprint problem' AND $echo0 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'File Broken Sched OT' AND $echo1 >= 1 ){		
+  }else	if($dtrconcern == 'File Broken Sched OT' AND $echo1 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Cancellation of Overtime' AND $echo2 >= 1 ){		
+  }else	if($dtrconcern == 'Cancellation of Overtime' AND $echo2 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Cancellation of Leave' AND $echo3 >= 1 ){		
+  }else	if($dtrconcern == 'Cancellation of Leave' AND $echo3 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Wrong Computations' AND $echo4 >= 1 ){		
+  }else	if($dtrconcern == 'Wrong Computations' AND $echo4 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
         </script>";
 
-  }else	if($dtrconcern == 'Remove Time Inputs' AND $echo5 >= 1 ){		
+  }else	if($dtrconcern == 'Remove Time Inputs' AND $echo5 >= 1 ){
 
   	echo "<script type='text/javascript'>alert('Failed: DTR Concern is already filed or you did not select any date, please check your filed DTR concern. Thank you!');
         window.location.href='../concerns.php?dtrconcern&concern=concern&empno=$empNUM'
@@ -710,12 +710,12 @@ body {
     		}
 
     		//INSERT DATA INTO THE DATABASE
-    		$sql4 = "INSERT INTO dtr_concerns 
-    			(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`othours`,`reason`,`status`) 
+    		$sql4 = "INSERT INTO dtr_concerns
+    			(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`othours`,`reason`,`status`)
     			VALUES
     			('$datenow', '$empNUM', '$empNAME','$userlevel','$branch','$userid','$areatype', '".$cdate."', '$dtrconcern','User Error', '$othours','$concernReason','Pending')";
     			$HRconnect->query($sql4);
-    	
+
     	}else if($dtrconcern == 'Wrong Computations'){
 			$sql0 = "SELECT * FROM user_info WHERE empno = '$empNUM'";
     		$query0=$HRconnect->query($sql0);
@@ -739,8 +739,8 @@ body {
     		}
 
     		//INSERT DATA INTO THE DATABASE
-    		$sql4 = "INSERT INTO dtr_concerns 
-    			(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`vltype`,`reason`,`status`) 
+    		$sql4 = "INSERT INTO dtr_concerns
+    			(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`vltype`,`reason`,`status`)
     			VALUES
     			('$datenow', '$empNUM', '$empNAME','$userlevel','$branch','$userid','$areatype', '".$cdate."', '$dtrconcern','System Error', '$computations','$concernReason','Pending')";
     			$HRconnect->query($sql4);
@@ -767,8 +767,8 @@ body {
     		}
 
     		//INSERT DATA INTO THE DATABASE
-    		$sql4 = "INSERT INTO dtr_concerns 
-    			(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`vltype`,`reason`,`status`) 
+    		$sql4 = "INSERT INTO dtr_concerns
+    			(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`vltype`,`reason`,`status`)
     			VALUES
     			('$datenow', '$empNUM', '$empNAME','$userlevel','$branch','$userid','$areatype', '".$cdate."', '$dtrconcern','User Error', '$othours','$concernReason','Pending')";
     			$HRconnect->query($sql4);
@@ -797,25 +797,25 @@ body {
 
     		//INSERT DATA INTO THE DATABASE
     		if($userlevel == 'mod' || $userlevel == 'ac' || $userlevel == 'admin'){
-    		$sql4 = "INSERT INTO overunder 
-    			(`timedate`,`empno`,`otdatefrom`,`othours`,`ottype`,`otreason`,`otstatus`) 
+    		$sql4 = "INSERT INTO overunder
+    			(`timedate`,`empno`,`otdatefrom`,`othours`,`ottype`,`otreason`,`otstatus`)
     			VALUES
     			('$datenow', '$empNUM',  '".$cdate."', '$othours','$ottype','$concernReason','pending2')";
     			$HRconnect->query($sql4);
 
-    		header("location:print_ot.php?ot=ot&empno=$empNUM&m=1"); 
+    		header("location:print_ot.php?ot=ot&empno=$empNUM&m=1");
 
     		}else{
-    			$sql4 = "INSERT INTO overunder 
-    			(`timedate`,`empno`,`otdatefrom`,`othours`,`ottype`,`otreason`,`otstatus`) 
+    			$sql4 = "INSERT INTO overunder
+    			(`timedate`,`empno`,`otdatefrom`,`othours`,`ottype`,`otreason`,`otstatus`)
     			VALUES
     			('$datenow', '$empNUM',  '".$cdate."', '$othours','$ottype','$concernReason','pending')";
     			$HRconnect->query($sql4);
 
-    		header("location:print_ot.php?ot=ot&empno=$empNUM&m=1"); 
-    		} 
+    		header("location:print_ot.php?ot=ot&empno=$empNUM&m=1");
+    		}
 
-    	}else{	
+    	}else{
 
 	//FILE UPLOAD
     $target_dir = 'attachments/';
@@ -826,22 +826,22 @@ body {
     }else{
     	$filename2 = basename($_FILES['attachment2']['name']);
     }
-    
+
 		$target_file = $target_dir . $filename;
 		$target_file2 = $target_dir . $filename2;
 		$uploadOk = 1;
 		$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-		$newFileName = $target_dir.md5_file($_FILES['attachment1']['tmp_name']).".".$imageFileType;	
+		$newFileName = $target_dir.md5_file($_FILES['attachment1']['tmp_name']).".".$imageFileType;
 
 		if($dtrconcern == 'Remove Time Inputs' || $dtrconcern == 'Sync/Network error'){
-			$newFileName2 = $target_dir.md5_file($_FILES['attachment1']['tmp_name']).".".$imageFileType;	
+			$newFileName2 = $target_dir.md5_file($_FILES['attachment1']['tmp_name']).".".$imageFileType;
 		}else{
 			$newFileName2 = $target_dir.md5_file($_FILES['attachment2']['tmp_name']).".".$imageFileType;
 		}
-			
+
 
 	// Check if image file is a actual image or fake image
-	if(isset($_POST["submit"])) 
+	if(isset($_POST["submit"]))
 	{
   		$check = getimagesize($_FILES['attachment1']["tmp_name"]);
   		if($check !== false) {
@@ -849,20 +849,20 @@ body {
     		$uploadOk = 1;
   		}
   		else
-  		{    		
+  		{
     		$uploadOk = 0;
   		}
 	}
 
 
-		if (move_uploaded_file($_FILES['attachment1']["tmp_name"], $newFileName)) 
+		if (move_uploaded_file($_FILES['attachment1']["tmp_name"], $newFileName))
 		{
 			if($dtrconcern != 'Remove Time Inputs' AND $dtrconcern != 'Sync/Network error'){
 				move_uploaded_file($_FILES['attachment2']["tmp_name"], $newFileName2);
 			}
-			
-  	} 
-  	else 
+
+  	}
+  	else
   	{
   		echo "<script type='text/javascript'>alert('Failed: Sorry, there was an error uploading your file.');
         </script>";
@@ -909,7 +909,7 @@ body {
     $areatype = $row3['area_type'];
     $userlevel = $row3['userlevel'];
     $datenow = date('Y-m-d H:i:s');
-	
+
     //EMPLOYEE WITH DIFFERENT USERLEVEL IN THE DATABASE
     		if($empNUM == 271 || $empNUM == 107 || $empNUM == 4625){
     			$userlevel = 'ac';
@@ -932,7 +932,7 @@ body {
     $areatype = $row3['area_type'];
     $userlevel = $row3['userlevel'];
     $datenow = date('Y-m-d H:i:s');
-	
+
     //EMPLOYEE WITH DIFFERENT USERLEVEL IN THE DATABASE
     		if($empNUM == 271 || $empNUM == 107 || $empNUM == 4625){
     			$userlevel = 'ac';
@@ -944,8 +944,8 @@ body {
     			$userlevel = $row3['userlevel'];
     		}
 
-    $sqlbrk = "INSERT INTO dtr_concerns 
-    (`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`actualIN`,`actualbOUT`,`actualbIN`,`actualOUT`,`newIN`,`newbOUT`,`newbIN`,`newOUT`,`reason`,`attachment1`,`attachment2`,`status`) 
+    $sqlbrk = "INSERT INTO dtr_concerns
+    (`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`actualIN`,`actualbOUT`,`actualbIN`,`actualOUT`,`newIN`,`newbOUT`,`newbIN`,`newOUT`,`reason`,`attachment1`,`attachment2`,`status`)
     VALUES
     ('$datenow', '$empNUM', '$empNAME','$userlevel','$branch','$userid','$areatype', '".$cdate."', '$dtrconcern','$errortype', '$gmIN', 'No Break', 'No Break', '$gmOUT', '$newIN', 'No Break', 'No Break', '$newOUT', '$concernReason','$newFileName','$newFileName2','Pending')";
     $HRconnect->query($sqlbrk);
@@ -973,8 +973,8 @@ body {
     		}
 
     		//INSERT DATA INTO THE DATABASE
-    		$sql4 = "INSERT INTO dtr_concerns 
-    			(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`vltype`,`reason`,`attachment1`,`status`) 
+    		$sql4 = "INSERT INTO dtr_concerns
+    			(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`vltype`,`reason`,`attachment1`,`status`)
     			VALUES
     			('$datenow', '$empNUM', '$empNAME','$userlevel','$branch','$userid','$areatype', '".$cdate."', '$dtrconcern','$errortype', '$inputs','$concernReason','$newFileName','Pending')";
     			$HRconnect->query($sql4);
@@ -1001,8 +1001,8 @@ body {
     		}
 
     		//INSERT DATA INTO THE DATABASE
-    		$sql4 = "INSERT INTO dtr_concerns 
-    		(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`actualIN`,`actualbOUT`,`actualbIN`,`actualOUT`,`newIN`,`newbOUT`,`newbIN`,`newOUT`,`reason`,`attachment1`,`status`) 
+    		$sql4 = "INSERT INTO dtr_concerns
+    		(`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`actualIN`,`actualbOUT`,`actualbIN`,`actualOUT`,`newIN`,`newbOUT`,`newbIN`,`newOUT`,`reason`,`attachment1`,`status`)
     		VALUES
     		('$datenow', '$empNUM', '$empNAME','$userlevel','$branch','$userid','$areatype', '".$cdate."', '$dtrconcern','$errortype', '$actualIN', '$actualbrkOUT', '$actualbrkIN', '$actualOUT', '$newIN', '$newbrkOUT', '$newbrkIN', '$newOUT', '$concernReason','$newFileName','Pending')";
     		$HRconnect->query($sql4);
@@ -1028,8 +1028,8 @@ body {
     			$userlevel = $row0['userlevel'];
     		}
 
-    $sql4 = "INSERT INTO dtr_concerns 
-    (`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`actualIN`,`actualbOUT`,`actualbIN`,`actualOUT`,`newIN`,`newbOUT`,`newbIN`,`newOUT`,`reason`,`attachment1`,`attachment2`,`status`) 
+    $sql4 = "INSERT INTO dtr_concerns
+    (`filing_date`,`empno`,`name`,`userlevel`,`branch`,`userid`,`area`,`ConcernDate`,`concern`,`errortype`,`actualIN`,`actualbOUT`,`actualbIN`,`actualOUT`,`newIN`,`newbOUT`,`newbIN`,`newOUT`,`reason`,`attachment1`,`attachment2`,`status`)
     VALUES
     ('$datenow', '$empNUM', '$empNAME','$userlevel','$branch','$userid','$areatype', '".$cdate."', '$dtrconcern','$errortype', '$actualIN', '$actualbrkOUT', '$actualbrkIN', '$actualOUT', '$newIN', '$newbrkOUT', '$newbrkIN', '$newOUT', '$concernReason','$newFileName','$newFileName2','Pending')";
     $HRconnect->query($sql4);
@@ -1043,49 +1043,49 @@ body {
 <p style="page-break-before: always">
 
 	<div class="col-12">
-		<center><h5><small>Human Resource Department</small><br>FILED DTR CONCERNS</h5></center>		
-			
-			<div class="row">								
+		<center><h5><small>Human Resource Department</small><br>FILED DTR CONCERNS</h5></center>
+
+			<div class="row">
 				<div class="col-12">
-					<p class="text-uppercase">									
+					<p class="text-uppercase">
 						Fullname: <b><?php echo $empNAME; ?></b> <br/>
 						Employee ID :  <b><?php echo $empNUM; ?></b>  <br/>
 						Dept/Branch: <b><?php echo $branch; ?></b>
 					</p>
 				</div>
-			
-							  
-			</div>		
-		<div class="table-responsive">	
-			<table class="myTable">					
-				<thead>								
+
+
+			</div>
+		<div class="table-responsive">
+			<table class="myTable">
+				<thead>
 					<tr class="text-uppercase">
 						<th><center><b>Date of Concern</b></center></th>
 						<th><center><b>Concern</b></center></th>
 						<th><center><b>Type of Error</b></center></th>
 						<th><center><b>Time In</b></center></th>
-						<th><center><b>Break Out</b></center></th>  
+						<th><center><b>Break Out</b></center></th>
 						<th><center><b>Break In</b></center></th>
 						<th><center><b>Time Out</b></center></th>
 						<th><center><b>Status</b></center></th>
-						<th><center><b>Approver</b></center></th>	
+						<th><center><b>Approver</b></center></th>
 						<th><center><b>Remarks</b></center></th>
 						<th><center><b></b></center></th>
 					</tr>
-									
+
 				</thead>
-				
-				
+
+
 				<tbody>
 
-		
-				<?php 
-					
+
+				<?php
+
                 $sql5 = "SELECT * FROM dtr_concerns WHERE empno = '$empNUM' AND ConcernDate BETWEEN '$datestart' AND '$dateend' ORDER BY `ConcernDate` ASC";
                 $query5=$HRconnect->query($sql5);
                 while($row5=$query5->fetch_array())
                 {
-				$status = $row5['status'];	
+				$status = $row5['status'];
 				$concernid = $row5['id'];
                 ?>
 					<tr>
@@ -1098,55 +1098,55 @@ body {
 						<td><center><?php echo $row5['newOUT']; ?></center></td>
 						<td><center><?php echo $row5['status']; ?></center></td>
 						<td><center><?php echo $row5['approver']; ?></center></td>
-						<td><center><?php echo $row5['remarks']; ?></center></td>	
-						<?php 
+						<td><center><?php echo $row5['remarks']; ?></center></td>
+						<?php
 						if($status == 'Pending'){
 						?>
 						<td><center><a href="print_concerns.php?cancel=yes&id=<?php echo $concernid; ?>&empno=<?php echo $empNUM; ?>&date=<?php echo $row5['ConcernDate']; ?>" class="btn btn-info btn-user btn-block bg-gradient-info" onclick="return confirm('Are you sure you want to Cancel this concern?');">Cancel</a> </center></td>
-						<?php 
+						<?php
 						}else{
-						?>	
+						?>
 						<td><center></center></td>
 						<?php
 						}
 						?>
 					</tr>
-			<?php 
+			<?php
 				}
 				?>
-					
+
 				</tbody>
 			</table>
-			<br>				
+			<br>
 		</div>
 		<hr>
 		<center><p class="text-muted"><i>I CERTIFY that the above inforamtion provided is correct. Any falsification of information in this
-						regard may form ground for disciplinary action up to and including dismissal.</i></p></center>	
-		
-		<div class="d-sm-flex align-items-center justify-content-between mb-4">													
-			<div class="text-center">          
+						regard may form ground for disciplinary action up to and including dismissal.</i></p></center>
+
+		<div class="d-sm-flex align-items-center justify-content-between mb-4">
+			<div class="text-center">
 				<a href="../index.php?empno=<?php echo $empNUM; ?>&SubmitButton=Submit"><button class="btn btn-primary btn-block">
 				Back</button></a>
-			</div>	
+			</div>
 		</div>
 	</div>
-	
+
 </p>
 
 <?php
 	}
 	?>
 
-	
+
 </body>
 
-<?php  
-	if(isset($_GET["dtr"]) == "filedconcerns")  
-	{  
+<?php
+	if(isset($_GET["dtr"]) == "filedconcerns")
+	{
 	?>
 <body>
-	<?php	
-	//GET DATA FROM CONCERNS	
+	<?php
+	//GET DATA FROM CONCERNS
 	$empNUM = $_GET['empno'];
 
 	//QUERY BRANCH
@@ -1164,48 +1164,48 @@ body {
 		@$backto = trim(date('Y-m-d', strtotime($_POST['dateto'])));
 
 		}
-	
+
 	?>
 
 <p style="page-break-before: always">
 
 	<div class="col-12">
-		<center><h5><small>Human Resource Department</small><br>FILED DTR CONCERNS</h5></center>		
-			
-		<div class="row">				
+		<center><h5><small>Human Resource Department</small><br>FILED DTR CONCERNS</h5></center>
+
+		<div class="row">
 				<div class="col-auto">
 					<form method="POST">
-						<div class="form-group row">                                
+						<div class="form-group row">
 
 							<div class="col-auto text-center">
 								<label>Date From</label>
-								<input type="date"  id="#datePicker" class="form-control text-center" name="datefrom" placeholder="Insert Date" autocomplete="off" onkeypress="return false;" />                                                                                                              
+								<input type="date"  id="#datePicker" class="form-control text-center" name="datefrom" placeholder="Insert Date" autocomplete="off" onkeypress="return false;" />
 							</div>
-																
+
 							<div class="col-auto text-center">
 								<label>Date To</label>
 								<input type="date" id="#datePicker1" class="form-control text-center" name="dateto" placeholder="Insert Date" autocomplete="off" onkeypress="return false;" />
 							</div>
-																
+
 							<div class="col-auto text-center d-none d-sm-inline-block">
 								<label class="invisible">.</label>
 								<div class="form-group row">
 									<div class="col-xs-6 ml-2">
-										<input class="btn btn-primary btn-user btn-block bg-gradient-primary text-center" name="submit" type="submit" value="Submit">									
+										<input class="btn btn-primary btn-user btn-block bg-gradient-primary text-center" name="submit" type="submit" value="Submit">
 									</div> &nbsp
-									
+
 									<div class="col-xs-6">
 										<input class="btn btn-danger btn-user btn-block bg-gradient-danger text-center" type="submit" value="Clear">
 									</div>
 								</div>
-							</div>										
+							</div>
 						</div>
 					</form>
 				</div>
-			</div>	
-		<div class="table-responsive">	
-			<table class="myTable">					
-				<thead>	
+			</div>
+		<div class="table-responsive">
+			<table class="myTable">
+				<thead>
 					<th colspan="11" class="text-uppercase">
 						<div class="d-flex justify-content-between">
 							<b><?php echo $empNAME?></b>
@@ -1215,37 +1215,37 @@ body {
 							<p class="m-0"><?php echo $empNUM?></p>
 							<b><?php echo $branch?></b>
 						</div>
-					</th>							
+					</th>
 					<tr class="text-uppercase">
 						<th><center><b>Date of Concern</b></center></th>
 						<th><center><b>Concern</b></center></th>
 						<th><center><b>Type of Error</b></center></th>
 						<th><center><b>Time In</b></center></th>
-						<th><center><b>Break Out</b></center></th>  
+						<th><center><b>Break Out</b></center></th>
 						<th><center><b>Break In</b></center></th>
 						<th><center><b>Time Out</b></center></th>
 						<th><center><b>Status</b></center></th>
-						<th><center><b>Approver</b></center></th>	
+						<th><center><b>Approver</b></center></th>
 						<th><center><b>Remarks</b></center></th>
 						<th><center><b></b></center></th>
 					</tr>
-									
+
 				</thead>
-				
-				
+
+
 				<tbody>
 
-		
-				<?php 
+
+				<?php
 
                 $sql7 = "SELECT * FROM dtr_concerns WHERE empno = '$empNUM' AND ConcernDate BETWEEN '$backfrom' AND '$backto' ORDER BY `ConcernDate` ASC";
                 $query7=$HRconnect->query($sql7);
-				
+
                 while($row7=$query7->fetch_array())
                 {
 
 				$status = $row7['status'];
-				$concernid = $row7['id'];	
+				$concernid = $row7['id'];
                 ?>
 					<tr>
 						<td><center><?php echo $row7['ConcernDate']; ?><center></td>
@@ -1258,50 +1258,50 @@ body {
 						<td><center><?php echo $row7['status']; ?></center></td>
 						<td><center><?php echo $row7['approver']; ?></center></td>
 						<td><center><?php echo $row7['remarks']; ?></center></td>
-						<?php 
+						<?php
 						if($status == 'Pending'){
 						?>
 						<td><center><a href="print_concerns.php?cancel=yes&id=<?php echo $concernid; ?>&empno=<?php echo $empNUM; ?>&date=<?php echo $row7['ConcernDate']; ?>" class="btn btn-info btn-user btn-block bg-gradient-info" onclick="return confirm('Are you sure you want to Cancel this concern?');">Cancel</a> </center></td>
-						<?php 
+						<?php
 						}else{
-						?>	
+						?>
 						<td><center> </center></td>
 						<?php
 						}
-						?>							
+						?>
 					</tr>
-			<?php 
+			<?php
 				}
 				?>
-					
+
 				</tbody>
 			</table>
-			<br>				
+			<br>
 		</div>
 		<hr>
 		<center><p class="text-muted"><i>I CERTIFY that the above inforamtion provided is correct. Any falsification of information in this
-						regard may form ground for disciplinary action up to and including dismissal.</i></p></center>	
-		
-		<div class="d-sm-flex align-items-center justify-content-between mb-4">													
-			<div class="text-center">          
-				<a href="../concerns.php?dtrconcern&concern=concern&empno=<?php echo $empNUM;?>&cutfrom=<?php echo $_GET['cutfrom'];?>&cutto=<?php echo $_GET['cutto'];?>"><button class="btn btn-primary btn-block">
+						regard may form ground for disciplinary action up to and including dismissal.</i></p></center>
+
+		<div class="d-sm-flex align-items-center justify-content-between mb-4">
+			<div class="text-center">
+				<a href="../filing-concerns.php?dtrconcern&concern=concern&empno=<?php echo $empNUM;?>&cutfrom=<?php echo $_GET['cutfrom'];?>&cutto=<?php echo $_GET['cutto'];?>"><button class="btn btn-primary btn-block">
 				Back</button></a>
-			</div>	
+			</div>
 		</div>
 	</div>
-	
+
 </p>
 
 <?php
 	}
-	?>	
+	?>
 </body>
-	
-	<?php if(@$_GET['c'] == 1){ ?>              
+
+	<?php if(@$_GET['c'] == 1){ ?>
 				<script>
 					$(function() {
 				  $(".thanks").delay(2500).fadeOut();
-				  
+
 				});
 				</script>
 
@@ -1316,15 +1316,15 @@ body {
                         </div>
                     </div>
                 </div>
-								   
+
 			<?php } ?>
 
 	<!-- Footer -->
-	<?php if(@$_POST['d'] == 2){ ?>              
+	<?php if(@$_POST['d'] == 2){ ?>
                 <script>
                     $(function() {
                   $(".thanks").delay(2500).fadeOut();
-                  
+
                 });
                 </script>
 
@@ -1338,8 +1338,8 @@ body {
 						  You have <b class="text-success">Successfully Filed</b> your Concern Thank you!
 						</div>
 					</div>
-				</div>                
-                                   
+				</div>
+
             <?php } ?>
 
     <footer class="sticky-footer">
