@@ -26,6 +26,7 @@ $stmtGetEmployee->bind_param("s", $empno); // Assuming empno is a string
 $stmtGetEmployee->execute();
 $resultGetEmployee = $stmtGetEmployee->get_result();
 $employeeData = $resultGetEmployee->fetch_array(MYSQLI_ASSOC);
+$empno = $employeeData['empno'];
 $name = $employeeData['name'];
 $position = $employeeData['position'];
 $branch = $employeeData['branch'];
@@ -79,6 +80,8 @@ echo "<script>
     const A_timeout = '$A_timeout';
     const timein4 = '$timein4';
     const timeout4 = '$timeout4';
+    const mindate = '$mindate';
+    const maxdate = '$maxdate';
 </script>";
 
 
@@ -431,6 +434,23 @@ $HRconnect->close();
             const position = "<?php echo htmlspecialchars($position); ?>";
             let type_concern;
 
+            // Check if the selected concernDate is within the range of mindate and maxdate
+            if (concernDate < mindate || concernDate > maxdate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Date',
+                    html: `You are not allowed to select a date outside the range of <strong>Cut-off</strong> <strong>${mindate}</strong> and <strong>${maxdate}</strong>.`,
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        confirmButton: 'swal-button-green'
+                    }
+                }).then(() => {
+                    // Reload the page after the modal is dismissed
+                    window.location.reload();
+                });
+                return; // Stop further execution if the date is invalid
+            }
+
             // Map concernType to its descriptive label
             let type_errors =
                 type_error === 'userError' ? 'User Error' :
@@ -462,6 +482,29 @@ $HRconnect->close();
                 const hours = String(date.getHours()).padStart(2, '0');
                 const minutes = String(date.getMinutes()).padStart(2, '0');
                 return `${hours}:${minutes}`;
+            }
+
+            // Map concernType to its descriptive label
+            let concernTypeLabel =
+                type_error === 'userError' ? 'User Error' :
+                type_error === 'systemError' ? 'System Error' :
+                type_error === 'others' ? 'Others' : '';
+
+            // Map userlevel to its descriptive label
+            let userlevelMapped;
+            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
+
+            // Assign userlevel based on empno
+            if (empno == 271 || empno == 107 || empno == 4625) {
+                userlevelMapped = 'ac';
+            } else if (empno == 1348 || empno == 2525 || empno == 1964 || empno == 141) {
+                userlevelMapped = 'mod';
+            } else if (empno == 3612 || empno == 1509 || empno == 4072 || empno == 3080 || empno == 2008 || empno == 5182) {
+                userlevelMapped = 'staff';
+            } else if (userlevel == 'master') {
+                userlevelMapped = 'staff';
+            } else {
+                userlevelMapped = "<?php echo htmlspecialchars($employeeData['userlevel']); ?>";
             }
 
             // Determine type_concern based on selectedConcern value
@@ -671,16 +714,6 @@ $HRconnect->close();
                                 return; // Prevent form submission
                             }
 
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
-                            }
-
                             const data = {
                                 empno: "<?php echo htmlspecialchars($empno); ?>",
                                 name: "<?php echo htmlspecialchars($name); ?>",
@@ -868,16 +901,6 @@ $HRconnect->close();
                                 return; // Prevent form submission
                             }
 
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
-                            }
-
                             const data = {
                                 empno: "<?php echo htmlspecialchars($empno); ?>",
                                 name: "<?php echo htmlspecialchars($name); ?>",
@@ -1036,16 +1059,6 @@ $HRconnect->close();
                                     },
                                 });
                                 return; // Prevent form submission
-                            }
-
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
                             }
 
                             const data = {
@@ -1209,16 +1222,6 @@ $HRconnect->close();
                                     },
                                 });
                                 return; // Prevent form submission
-                            }
-
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
                             }
 
                             const data = {
@@ -1444,16 +1447,6 @@ $HRconnect->close();
                                 return; // Prevent form submission
                             }
 
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
-                            }
-
                             const data = {
                                 empno: "<?php echo htmlspecialchars($empno); ?>",
                                 name: "<?php echo htmlspecialchars($name); ?>",
@@ -1619,16 +1612,6 @@ $HRconnect->close();
                                 removeTimeinputs === 'brokenSchedOut' ? 'Broken Sched Out' :
                                 removeTimeinputs === 'allRegularInputs' ? 'All Regular Inputs' :
                                 removeTimeinputs === 'allBrokenSchedInputs' ? 'All Broken Sched Inputs' : '';
-
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
-                            }
 
                             const data = {
                                 empno: "<?php echo htmlspecialchars($empno); ?>",
@@ -1849,22 +1832,6 @@ $HRconnect->close();
                                 return; // Prevent form submission
                             }
 
-                            // Map concernType to its descriptive label
-                            let concernTypeLabel =
-                                concernType === 'userError' ? 'User Error' :
-                                concernType === 'systemError' ? 'System Error' :
-                                concernType === 'others' ? 'Others' : '';
-
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
-                            }
-
                             // Prepare the data to send
                             const data = new FormData();
                             data.append('empno', "<?php echo htmlspecialchars($empno); ?>");
@@ -2078,16 +2045,6 @@ $HRconnect->close();
                                 return; // Prevent form submission
                             }
 
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
-                            }
-
                             // Prepare the data to send
                             const data = new FormData();
                             data.append('empno', "<?php echo htmlspecialchars($empno); ?>");
@@ -2291,16 +2248,6 @@ $HRconnect->close();
                                     },
                                 });
                                 return; // Prevent form submission
-                            }
-
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
                             }
 
                             // Prepare the data to send
@@ -2536,16 +2483,6 @@ $HRconnect->close();
                                 return; // Prevent form submission
                             }
 
-                            // Map userlevel to its descriptive label
-                            let userlevelMapped;
-                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
-
-                            if (userlevel === 'master') {
-                                userlevelMapped = 'staff';
-                            } else {
-                                userlevelMapped = userlevel;
-                            }
-
                             // Prepare the data to send
                             const data = new FormData();
                             data.append('empno', "<?php echo htmlspecialchars($empno); ?>");
@@ -2667,20 +2604,36 @@ $HRconnect->close();
 
                                                 othoursInput.addEventListener('input', function() {
                                                     let inputValue = parseInt(othoursInput.value, 10);
-
                                                     // Check if the input value is negative
                                                     if (inputValue < 0) {
-                                                        // Alert the user and reset the input value to 0
-                                                        alert("Negative values are not allowed. Resetting to 0.");
-                                                        othoursInput.value = 0;
-                                                        inputValue = 0; // Update the value after resetting
+                                                        Swal.fire({
+                                                            icon: 'warning',
+                                                            title: 'Invalid Input',
+                                                            text: 'Negative values are not allowed.',
+                                                            confirmButtonText: 'OK',
+                                                            customClass: {
+                                                                confirmButton: 'swal-button-green'
+                                                            },
+                                                        });
+                                                        // Reset the input value to 1
+                                                        othoursInput.value = 1;
+                                                        inputValue = 1; // Update the value after resetting
                                                     }
-
                                                     // Check if the input value exceeds the maximum allowed OT hours
                                                     if (inputValue > maxOThours) {
-                                                        // Alert the user and reset the input value to the maximum allowed hours
-                                                        alert(`You cannot file more than ${maxOThours} OT hours.`);
-                                                        othoursInput.value = maxOThours; // Reset to max allowed hours
+                                                        Swal.fire({
+                                                            icon: 'warning',
+                                                            title: 'Overtime Hours Exceeded',
+                                                            text: `You cannot file more than ${maxOThours} OT hours.`,
+                                                            confirmButtonText: 'OK',
+                                                            customClass: {
+                                                                confirmButton: 'swal-button-green'
+                                                            },
+                                                        }).then(() => {
+                                                            // Reset the input value to maxOThours after the alert is dismissed
+                                                            othoursInput.value = maxOThours;
+                                                            inputValue = maxOThours; // Update the input value
+                                                        });
                                                     }
                                                 });
                                             }
