@@ -6,7 +6,7 @@ $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 session_start();
 
 //For approval concern: para hindi sila makapag approve.
-//ito yong current cut off 
+//ito yong current cut off
 //cut-off date start
 $datestart = '2024-08-09';
 //cut-off date end
@@ -211,7 +211,7 @@ if ($userlevel != 'staff') {
             </div>
             <?php
             // VIEW DETAILS OF DTR CONCERNS OF EMPLOYEE
-        
+
             if (isset($_GET["summary"]) == "okay") {
                 $empno = $_GET['empno'];
                 $sqlN = "SELECT DISTINCT `name`,`empno` FROM dtr_concerns WHERE empno = '$empno' ";
@@ -550,7 +550,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS HR TEAM GENNIE EMILY AND MAAM TIN
-        
+
             if (
                 isset($_GET["pending"]) == "pending" and $emnum == 2165 || $emnum == 4072 || $emnum == 1233
                 /*Audit*/ || $emnum == 3612 || $emnum == 3736 || $emnum == 1533 || $emnum == 4206 || $emnum == 3770
@@ -666,7 +666,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS MAAM CHONA MAAM RESSIE SIR CARL
-        
+
             if (isset($_GET["sum"]) == "admin") {
                 ?>
                 <!-- DataTales Example -->
@@ -790,7 +790,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS MASTER - PENDING
-        
+
             if (isset($_GET["pending"]) == "pending" and $userlevel == 'master') {
                 ?>
                 <!-- DataTales Example -->
@@ -906,7 +906,7 @@ if ($userlevel != 'staff') {
                                         $BrokenOT = 'File Broken Sched OT';
                                         $forgot1 = 'Forgot to click Halfday';
                                         $forgot2 = 'Forgot/Wrong inputs of broken sched';
-                                        $forgot3 = 'Forgot/Wrong time IN/OUT or break OUT/IN';
+                                        $forgot3 = 'Failure/Forgot to time in or time out';
                                         $wrong = 'Wrong format/filing of OBP';
                                         $timeInterval = 'Not following time interval';
                                         $removeLogs = 'Remove Time Inputs';
@@ -968,7 +968,7 @@ if ($userlevel != 'staff') {
                                             $BrokenOT = 'File Broken Sched OT';
                                             $forgot1 = 'Forgot to click Halfday';
                                             $forgot2 = 'Forgot/Wrong inputs of broken sched';
-                                            $forgot3 = 'Forgot/Wrong time IN/OUT or break OUT/IN';
+                                            $forgot3 = 'Failure/Forgot to time in or time out';
                                             $wrong = 'Wrong format/filing of OBP';
                                             $timeInterval = 'Not following time interval';
                                             $removeLogs = 'Remove Time Inputs';
@@ -1045,7 +1045,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS MASTER - FOR SYSTEM ERROR
-        
+
             if (isset($_GET["error"]) == 'system' and $userlevel == 'master') {
                 ?>
                 <!-- DataTales Example -->
@@ -1277,7 +1277,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS MASTER - FOR HARDWARE ERROR
-        
+
             if (isset($_GET["other"]) == "hardware" and $userlevel == 'master') {
                 ?>
                 <!-- DataTales Example -->
@@ -1511,7 +1511,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS MASTER - APPROVED CONCERNS
-        
+
             if (isset($_GET["approved"]) == "approved" and $userlevel == 'master') {
                 ?>
                 <!-- DataTales Example -->
@@ -1663,7 +1663,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS MASTER - VIEW SUMMARY
-        
+
             if (isset($_GET["view"]) == "summary" and $userlevel == 'master') {
                 ?>
                 <!-- DataTales Example -->
@@ -1791,7 +1791,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS ADMIN - PENDING
-        
+
             if (isset($_GET["pending"]) == "pending" and $userlevel == 'admin') {
                 ?>
                 <!-- DataTales Example -->
@@ -1972,7 +1972,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS ADMIN - BROKEN OT
-        
+
             if (isset($_GET["brokenot"]) == "approval" and $userlevel == 'admin') {
                 ?>
                 <!-- DataTales Example -->
@@ -2133,7 +2133,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS ADMIN - View summary of all area
-        
+
             if (isset($_GET["view"]) == "summary" and $userlevel == 'admin') {
                 ?>
                 <!-- DataTales Example -->
@@ -2243,7 +2243,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS ADMIN - APPROVED CONCERNS
-        
+
             if (isset($_GET["approved"]) == "approved" and $userlevel == 'admin') {
                 ?>
                 <!-- DataTales Example -->
@@ -2397,7 +2397,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS AC - PENDING
-        
+
             if (
                 isset($_GET["pending"]) == "pending" and $userlevel == 'ac' and $emnum != 2165 and $emnum != 1053 and $emnum != 1509 and $emnum != 1233
                 and $emnum != 4072 and $emnum != 1910 and $emnum != 3080 and $emnum != 3156 and $emnum != 3612 and $emnum != 4001 and $emnum != 5263
@@ -2477,7 +2477,7 @@ if ($userlevel != 'staff') {
                                     $BrokenOT = 'File Broken Sched OT';
                                     $forgot1 = 'Forgot to click Halfday';
                                     $forgot2 = 'Forgot/Wrong inputs of broken sched';
-                                    $forgot3 = 'Forgot/Wrong time IN/OUT or break OUT/IN';
+                                    $forgot3 = 'Failure/Forgot to time in or time out';
                                     $wrong = 'Wrong format/filing of OBP';
                                     $timeInterval = 'Not following time interval';
                                     $removeLogs = 'Remove Time Inputs';
@@ -2492,10 +2492,10 @@ if ($userlevel != 'staff') {
                                         } else if ($emnum == 1331) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(819,109,76,71,167,45) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
-                                        } else if ($emnum == 24) { //jones added 
+                                        } else if ($emnum == 24) { //jones added
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
-                                        } else if ($emnum == 5048) { //jones added 
+                                        } else if ($emnum == 5048) { //jones added
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 1073) {
@@ -2653,7 +2653,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS AC - BROKEN OT
-        
+
             if (
                 isset($_GET["brokenot"]) == "approval" and $userlevel == 'ac' and $emnum != 1053 || $emnum != 1509 || $emnum != 1910
                 || $emnum != 3080 || $emnum != 3156 || $emnum != 3612 || $emnum != 4001 || $emnum != 5263 || $emnum != 5430
@@ -2877,7 +2877,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS AC - View summary of all area
-        
+
             if (
                 isset($_GET["view"]) == "summary" and $userlevel == 'ac' and $emnum != 1053 || $emnum != 1509 || $emnum != 1910
                 || $emnum != 3080 || $emnum != 3156 || $emnum != 3612 || $emnum != 4001 || $emnum != 5263 || $emnum != 5430
@@ -2992,7 +2992,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS AC - APPROVED CONCERNS
-        
+
             if (
                 isset($_GET["approved"]) == "approved" and $userlevel == 'ac' and $emnum != 1053 || $emnum != 1509 || $emnum != 1910
                 || $emnum != 3080 || $emnum != 3156 || $emnum != 3612 || $emnum != 4001 || $emnum != 5263 || $emnum != 5430 || $emnum != 4892
@@ -3142,7 +3142,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS MOD - PENDING
-        
+
             if (isset($_GET["pending"]) == "pending" and $userlevel == 'mod' and $emnum != 309 || $emnum != 158 || $emnum != 3110 || $emnum != 4451) {
                 ?>
                 <!-- DataTales Example -->
@@ -3226,7 +3226,7 @@ if ($userlevel != 'staff') {
                                         $BrokenOT = 'File Broken Sched OT';
                                         $forgot1 = 'Forgot to click Halfday';
                                         $forgot2 = 'Forgot/Wrong inputs of broken sched';
-                                        $forgot3 = 'Forgot/Wrong time IN/OUT or break OUT/IN';
+                                        $forgot3 = 'Failure/Forgot to time in or time out';
                                         $wrong = 'Wrong format/filing of OBP';
                                         $timeInterval = 'Not following time interval';
                                         $removeLogs = 'Remove Time Inputs';
@@ -3295,7 +3295,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS MOD - BROKEN OT
-        
+
             if (isset($_GET["brokenot"]) == "approval" and $userlevel == 'mod') {
                 ?>
                 <!-- DataTales Example -->
@@ -3429,7 +3429,7 @@ if ($userlevel != 'staff') {
             ?>
             <?php
             // IF USER LEVEL IS MOD - APPROVED CONCERNS
-        
+
             if (isset($_GET["approved"]) == "approved" and $userlevel == 'mod') {
                 ?>
                 <!-- DataTales Example -->
@@ -3583,7 +3583,7 @@ if ($userlevel != 'staff') {
 
             <?php
             // IF USER LEVEL IS MOD - VIEW SUMMARY
-        
+
             if (isset($_GET["view"]) == "summary" and $userlevel == 'mod') {
                 ?>
                 <!-- DataTales Example -->
