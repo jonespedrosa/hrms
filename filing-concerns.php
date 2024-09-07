@@ -606,13 +606,16 @@ $HRconnect->close();
                                             document.getElementById('capturedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
                                             document.getElementById('capturedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
                                             document.getElementById('capturedTimeOut').value = extractTime(data.A_timeout);
-                                            if (selectedConcern === "Failure/Forgot to time in or time out") {
-                                                // Display data on proposedBreakIn and proposedBreakOut
+                                            // Display data on proposedTimeIn and proposedBreakOut proposedBreakIn, proposedTimeOut
+                                            if (selectedConcern === "Failure/Forgot to click half day") {
+                                                document.getElementById('proposedTimeIn').value = extractTime(data.M_timein);
+                                                document.getElementById('proposedBreakOut').value = "No Break";
+                                                document.getElementById('proposedBreakIn').value = "No Break";
+                                                document.getElementById('proposedTimeOut').value = extractTime(data.A_timeout);
+                                            } else {
+                                                document.getElementById('proposedTimeIn').value = extractTime(data.M_timein);
                                                 document.getElementById('proposedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
                                                 document.getElementById('proposedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
-                                            } else if (selectedConcern === "Failure/Forgot to break in or break out") {
-                                                // Display data on proposedTimeIn and proposedTimeOut
-                                                document.getElementById('proposedTimeIn').value = extractTime(data.M_timein);
                                                 document.getElementById('proposedTimeOut').value = extractTime(data.A_timeout);
                                             }
                                         }
@@ -628,9 +631,17 @@ $HRconnect->close();
                             const oneHourBreakChecked = this.checked;
                             const proposedBreakOut = document.getElementById('proposedBreakOut');
                             const proposedBreakIn = document.getElementById('proposedBreakIn');
-                            const value = oneHourBreakChecked ? "No Break" : "";
-                            proposedBreakOut.value = value;
-                            proposedBreakIn.value = value;
+
+                            // Get the captured values
+                            const capturedBreakOut = document.getElementById('capturedBreakOut').value;
+                            const capturedBreakIn = document.getElementById('capturedBreakIn').value;
+
+                            // Set the value based on checkbox state
+                            const breakOutValue = oneHourBreakChecked ? "No Break" : capturedBreakOut;
+                            const breakInValue = oneHourBreakChecked ? "No Break" : capturedBreakIn;
+
+                            proposedBreakOut.value = breakOutValue;
+                            proposedBreakIn.value = breakInValue;
                         });
 
                         // Disable inputs based on selectedConcern
@@ -638,7 +649,6 @@ $HRconnect->close();
                             // Disable proposedBreakIn and proposedBreakOut
                             document.getElementById('proposedBreakIn').disabled = true;
                             document.getElementById('proposedBreakOut').disabled = true;
-
                         } else if (selectedConcern === "Failure/Forgot to break in or break out" || selectedConcern === "Not following break out and break in interval") {
                             // Disable proposedTimeIn and proposedTimeOut
                             document.getElementById('proposedTimeIn').disabled = true;
@@ -647,6 +657,7 @@ $HRconnect->close();
                             // Disable proposedBreakIn and proposedBreakOut
                             document.getElementById('proposedBreakIn').disabled = true;
                             document.getElementById('proposedBreakOut').disabled = true;
+
                             // Automatically check the oneHourBreakCheckbox
                             document.getElementById('oneHourBreakCheckbox').checked = true;
                             // Trigger the change event manually to update the proposedBreakIn and proposedBreakOut values
@@ -846,6 +857,9 @@ $HRconnect->close();
                                             // Set the broken schedule inputs
                                             document.getElementById('capturedBrokenSchedIn').value = data.timein4 ? extractTime(data.timein4) : "";
                                             document.getElementById('capturedBrokenSchedOut').value = data.timeout4 ? extractTime(data.timeout4) : "";
+                                            // Display data on proposedBrokenSchedIn and proposedBrokenSchedOut
+                                            document.getElementById('proposedBrokenSchedIn').value = data.timein4 ? extractTime(data.timein4) : "";
+                                            document.getElementById('proposedBrokenSchedOut').value = data.timeout4 ? extractTime(data.timeout4) : "";
                                         }
                                     })
                                     .catch(error => console.error('Error fetching time inputs:', error));
@@ -865,10 +879,8 @@ $HRconnect->close();
                             const capturedBrokenSchedOut = document.getElementById('capturedBrokenSchedOut');
                             const proposedBrokenSchedIn = document.getElementById('proposedBrokenSchedIn').value; // New input
                             const proposedBrokenSchedOut = document.getElementById('proposedBrokenSchedOut').value; // New input
-
                             const timein4 = capturedBrokenSchedIn ? capturedBrokenSchedIn.value : 'No Logs';
                             const timeout4 = capturedBrokenSchedOut ? capturedBrokenSchedOut.value : 'No Logs';
-
                             // Handle timein4 and timeout4 values
                             const timein4Processed = timein4 !== '' ? timein4 : 'No Logs';
                             const timeout4Processed = timeout4 !== '' ? timeout4 : 'No Logs';
@@ -1767,9 +1779,17 @@ $HRconnect->close();
                             const oneHourBreakChecked = this.checked;
                             const proposedBreakOut = document.getElementById('proposedBreakOut');
                             const proposedBreakIn = document.getElementById('proposedBreakIn');
-                            const value = oneHourBreakChecked ? "No Break" : "";
-                            proposedBreakOut.value = value;
-                            proposedBreakIn.value = value;
+
+                            // Get the captured values
+                            const capturedBreakOut = document.getElementById('capturedBreakOut').value;
+                            const capturedBreakIn = document.getElementById('capturedBreakIn').value;
+
+                            // Set the value based on checkbox state
+                            const breakOutValue = oneHourBreakChecked ? "No Break" : capturedBreakOut;
+                            const breakInValue = oneHourBreakChecked ? "No Break" : capturedBreakIn;
+
+                            proposedBreakOut.value = breakOutValue;
+                            proposedBreakIn.value = breakInValue;
                         });
 
                         document.getElementById('oneHourBreakCheckbox').disabled = true;
@@ -1969,6 +1989,11 @@ $HRconnect->close();
                                             document.getElementById('capturedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
                                             document.getElementById('capturedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
                                             document.getElementById('capturedTimeOut').value = extractTime(data.A_timeout);
+                                            // Display data on proposedTimeIn and proposedBreakOut proposedBreakIn, proposedTimeOut
+                                            document.getElementById('proposedTimeIn').value = extractTime(data.M_timein);
+                                            document.getElementById('proposedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
+                                            document.getElementById('proposedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
+                                            document.getElementById('proposedTimeOut').value = extractTime(data.A_timeout);
                                         }
                                     })
                                     .catch(error => console.error('Error fetching time inputs:', error));
@@ -1982,9 +2007,17 @@ $HRconnect->close();
                             const oneHourBreakChecked = this.checked;
                             const proposedBreakOut = document.getElementById('proposedBreakOut');
                             const proposedBreakIn = document.getElementById('proposedBreakIn');
-                            const value = oneHourBreakChecked ? "No Break" : "";
-                            proposedBreakOut.value = value;
-                            proposedBreakIn.value = value;
+
+                            // Get the captured values
+                            const capturedBreakOut = document.getElementById('capturedBreakOut').value;
+                            const capturedBreakIn = document.getElementById('capturedBreakIn').value;
+
+                            // Set the value based on checkbox state
+                            const breakOutValue = oneHourBreakChecked ? "No Break" : capturedBreakOut;
+                            const breakInValue = oneHourBreakChecked ? "No Break" : capturedBreakIn;
+
+                            proposedBreakOut.value = breakOutValue;
+                            proposedBreakIn.value = breakInValue;
                         });
 
                         document.getElementById('btnSubmit').addEventListener('click', function() {
@@ -2182,6 +2215,9 @@ $HRconnect->close();
                                             // Set the broken schedule inputs
                                             document.getElementById('capturedBrokenSchedIn').value = data.timein4 ? extractTime(data.timein4) : "";
                                             document.getElementById('capturedBrokenSchedOut').value = data.timeout4 ? extractTime(data.timeout4) : "";
+                                            // Display data on proposedBrokenSchedIn and proposedBrokenSchedOut
+                                            document.getElementById('proposedBrokenSchedIn').value = data.timein4 ? extractTime(data.timein4) : "";
+                                            document.getElementById('proposedBrokenSchedOut').value = data.timeout4 ? extractTime(data.timeout4) : "";
                                         }
                                     })
                                     .catch(error => console.error('Error fetching time inputs:', error));
@@ -2407,6 +2443,11 @@ $HRconnect->close();
                                             document.getElementById('capturedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
                                             document.getElementById('capturedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
                                             document.getElementById('capturedTimeOut').value = extractTime(data.A_timeout);
+                                            // Display data on proposedTimeIn and proposedBreakOut proposedBreakIn, proposedTimeOut
+                                            document.getElementById('proposedTimeIn').value = extractTime(data.M_timein);
+                                            document.getElementById('proposedBreakOut').value = data.M_timeout !== "No Break" ? extractTime(data.M_timeout) : "No Break"; // Using M_timeout for BreakOut
+                                            document.getElementById('proposedBreakIn').value = data.A_timein !== "No Break" ? extractTime(data.A_timein) : "No Break"; // Using A_timein for BreakIn
+                                            document.getElementById('proposedTimeOut').value = extractTime(data.A_timeout);
                                         }
                                     })
                                     .catch(error => console.error('Error fetching time inputs:', error));
@@ -2420,9 +2461,17 @@ $HRconnect->close();
                             const oneHourBreakChecked = this.checked;
                             const proposedBreakOut = document.getElementById('proposedBreakOut');
                             const proposedBreakIn = document.getElementById('proposedBreakIn');
-                            const value = oneHourBreakChecked ? "No Break" : "";
-                            proposedBreakOut.value = value;
-                            proposedBreakIn.value = value;
+
+                            // Get the captured values
+                            const capturedBreakOut = document.getElementById('capturedBreakOut').value;
+                            const capturedBreakIn = document.getElementById('capturedBreakIn').value;
+
+                            // Set the value based on checkbox state
+                            const breakOutValue = oneHourBreakChecked ? "No Break" : capturedBreakOut;
+                            const breakInValue = oneHourBreakChecked ? "No Break" : capturedBreakIn;
+
+                            proposedBreakOut.value = breakOutValue;
+                            proposedBreakIn.value = breakInValue;
                         });
 
                         document.getElementById('btnSubmit').addEventListener('click', function() {
