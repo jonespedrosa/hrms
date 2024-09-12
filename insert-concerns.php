@@ -11,6 +11,8 @@ if (!$HRconnect) {
 
 $data = json_decode(file_get_contents('php://input'), true);
 
+// Set the time zone to the Philippines time zone
+date_default_timezone_set('Asia/Manila');
 $filling_date = date('Y-m-d H:i:s');
 $empno = $data['empno'];
 $name = $data['name'];

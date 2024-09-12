@@ -1437,7 +1437,6 @@ if (!isset($_SESSION['user_validate'])) {
                                         </div>
                                     </div>
 
-
                                      <?php
                                      if (isset($_GET['date']))
                                          //GET the employee number and date

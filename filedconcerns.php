@@ -8,9 +8,9 @@ session_start();
 //For approval concern: para hindi sila makapag approve.
 //ito yong current cut off
 //cut-off date start
-$datestart = '2024-08-09';
+$datestart = '2024-08-24';
 //cut-off date end
-$dateend = '2024-08-23';
+$dateend = '2024-09-08';
 
 //ito yong inayos ngayon na sasahorin to
 //previous cut-off date start
@@ -491,7 +491,7 @@ if ($userlevel != 'staff') {
                                                             <center>Attachment is <br> not needed</center>
                                                         </td>
                                                     <?php
-                                                } else if ($row['concern'] == 'Sync/Network error') {
+                                                } else if ($row['concern'] == 'Time inputs did not sync') {
                                                     ?>
                                                             <td>
                                                                 <center><a href="pdf/<?php echo $row['attachment1']; ?>" target="_blank"> Click here
@@ -904,15 +904,16 @@ if ($userlevel != 'staff') {
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
                                         $BrokenOT = 'File Broken Sched OT';
-                                        $forgot1 = 'Forgot to click Halfday';
-                                        $forgot2 = 'Forgot/Wrong inputs of broken sched';
+                                        $forgot1 = 'Failure/Forgot to click half day';
+                                        $forgot2 = 'Failure/Forgot to click broken schedule';
                                         $forgot3 = 'Failure/Forgot to time in or time out';
+                                        $forgot4 = 'Failure/Forgot to break in or break out';
                                         $wrong = 'Wrong format/filing of OBP';
                                         $timeInterval = 'Not following time interval';
                                         $removeLogs = 'Remove Time Inputs';
                                         $cancel1 = 'Cancellation of Overtime';
                                         $cancel2 = 'Cancellation of Leave';
-                                        $sql = "SELECT DISTINCT `name`,`id`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel in ('admin','ac','mod','staff','master') AND area = '$area' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                        $sql = "SELECT DISTINCT `name`,`id`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel in ('admin','ac','mod','staff','master') AND area = '$area' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
@@ -951,7 +952,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                                 <td>
                                                     <center><a
-                                                            href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                            href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                             class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                     </center>
                                                 </td>
@@ -966,9 +967,10 @@ if ($userlevel != 'staff') {
                                             $emergency = 'Emergency time out';
                                             $FPError = 'Fingerprint problem';
                                             $BrokenOT = 'File Broken Sched OT';
-                                            $forgot1 = 'Forgot to click Halfday';
-                                            $forgot2 = 'Forgot/Wrong inputs of broken sched';
+                                            $forgot1 = 'Failure/Forgot to click half day';
+                                            $forgot2 = 'Failure/Forgot to click broken schedule';
                                             $forgot3 = 'Failure/Forgot to time in or time out';
+                                            $forgot4 = 'Failure/Forgot to break in or break out';
                                             $wrong = 'Wrong format/filing of OBP';
                                             $timeInterval = 'Not following time interval';
                                             $removeLogs = 'Remove Time Inputs';
@@ -980,7 +982,7 @@ if ($userlevel != 'staff') {
                                                     $area = $_GET['area'];
                                                 }
 
-                                                $sql = "SELECT DISTINCT `name`,`id`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel in ('admin','ac','mod','staff','master') AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                $sql = "SELECT DISTINCT `name`,`id`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel in ('admin','ac','mod','staff','master') AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                 $query = $HRconnect->query($sql);
                                                 while ($row = $query->fetch_array()) {
                                                     $name = $row['name'];
@@ -1019,7 +1021,7 @@ if ($userlevel != 'staff') {
                                                         </td>
                                                         <td>
                                                             <center><a
-                                                                    href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                                    href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                                     class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                             </center>
                                                         </td>
@@ -1199,7 +1201,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                                 <td>
                                                     <center><a
-                                                            href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                            href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                             class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                     </center>
                                                 </td>
@@ -1251,7 +1253,7 @@ if ($userlevel != 'staff') {
                                                         </td>
                                                         <td>
                                                             <center><a
-                                                                    href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&change=ok&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                                    href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&change=ok&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                                     class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                             </center>
                                                         </td>
@@ -1432,7 +1434,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                                 <td>
                                                     <center><a
-                                                            href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                            href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                             class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                     </center>
                                                 </td>
@@ -1484,7 +1486,7 @@ if ($userlevel != 'staff') {
                                                         </td>
                                                         <td>
                                                             <center><a
-                                                                    href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&change=ok&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                                    href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&change=ok&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                                     class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                             </center>
                                                         </td>
@@ -1873,8 +1875,8 @@ if ($userlevel != 'staff') {
                                     $emergency = 'Emergency time out';
                                     $FPError = 'Fingerprint problem';
                                     $BrokenOT = 'File Broken Sched OT';
-                                    $forgot1 = 'Forgot to click Halfday';
-                                    $forgot2 = 'Forgot/Wrong inputs of broken sched';
+                                    $forgot1 = 'Failure/Forgot to click half day';
+                                    $forgot2 = 'Failure/Forgot to click broken schedule';
                                     $forgot3 = 'Forgot/Wrong time IN/OUT or break OUT/IN';
                                     $wrong = 'Wrong format/filing of OBP';
                                     $timeInterval = 'Not following time interval';
@@ -1884,27 +1886,27 @@ if ($userlevel != 'staff') {
                                     if (@$_SESSION['useridd'] != null) {
 
                                         if ($emnum == 1) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(4378,3336,3294,5752,3111,5928,3071,3027,2221,1331,1073,271,107,24,4625,5752,5834) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(4378,3336,3294,5752,3111,5928,3071,3027,2221,1331,1073,271,107,24,4625,5752,5834) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         }
 
                                         if ($emnum == 2) {
-                                            $sql = "SELECT * FROM dtr_concerns WHERE userid = '$userid' AND empno in(3177,4625,885,4378,3336,3294,5752,3111,5928,3071,3027,2221,1331,1073,271,107,24,4625,5752,5834) AND status = 'Pending' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT * FROM dtr_concerns WHERE userid = '$userid' AND empno in(3177,4625,885,4378,3336,3294,5752,3111,5928,3071,3027,2221,1331,1073,271,107,24,4625,5752,5834) AND status = 'Pending' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         }
 
                                         if ($emnum == 4) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(107) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(107) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         }
 
                                         if ($emnum == 1348) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         }
 
                                         if ($emnum == 271) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         }
 
@@ -1945,7 +1947,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                                 <td>
                                                     <center><a
-                                                            href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                            href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                             class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                     </center>
                                                 </td>
@@ -2109,7 +2111,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                                 <td>
                                                     <center><a
-                                                            href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                            href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                             class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                     </center>
                                                 </td>
@@ -2475,9 +2477,10 @@ if ($userlevel != 'staff') {
                                     $emergency = 'Emergency time out';
                                     $FPError = 'Fingerprint problem';
                                     $BrokenOT = 'File Broken Sched OT';
-                                    $forgot1 = 'Forgot to click Halfday';
-                                    $forgot2 = 'Forgot/Wrong inputs of broken sched';
+                                    $forgot1 = 'Failure/Forgot to click half day';
+                                    $forgot2 = 'Failure/Forgot to click broken schedule';
                                     $forgot3 = 'Failure/Forgot to time in or time out';
+                                    $forgot4 = 'Failure/Forgot to break in or break out';
                                     $wrong = 'Wrong format/filing of OBP';
                                     $timeInterval = 'Not following time interval';
                                     $removeLogs = 'Remove Time Inputs';
@@ -2487,105 +2490,105 @@ if ($userlevel != 'staff') {
 
 
                                         if ($emnum == 4378) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(1348,1964,2957,4349,2111,2243,3332,3693,4000) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(1348,1964,2957,4349,2111,2243,3332,3693,4000) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 1331) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(819,109,76,71,167,45) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(819,109,76,71,167,45) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 24) { //jones added
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 5048) { //jones added
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 1073) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno NOT IN(1073,2221,6119,5832) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno NOT IN(1073,2221,6119,5832) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 4298) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 3178) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 2684) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 3071) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(2203,2264) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(2203,2264) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 76) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(37,53,45,69,124,2720,40,20,3685,189,229) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(37,53,45,69,124,2720,40,20,3685,189,229) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 37 || $emnum == 53 || $emnum == 45 || $emnum == 69 || $emnum == 124 || $emnum == 2720 || $emnum == 40 || $emnum == 20 || $emnum == 3685 || $emnum == 189 || $emnum == 229) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'SOUTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'SOUTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 109) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(63,88,97,170) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(63,88,97,170) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 63 || $emnum == 88 || $emnum == 97 || $emnum == 170) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'MFO' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'MFO' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 819) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(38,112,254,302,4484,1562,4709,204,4301) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(38,112,254,302,4484,1562,4709,204,4301) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 38 || $emnum == 112 || $emnum == 254 || $emnum == 302 || $emnum == 460 || $emnum == 2094) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'NORTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'NORTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 71) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(309,197,158,4209) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(309,197,158,4209) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 5752) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(159) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(159) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 3336) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                         } else if ($emnum == 3111) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 2221) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' /* AND empno in(1262,5832) removed by loede.jones */ AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' /* AND empno in(1262,5832) removed by loede.jones */ AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 1844) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(2485) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(2485) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 885) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 957) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 6538) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 5356) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 1964) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 5834) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 5928) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 5584) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 3294) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 6207) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 5361 or $emnum == 3178 or $emnum == 5515 or $emnum == 5452 or $emnum == 4811 or $emnum == 2684 or $emnum == 884) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 6082) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         }
 
@@ -2627,7 +2630,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                                 <td>
                                                     <center><a
-                                                            href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                            href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                             class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                     </center>
                                                 </td>
@@ -2792,7 +2795,7 @@ if ($userlevel != 'staff') {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 5834) {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                         } else if ($emnum == 5752) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(159) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
@@ -2853,7 +2856,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                                 <td>
                                                     <center><a
-                                                            href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                            href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                             class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                     </center>
                                                 </td>
@@ -3224,9 +3227,10 @@ if ($userlevel != 'staff') {
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
                                         $BrokenOT = 'File Broken Sched OT';
-                                        $forgot1 = 'Forgot to click Halfday';
-                                        $forgot2 = 'Forgot/Wrong inputs of broken sched';
+                                        $forgot1 = 'Failure/Forgot to click half day';
+                                        $forgot2 = 'Failure/Forgot to click broken schedule';
                                         $forgot3 = 'Failure/Forgot to time in or time out';
+                                        $forgot4 = 'Failure/Forgot to break in or break out';
                                         $wrong = 'Wrong format/filing of OBP';
                                         $timeInterval = 'Not following time interval';
                                         $removeLogs = 'Remove Time Inputs';
@@ -3234,7 +3238,7 @@ if ($userlevel != 'staff') {
                                         $cancel2 = 'Cancellation of Leave';
 
                                         if ($userlevel == 'mod') {
-                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel = 'staff' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                            $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel = 'staff' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                             $query = $HRconnect->query($sql);
                                             while ($row = $query->fetch_array()) {
                                                 $name = $row['name'];
@@ -3272,7 +3276,7 @@ if ($userlevel != 'staff') {
                                                     </td>
                                                     <td>
                                                         <center><a
-                                                                href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                                href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                                 class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                         </center>
                                                     </td>
@@ -3407,7 +3411,7 @@ if ($userlevel != 'staff') {
                                                     </td>
                                                     <td>
                                                         <center><a
-                                                                href="pdf/viewconcerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
+                                                                href="pdf/view-concerns.php?dtrconcerns=<?php echo $row['concern']; ?>&dtr=concerns&empno=<?php echo $row['empno']; ?>&date=<?php echo $row['ConcernDate']; ?>"
                                                                 class="btn btn-info btn-user btn-sm btn-block bg-gradient-info">View</a>
                                                         </center>
                                                     </td>
