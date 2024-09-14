@@ -10,7 +10,7 @@ if (mysqli_connect_errno()) {
 }
 
 // Fetch data from the lnd_training_schedule table
-$sql = "SELECT lnd_training_schedule.id, 
+$sql = "SELECT lnd_training_schedule.id,
         lnd_training_schedule.batch_number,
         lnd_training_schedule.datefrom,
         lnd_training_schedule.dateto,

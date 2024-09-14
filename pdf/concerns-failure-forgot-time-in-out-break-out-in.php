@@ -34,50 +34,47 @@ $type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : nul
                     Concerns Details
                 </h5>
                 <hr style="margin: 0; margin-bottom: 10px">
-                <div class="form-group mb-1" style="text-align: left;">
+                <div class="form-group mb-1 mt-2" style="text-align: left;">
                     <label for="" class="mb-1" style="font-weight: bold;">Date of Concerns:</label>
                     <input type="text" class="form-control bg-gray-100 text-center text-uppercase" name="dateOfConcerns" id="dateOfConcerns" style="font-size:100%" readonly />
                 </div>
-                <div class="form-group mb-1" style="text-align: left;">
+                <div class="form-group mb-1 mt-2" style="text-align: left;">
                     <label for="" class="mb-1" style="font-weight: bold;">Type of Concerns:</label>
                     <input type="text" class="form-control bg-gray-100 text-center text-uppercase" name="typeOfConcerns" id="typeOfConcerns" style="font-size:100%" readonly />
                 </div>
-                <div class="form-group mb-1" style="text-align: left;">
+                <div class="form-group mb-1 mt-2" style="text-align: left;">
                     <label for="" class="mb-1" style="font-weight: bold;">Type of Errors:</label>
                     <input type="text" class="form-control bg-gray-100 text-center text-uppercase" name="typeOfError" id="typeOfError" style="font-size:100%" readonly />
                 </div>
-                <div class="form-group mb-1" style="text-align: left;">
-                    <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Captured Time Inputs:</label>
-                    <div class="table-responsive">
-                        <table class="table table-bordered rounded-">
-                            <thead>
-                                <tr>
-                                    <th>Time In</th>
-                                    <th>Break Out</th>
-                                    <th>Break In</th>
-                                    <th>Time Out</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="capturedTimeIn" name="capturedTimeIn" readonly></td>
-                                    <td><input class="form-control bg-gray-100 text-center" type="text" id="capturedBreakOut" name="capturedBreakOut" readonly></td>
-                                    <td><input class="form-control bg-gray-100 text-center" type="text" id="capturedBreakIn" name="capturedBreakIn" readonly></td>
-                                    <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="capturedTimeOut" name="capturedTimeOut" readonly></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
     <div class="box">
         <div id="">
-            <h5 class="" style="color: #434343; font-weight: bold; text-align: left; display: block;">
-                Requested Details
-            </h5>
-            <hr style="margin: 0; margin-bottom: 10px">
+            <div class="form-group mb-1" style="text-align: left;">
+                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Captured Time Inputs:</label>
+                <div class="table-responsive mb-0">
+                    <table class="table table-bordered rounded-">
+                        <thead>
+                            <tr>
+                                <th>Time In</th>
+                                <th>Break Out</th>
+                                <th>Break In</th>
+                                <th>Time Out</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="capturedTimeIn" name="capturedTimeIn" placeholder="--:--" readonly></td>
+                                <td><input class="form-control bg-gray-100 text-center" type="text" id="capturedBreakOut" name="capturedBreakOut" placeholder="--:--" readonly></td>
+                                <td><input class="form-control bg-gray-100 text-center" type="text" id="capturedBreakIn" name="capturedBreakIn" placeholder="--:--" readonly></td>
+                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="capturedTimeOut" name="capturedTimeOut" placeholder="--:--" readonly></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             <div class="form-group mb-1" style="text-align: left;">
                 <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Requested Time Inputs:</label>
                 <div class="table-responsive">
@@ -92,10 +89,10 @@ $type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : nul
                         </thead>
                         <tbody>
                             <tr>
-                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="newTimeIN" name="newTimeIN" readonly></td>
-                                <td><input class="form-control bg-gray-100 text-center" type="text" id="newBreakOut" name="newBreakOut" readonly></td>
-                                <td><input class="form-control bg-gray-100 text-center" type="text" id="newBreakIn" name="newBreakIn" readonly></td>
-                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="newTimeOut" name="newTimeOut" readonly></td>
+                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="newTimeIN" name="newTimeIN" placeholder="--:--" readonly></td>
+                                <td><input class="form-control bg-gray-100 text-center" type="text" id="newBreakOut" name="newBreakOut" placeholder="--:--" readonly></td>
+                                <td><input class="form-control bg-gray-100 text-center" type="text" id="newBreakIn" name="newBreakIn" placeholder="--:--" readonly></td>
+                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="newTimeOut" name="newTimeOut" placeholder="--:--" readonly></td>
                             </tr>
                         </tbody>
                     </table>
@@ -119,17 +116,15 @@ $type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : nul
     </div>
 </div>
 <style>
-    /* Make the table border rounded */
     .table {
         border-radius: 2px;
-        overflow: hidden; /* Ensure the border-radius is applied even to table content */
+        overflow: hidden;
     }
 
-    /* Center text inside <th> elements and set background color to gray */
     th {
         text-align: center;
         vertical-align: middle;
-        background-color: #f0f0f0; /* Light gray background */
-        padding: 5px 10px !important; /* Top and bottom padding 5px, left and right 10px */
+        background-color: #f0f0f0;
+        padding: 5px 10px !important;
     }
 </style>

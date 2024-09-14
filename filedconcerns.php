@@ -8,9 +8,9 @@ session_start();
 //For approval concern: para hindi sila makapag approve.
 //ito yong current cut off
 //cut-off date start
-$datestart = '2024-08-24';
+$datestart = '2024-09-09';
 //cut-off date end
-$dateend = '2024-09-08';
+$dateend = '2024-09-23';
 
 //ito yong inayos ngayon na sasahorin to
 //previous cut-off date start
@@ -52,7 +52,6 @@ if (isset($_GET['branch'])) {
     @$_SESSION['useridd'] = $_GET['branch'];
 
     Header('Location: filedconcerns.php?pending=pending');
-
 }
 
 if ($userlevel != 'staff') {
@@ -67,7 +66,7 @@ if ($userlevel != 'staff') {
         $newdate2 = date("Y-m-23");
     }
 
-    ?>
+?>
 
 
     <!DOCTYPE html>
@@ -225,7 +224,7 @@ if ($userlevel != 'staff') {
                     $prevdate2 = $_GET['dateend'];
                 }
 
-                ?>
+            ?>
                 <!-- DataTales Example -->
                 <form method="GET">
                     <div class="form-group row">
@@ -255,42 +254,42 @@ if ($userlevel != 'staff') {
 
                                     <?php
                                     if ($emnum == 1233 || $emnum == 2165 || $emnum == 4072) {
-                                        ?>
+                                    ?>
                                         <input type="hidden" name="spc" value="">
                                         <input class="btn btn-primary btn-user btn-block bg-gradient-primary text-center"
                                             type="submit" name='submit1' value="Submit"
                                             formaction="filedconcerns.php?spc=&summary=okay&adminview=ok">
-                                    </div> &nbsp
-                                    <div class="col-xs-6">
-                                        <input class="btn btn-danger btn-user btn-block bg-gradient-danger text-center"
-                                            type="submit" value="Clear"
-                                            formaction="filedconcerns.php?spc=&summary=okay&datestart=<?php echo $datestart; ?>&dateend=<?php echo $dateend; ?>">
-                                        <?php
+                                </div> &nbsp
+                                <div class="col-xs-6">
+                                    <input class="btn btn-danger btn-user btn-block bg-gradient-danger text-center"
+                                        type="submit" value="Clear"
+                                        formaction="filedconcerns.php?spc=&summary=okay&datestart=<?php echo $datestart; ?>&dateend=<?php echo $dateend; ?>">
+                                <?php
                                     } else if ($emnum == 1348 || $emnum == 271 || $emnum == 2957) {
-                                        ?>
-                                            <input type="hidden" name="spc2" value="">
-                                            <input class="btn btn-primary btn-user btn-block bg-gradient-primary text-center"
-                                                type="submit" value="Submit"
-                                                formaction="filedconcerns.php?spc2=&summary=okay&adminview=ok">
-                                        </div> &nbsp
-                                        <div class="col-xs-6">
-                                            <input class="btn btn-danger btn-user btn-block bg-gradient-danger text-center"
-                                                type="submit" value="Clear"
-                                                formaction="filedconcerns.php?spc2=&summary=okay&datestart=<?php echo $datestart; ?>&dateend=<?php echo $dateend; ?>">
-                                        <?php
+                                ?>
+                                    <input type="hidden" name="spc2" value="">
+                                    <input class="btn btn-primary btn-user btn-block bg-gradient-primary text-center"
+                                        type="submit" value="Submit"
+                                        formaction="filedconcerns.php?spc2=&summary=okay&adminview=ok">
+                                </div> &nbsp
+                                <div class="col-xs-6">
+                                    <input class="btn btn-danger btn-user btn-block bg-gradient-danger text-center"
+                                        type="submit" value="Clear"
+                                        formaction="filedconcerns.php?spc2=&summary=okay&datestart=<?php echo $datestart; ?>&dateend=<?php echo $dateend; ?>">
+                                <?php
                                     } else {
-                                        ?>
-                                            <input class="btn btn-primary btn-user btn-block bg-gradient-primary text-center"
-                                                type="submit" value="Submit"
-                                                formaction="filedconcerns.php?spc=&summary=okay&adminview=ok">
-                                        </div> &nbsp
-                                        <div class="col-xs-6">
-                                            <input class="btn btn-danger btn-user btn-block bg-gradient-danger text-center"
-                                                type="submit" value="Clear"
-                                                formaction="filedconcerns.php?summary=okay&datestart=<?php echo $datestart; ?>&dateend=<?php echo $dateend; ?>">
-                                        <?php
+                                ?>
+                                    <input class="btn btn-primary btn-user btn-block bg-gradient-primary text-center"
+                                        type="submit" value="Submit"
+                                        formaction="filedconcerns.php?spc=&summary=okay&adminview=ok">
+                                </div> &nbsp
+                                <div class="col-xs-6">
+                                    <input class="btn btn-danger btn-user btn-block bg-gradient-danger text-center"
+                                        type="submit" value="Clear"
+                                        formaction="filedconcerns.php?summary=okay&datestart=<?php echo $datestart; ?>&dateend=<?php echo $dateend; ?>">
+                                <?php
                                     }
-                                    ?>
+                                ?>
                                 </div>
                             </div>
                         </div>
@@ -301,25 +300,25 @@ if ($userlevel != 'staff') {
                     <li class="nav-item">
                         <?php
                         if (isset($_GET['all'])) {
-                            ?>
+                        ?>
                             <a class="effect-shine nav-link active" href="filedconcerns.php?pending=pending"><b>Back to View
                                     Summary</b></a>
-                            <?php
+                        <?php
                         } else if (isset($_GET['spc'])) {
-                            ?>
-                                <a class="effect-shine nav-link active" href="filedconcerns.php?pending=pending"><b>Back to View
-                                        Summary</b></a>
-                            <?php
+                        ?>
+                            <a class="effect-shine nav-link active" href="filedconcerns.php?pending=pending"><b>Back to View
+                                    Summary</b></a>
+                        <?php
                         } else if (isset($_GET['spc2'])) {
-                            ?>
-                                    <a class="effect-shine nav-link active" href="filedconcerns.php?sum=admin"><b>Back to View
-                                            Summary</b></a>
-                            <?php
+                        ?>
+                            <a class="effect-shine nav-link active" href="filedconcerns.php?sum=admin"><b>Back to View
+                                    Summary</b></a>
+                        <?php
                         } else {
-                            ?>
-                                    <a class="effect-shine nav-link active" href="filedconcerns.php?view=summary"><b>Back to View
-                                            Summary</b></a>
-                            <?php
+                        ?>
+                            <a class="effect-shine nav-link active" href="filedconcerns.php?view=summary"><b>Back to View
+                                    Summary</b></a>
+                        <?php
                         }
                         ?>
                     </li>
@@ -384,7 +383,7 @@ if ($userlevel != 'staff') {
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -431,13 +430,13 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
                                         <?php } ?>
-                                        <?php
+                                    <?php
                                     } else {
-                                        ?>
+                                    ?>
                                         <div class="alert alert-danger d-none d-sm-block text-center" role="alert">
                                             Choose Cafe/Department to View DTR Concerns Filled</a>
                                         </div>
-                                        <?php
+                                    <?php
                                     }
                                     ?>
                                 <?php } ?>
@@ -449,7 +448,7 @@ if ($userlevel != 'staff') {
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -472,46 +471,46 @@ if ($userlevel != 'staff') {
                                                     </center>
                                                 </td>
                                                 <?php
-                                                if ($row['concern'] == 'Cancellation of Overtime' || $row['concern'] == 'Cancellation of Leave' || $row['concern'] == 'Wrong Computations' || $row['concern'] == 'File Broken Sched OT') {
-                                                    ?>
+                                                if ($row['concern'] == 'Wrong filing of overtime' || $row['concern'] == 'Wrong filing of leave' || $row['concern'] == 'Wrong Computations' || $row['concern'] == 'File broken sched overtime') {
+                                                ?>
                                                     <td>
                                                         <center>Attachment is <br> not needed</center>
                                                     </td>
                                                     <td>
                                                         <center>Attachment is <br> not needed</center>
                                                     </td>
-                                                    <?php
-                                                } else if ($row['concern'] == 'Remove Time Inputs') {
-                                                    ?>
-                                                        <td>
-                                                            <center><a href="pdf/<?php echo $row['attachment1']; ?>" target="_blank"> Click here
-                                                                    to view attachment </a></center>
-                                                        </td>
-                                                        <td>
-                                                            <center>Attachment is <br> not needed</center>
-                                                        </td>
-                                                    <?php
-                                                } else if ($row['concern'] == 'Time inputs did not sync') {
-                                                    ?>
-                                                            <td>
-                                                                <center><a href="pdf/<?php echo $row['attachment1']; ?>" target="_blank"> Click here
-                                                                        to view attachment </a></center>
-                                                            </td>
-                                                            <td>
-                                                                <center>Attachment is <br> not needed</center>
-                                                            </td>
-                                                    <?php
+                                                <?php
+                                                } else if ($row['concern'] == 'Remove time inputs') {
+                                                ?>
+                                                    <td>
+                                                        <center><a href="pdf/<?php echo $row['attachment1']; ?>" target="_blank"> Click here
+                                                                to view attachment </a></center>
+                                                    </td>
+                                                    <td>
+                                                        <center>Attachment is <br> not needed</center>
+                                                    </td>
+                                                <?php
+                                                } else if ($row['concern'] == 'Time inputs did not sync' || $row['concern'] == 'Misaligned time inputs' || $row['concern'] == 'Broken Schedule did not sync' || $row['concern'] == 'Persona error') {
+                                                ?>
+                                                    <td>
+                                                        <center><a href="pdf/<?php echo $row['attachment1']; ?>" target="_blank"> Click here
+                                                                to view attachment </a></center>
+                                                    </td>
+                                                    <td>
+                                                        <center>Attachment is <br> not needed</center>
+                                                    </td>
+                                                <?php
                                                 } else {
-                                                    ?>
-                                                            <td>
-                                                                <center><a href="pdf/<?php echo $row['attachment1']; ?>" target="_blank"> Click here
-                                                                        to view attachment </a></center>
-                                                            </td>
-                                                            <td>
-                                                                <center><a href="pdf/<?php echo $row['attachment2']; ?>" target="_blank"> Click here
-                                                                        to view attachment</a></center>
-                                                            </td>
-                                                    <?php
+                                                ?>
+                                                    <td>
+                                                        <center><a href="pdf/<?php echo $row['attachment1']; ?>" target="_blank"> Click here
+                                                                to view attachment </a></center>
+                                                    </td>
+                                                    <td>
+                                                        <center><a href="pdf/<?php echo $row['attachment2']; ?>" target="_blank"> Click here
+                                                                to view attachment</a></center>
+                                                    </td>
+                                                <?php
                                                 }
                                                 ?>
                                                 <td>
@@ -531,9 +530,8 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
 
-                                            <?php
+                                    <?php
                                         }
-
                                     }
                                     ?>
 
@@ -544,7 +542,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -559,7 +557,7 @@ if ($userlevel != 'staff') {
                 || $_SESSION['empno'] == 4892 || $_SESSION['empno'] == 3337 || $_SESSION['empno'] == 6436 || $_SESSION['empno'] == 6209
                 || $_SESSION['empno'] == 6244 || $_SESSION['empno'] == 6245 || $_SESSION['empno'] == 6438  /*End*/
             ) {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -618,7 +616,7 @@ if ($userlevel != 'staff') {
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
 
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -648,7 +646,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
 
-                                            <?php
+                                    <?php
 
                                         }
                                     }
@@ -660,7 +658,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -668,7 +666,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS MAAM CHONA MAAM RESSIE SIR CARL
 
             if (isset($_GET["sum"]) == "admin") {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -742,7 +740,7 @@ if ($userlevel != 'staff') {
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
 
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -772,7 +770,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
 
-                                            <?php
+                                    <?php
 
                                         }
                                     }
@@ -784,7 +782,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -792,7 +790,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS MASTER - PENDING
 
             if (isset($_GET["pending"]) == "pending" and $userlevel == 'master') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -839,11 +837,11 @@ if ($userlevel != 'staff') {
                         $sqlarea = "SELECT DISTINCT `area_type` FROM user_info ";
                         $queryarea = $HRconnect->query($sqlarea);
                         while ($rowarea = $queryarea->fetch_array()) {
-                            ?>
+                        ?>
                             <option>
                                 <?php echo $rowarea['area_type']; ?>
                             </option>
-                            <?php
+                        <?php
                         }
                         ?>
                     </select>
@@ -903,21 +901,21 @@ if ($userlevel != 'staff') {
                                         $area = $_GET['area'];
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
-                                        $BrokenOT = 'File Broken Sched OT';
+                                        $BrokenOT = 'File broken sched overtime';
                                         $forgot1 = 'Failure/Forgot to click half day';
                                         $forgot2 = 'Failure/Forgot to click broken schedule';
                                         $forgot3 = 'Failure/Forgot to time in or time out';
                                         $forgot4 = 'Failure/Forgot to break in or break out';
-                                        $wrong = 'Wrong format/filing of OBP';
-                                        $timeInterval = 'Not following time interval';
-                                        $removeLogs = 'Remove Time Inputs';
-                                        $cancel1 = 'Cancellation of Overtime';
-                                        $cancel2 = 'Cancellation of Leave';
+                                        $wrong = 'Wrong filing of OBP';
+                                        $timeInterval = 'Not following break out and break in interval';
+                                        $removeLogs = 'Remove time inputs';
+                                        $cancel1 = 'Wrong filing of overtime';
+                                        $cancel2 = 'Wrong filing of leave';
                                         $sql = "SELECT DISTINCT `name`,`id`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel in ('admin','ac','mod','staff','master') AND area = '$area' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                                 <td>
@@ -957,7 +955,7 @@ if ($userlevel != 'staff') {
                                                     </center>
                                                 </td>
                                             </tr>
-                                            <?php
+                                        <?php
                                         }
                                     } else {
                                         ?>
@@ -966,16 +964,16 @@ if ($userlevel != 'staff') {
                                         if (@$_SESSION['useridd'] != null) {
                                             $emergency = 'Emergency time out';
                                             $FPError = 'Fingerprint problem';
-                                            $BrokenOT = 'File Broken Sched OT';
+                                            $BrokenOT = 'File broken sched overtime';
                                             $forgot1 = 'Failure/Forgot to click half day';
                                             $forgot2 = 'Failure/Forgot to click broken schedule';
                                             $forgot3 = 'Failure/Forgot to time in or time out';
                                             $forgot4 = 'Failure/Forgot to break in or break out';
-                                            $wrong = 'Wrong format/filing of OBP';
-                                            $timeInterval = 'Not following time interval';
-                                            $removeLogs = 'Remove Time Inputs';
-                                            $cancel1 = 'Cancellation of Overtime';
-                                            $cancel2 = 'Cancellation of Leave';
+                                            $wrong = 'Wrong filing of OBP';
+                                            $timeInterval = 'Not following break out and break in interval';
+                                            $removeLogs = 'Remove time inputs';
+                                            $cancel1 = 'Wrong filing of overtime';
+                                            $cancel2 = 'Wrong filing of leave';
                                             if ($userlevel == 'master') {
 
                                                 if (isset($_GET['area'])) {
@@ -986,7 +984,7 @@ if ($userlevel != 'staff') {
                                                 $query = $HRconnect->query($sql);
                                                 while ($row = $query->fetch_array()) {
                                                     $name = $row['name'];
-                                                    ?>
+                                        ?>
                                                     <tr>
                                                         <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                                         <td>
@@ -1027,7 +1025,7 @@ if ($userlevel != 'staff') {
                                                         </td>
                                                     </tr>
 
-                                                    <?php
+                                    <?php
                                                 }
                                             }
                                         }
@@ -1040,7 +1038,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -1049,7 +1047,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS MASTER - FOR SYSTEM ERROR
 
             if (isset($_GET["error"]) == 'system' and $userlevel == 'master') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -1097,11 +1095,11 @@ if ($userlevel != 'staff') {
                         $sqlarea = "SELECT DISTINCT `area_type` FROM user_info ";
                         $queryarea = $HRconnect->query($sqlarea);
                         while ($rowarea = $queryarea->fetch_array()) {
-                            ?>
+                        ?>
                             <option>
                                 <?php echo $rowarea['area_type']; ?>
                             </option>
-                            <?php
+                        <?php
                         }
                         ?>
                     </select>
@@ -1161,12 +1159,12 @@ if ($userlevel != 'staff') {
                                         $area = $_GET['area'];
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
-                                        $BrokenOT = 'File Broken Sched OT';
+                                        $BrokenOT = 'File broken sched overtime';
                                         $sql = "SELECT DISTINCT `name`,`id`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel in ('admin','ac','mod','staff','master') AND area = '$area' AND errortype = 'System Error' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                                 <td>
@@ -1206,7 +1204,7 @@ if ($userlevel != 'staff') {
                                                     </center>
                                                 </td>
                                             </tr>
-                                            <?php
+                                        <?php
                                         }
                                     } else {
                                         ?>
@@ -1218,7 +1216,7 @@ if ($userlevel != 'staff') {
                                                 $query = $HRconnect->query($sql);
                                                 while ($row = $query->fetch_array()) {
                                                     $name = $row['name'];
-                                                    ?>
+                                        ?>
                                                     <tr>
                                                         <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                                         <td>
@@ -1259,7 +1257,7 @@ if ($userlevel != 'staff') {
                                                         </td>
                                                     </tr>
 
-                                                    <?php
+                                    <?php
                                                 }
                                             }
                                         }
@@ -1273,7 +1271,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -1281,7 +1279,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS MASTER - FOR HARDWARE ERROR
 
             if (isset($_GET["other"]) == "hardware" and $userlevel == 'master') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -1329,11 +1327,11 @@ if ($userlevel != 'staff') {
                         $sqlarea = "SELECT DISTINCT `area_type` FROM user_info ";
                         $queryarea = $HRconnect->query($sqlarea);
                         while ($rowarea = $queryarea->fetch_array()) {
-                            ?>
+                        ?>
                             <option>
                                 <?php echo $rowarea['area_type']; ?>
                             </option>
-                            <?php
+                        <?php
                         }
                         ?>
                     </select>
@@ -1394,13 +1392,13 @@ if ($userlevel != 'staff') {
                                         $area = $_GET['area'];
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
-                                        $BrokenOT = 'File Broken Sched OT';
-                                        $hardwareError = 'Hardware/Persona malfunction';
+                                        $BrokenOT = 'File broken sched overtime';
+                                        $hardwareError = 'Hardware malfunction';
                                         $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel in ('admin','ac','mod','staff','master') AND area = '$area' AND concern = '$hardwareError' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -1439,20 +1437,20 @@ if ($userlevel != 'staff') {
                                                     </center>
                                                 </td>
                                             </tr>
-                                            <?php
+                                        <?php
                                         }
                                     } else {
                                         ?>
 
                                         <?php
                                         if (@$_SESSION['useridd'] != null) {
-                                            $hardwareError = 'Hardware/Persona malfunction';
+                                            $hardwareError = 'Hardware malfunction';
                                             if ($userlevel == 'master') {
                                                 $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND concern = '$hardwareError' AND userid = '$userid' AND  userlevel in ('admin','ac','mod','staff','master') AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                 $query = $HRconnect->query($sql);
                                                 while ($row = $query->fetch_array()) {
                                                     $name = $row['name'];
-                                                    ?>
+                                        ?>
                                                     <tr>
                                                         <td>
                                                             <center>
@@ -1492,7 +1490,7 @@ if ($userlevel != 'staff') {
                                                         </td>
                                                     </tr>
 
-                                                    <?php
+                                    <?php
                                                 }
                                             }
                                         }
@@ -1506,7 +1504,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -1515,7 +1513,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS MASTER - APPROVED CONCERNS
 
             if (isset($_GET["approved"]) == "approved" and $userlevel == 'master') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -1600,7 +1598,7 @@ if ($userlevel != 'staff') {
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -1649,7 +1647,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
 
-                                            <?php
+                                    <?php
                                         }
                                     }
                                     ?>
@@ -1659,7 +1657,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -1667,7 +1665,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS MASTER - VIEW SUMMARY
 
             if (isset($_GET["view"]) == "summary" and $userlevel == 'master') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -1745,7 +1743,7 @@ if ($userlevel != 'staff') {
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
 
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -1775,7 +1773,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
 
-                                            <?php
+                                    <?php
 
                                         }
                                     }
@@ -1787,7 +1785,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -1795,7 +1793,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS ADMIN - PENDING
 
             if (isset($_GET["pending"]) == "pending" and $userlevel == 'admin') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -1817,11 +1815,11 @@ if ($userlevel != 'staff') {
                     </li>
                     <?php
                     if ($emnum == 1348 || $emnum == 271) {
-                        ?>
+                    ?>
                         <li class="nav-item">
                             <a class="effect-shine nav-link" href="filedconcerns.php?sum=admin"><b>View Summary</b></a>
                         </li>
-                        <?php
+                    <?php
                     }
                     ?>
                 </ul>
@@ -1874,46 +1872,41 @@ if ($userlevel != 'staff') {
                                     <?php
                                     $emergency = 'Emergency time out';
                                     $FPError = 'Fingerprint problem';
-                                    $BrokenOT = 'File Broken Sched OT';
+                                    $BrokenOT = 'File broken sched overtime';
                                     $forgot1 = 'Failure/Forgot to click half day';
                                     $forgot2 = 'Failure/Forgot to click broken schedule';
                                     $forgot3 = 'Forgot/Wrong time IN/OUT or break OUT/IN';
-                                    $wrong = 'Wrong format/filing of OBP';
-                                    $timeInterval = 'Not following time interval';
-                                    $removeLogs = 'Remove Time Inputs';
-                                    $cancel1 = 'Cancellation of Overtime';
-                                    $cancel2 = 'Cancellation of Leave';
+                                    $wrong = 'Wrong filing of OBP';
+                                    $timeInterval = 'Not following break out and break in interval';
+                                    $removeLogs = 'Remove time inputs';
+                                    $cancel1 = 'Wrong filing of overtime';
+                                    $cancel2 = 'Wrong filing of leave';
                                     if (@$_SESSION['useridd'] != null) {
 
                                         if ($emnum == 1) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(4378,3336,3294,5752,3111,5928,3071,3027,2221,1331,1073,271,107,24,4625,5752,5834) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         if ($emnum == 2) {
                                             $sql = "SELECT * FROM dtr_concerns WHERE userid = '$userid' AND empno in(3177,4625,885,4378,3336,3294,5752,3111,5928,3071,3027,2221,1331,1073,271,107,24,4625,5752,5834) AND status = 'Pending' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         if ($emnum == 4) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(107) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         if ($emnum == 1348) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         if ($emnum == 271) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -1952,12 +1945,12 @@ if ($userlevel != 'staff') {
                                                     </center>
                                                 </td>
                                             </tr>
-                                            <?php
+                                        <?php
                                         }
                                         ?>
 
 
-                                        <?php
+                                    <?php
 
                                     }
                                     ?>
@@ -1967,7 +1960,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -1976,7 +1969,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS ADMIN - BROKEN OT
 
             if (isset($_GET["brokenot"]) == "approval" and $userlevel == 'admin') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -2047,37 +2040,32 @@ if ($userlevel != 'staff') {
                                     if (@$_SESSION['useridd'] != null) {
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
-                                        $BrokenOT = 'File Broken Sched OT';
+                                        $BrokenOT = 'File broken sched overtime';
 
                                         if ($emnum == 1) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(4378,3336,3294,5752,3111,5928,3071,3027,2221,1331,1073,271,107,24,4625,5752,5834) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         if ($emnum == 2) {
                                             $sql = "SELECT * FROM dtr_concerns WHERE userid = '$userid' AND empno in(3177,4625,885,4378,3336,3294,5752,3111,5928,3071,3027,2221,1331,1073,271,107,24,4625,5752,5834) AND status = 'Pending' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         if ($emnum == 4) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(107) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         if ($emnum == 1348) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(1220,1233,2114,2165,3013,3778,4072) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         if ($emnum == 271) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -2116,10 +2104,10 @@ if ($userlevel != 'staff') {
                                                     </center>
                                                 </td>
                                             </tr>
-                                            <?php
+                                        <?php
                                         }
                                         ?>
-                                        <?php
+                                    <?php
 
                                     }
                                     ?>
@@ -2129,7 +2117,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -2137,7 +2125,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS ADMIN - View summary of all area
 
             if (isset($_GET["view"]) == "summary" and $userlevel == 'admin') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
@@ -2196,7 +2184,7 @@ if ($userlevel != 'staff') {
                                     while ($row = $query->fetch_array()) {
                                         $name = $row['name'];
 
-                                        ?>
+                                    ?>
                                         <tr>
                                             <td>
                                                 <center>
@@ -2226,7 +2214,7 @@ if ($userlevel != 'staff') {
                                             </td>
                                         </tr>
 
-                                        <?php
+                                    <?php
 
 
                                     }
@@ -2238,7 +2226,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -2247,7 +2235,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS ADMIN - APPROVED CONCERNS
 
             if (isset($_GET["approved"]) == "approved" and $userlevel == 'admin') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
@@ -2268,11 +2256,11 @@ if ($userlevel != 'staff') {
                     </li>
                     <?php
                     if ($emnum == 1348 || $emnum == 271) {
-                        ?>
+                    ?>
                         <li class="nav-item">
                             <a class="effect-shine nav-link" href="filedconcerns.php?sum=admin"><b>View Summary</b></a>
                         </li>
-                        <?php
+                    <?php
                     }
                     ?>
                 </ul>
@@ -2334,7 +2322,7 @@ if ($userlevel != 'staff') {
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -2383,7 +2371,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
 
-                                            <?php
+                                    <?php
                                         }
                                     }
                                     ?>
@@ -2393,7 +2381,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -2406,7 +2394,7 @@ if ($userlevel != 'staff') {
                 and $emnum != 5430 and $emnum != 4892 and $emnum != 3337 and $emnum != 6436 and $emnum != 6209 and $emnum != 6244 and $emnum != 6245
                 and $emnum != 6438
             ) {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -2476,127 +2464,94 @@ if ($userlevel != 'staff') {
                                     <?php
                                     $emergency = 'Emergency time out';
                                     $FPError = 'Fingerprint problem';
-                                    $BrokenOT = 'File Broken Sched OT';
+                                    $BrokenOT = 'File broken sched overtime';
                                     $forgot1 = 'Failure/Forgot to click half day';
                                     $forgot2 = 'Failure/Forgot to click broken schedule';
                                     $forgot3 = 'Failure/Forgot to time in or time out';
                                     $forgot4 = 'Failure/Forgot to break in or break out';
-                                    $wrong = 'Wrong format/filing of OBP';
-                                    $timeInterval = 'Not following time interval';
-                                    $removeLogs = 'Remove Time Inputs';
-                                    $cancel1 = 'Cancellation of Overtime';
-                                    $cancel2 = 'Cancellation of Leave';
+                                    $wrong = 'Wrong filing of OBP';
+                                    $timeInterval = 'Not following break out and break in interval';
+                                    $removeLogs = 'Remove time inputs';
+                                    $cancel1 = 'Wrong filing of overtime';
+                                    $cancel2 = 'Wrong filing of leave';
                                     if (@$_SESSION['useridd'] != null) {
 
 
                                         if ($emnum == 4378) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(1348,1964,2957,4349,2111,2243,3332,3693,4000) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 1331) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(819,109,76,71,167,45) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 24) { //jones added
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5048) { //jones added
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 1073) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno NOT IN(1073,2221,6119,5832) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 4298) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 3178) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 2684) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 3071) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(2203,2264) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 76) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(37,53,45,69,124,2720,40,20,3685,189,229) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 37 || $emnum == 53 || $emnum == 45 || $emnum == 69 || $emnum == 124 || $emnum == 2720 || $emnum == 40 || $emnum == 20 || $emnum == 3685 || $emnum == 189 || $emnum == 229) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'SOUTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 109) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(63,88,97,170) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 63 || $emnum == 88 || $emnum == 97 || $emnum == 170) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'MFO' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 819) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(38,112,254,302,4484,1562,4709,204,4301) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 38 || $emnum == 112 || $emnum == 254 || $emnum == 302 || $emnum == 460 || $emnum == 2094) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'NORTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 71) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(309,197,158,4209) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5752) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(159) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 3336) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                         } else if ($emnum == 3111) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 2221) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' /* AND empno in(1262,5832) removed by loede.jones */ AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 1844) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(2485) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 885) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 957) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 6538) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5356) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 1964) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5834) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5928) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5584) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 3294) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 6207) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5361 or $emnum == 3178 or $emnum == 5515 or $emnum == 5452 or $emnum == 4811 or $emnum == 2684 or $emnum == 884) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 6082) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         }
 
 
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -2635,12 +2590,12 @@ if ($userlevel != 'staff') {
                                                     </center>
                                                 </td>
                                             </tr>
-                                            <?php
+                                        <?php
                                         }
                                         ?>
 
 
-                                        <?php
+                                    <?php
                                     }
                                     ?>
 
@@ -2649,7 +2604,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -2663,7 +2618,7 @@ if ($userlevel != 'staff') {
                 || $emnum != 4892 || $emnum != 3337 || $emnum != 6436 || $emnum != 6209 || $emnum != 6244 || $emnum != 6245
                 || $emnum != 6438 || $emnum != 1964
             ) {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -2734,95 +2689,68 @@ if ($userlevel != 'staff') {
                                     if (@$_SESSION['useridd'] != null) {
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
-                                        $BrokenOT = 'File Broken Sched OT';
+                                        $BrokenOT = 'File broken sched overtime';
 
                                         if ($emnum == 4378) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(1348,1964,2957,4349,2111,2243,3332,3693,4000) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 1331) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(819,109,76,71,167,45) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 1073) {
                                             if ($userid == 170) {
                                                 $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno = 1844  AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                             } else {
                                                 $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid'AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                             }
-
                                         } else if ($emnum == 4298) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 3178) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 2684) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 3071) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(2203,2264) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 76) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(37,53,45,69,124,2720,40,20,3685,189,229) AND errortype = 'User Error' OR errortype = 'Other Error' AND concern = '$emergency' AND concern = '$FPError'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 37 || $emnum == 53 || $emnum == 45 || $emnum == 69 || $emnum == 124 || $emnum == 2720 || $emnum == 40 || $emnum == 20 || $emnum == 3685 || $emnum == 189 || $emnum == 229) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT' AND area = 'SOUTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 109) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(63,88,97,170) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 63 || $emnum == 88 || $emnum == 97 || $emnum == 170) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT' AND area = 'MFO' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 819) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(38,112,254,302,4484,1562,4709,204,4301) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 38 || $emnum == 112 || $emnum == 254 || $emnum == 302 || $emnum == 460 || $emnum == 2094) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT' AND area = 'MFO' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 71) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(309,197,158,4209) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5928) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 885) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 957) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 1964) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5834) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5752) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(159) AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5584) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 6207) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 5361 or $emnum == 3178 or $emnum == 5515 or $emnum == 5452 or $emnum == 4811 or $emnum == 2684 or $emnum == 884) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else if ($emnum == 6082) {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno != '" . $_SESSION['empno'] . "' AND errortype = 'Other Error' AND concern = '$BrokenOT'  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
                                         } else {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND errortype = 'Other Error' AND concern = '$BrokenOT' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
-
-
-
                                         }
 
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -2861,10 +2789,10 @@ if ($userlevel != 'staff') {
                                                     </center>
                                                 </td>
                                             </tr>
-                                            <?php
+                                        <?php
                                         }
                                         ?>
-                                        <?php
+                                    <?php
 
                                     }
                                     ?>
@@ -2874,7 +2802,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -2887,7 +2815,7 @@ if ($userlevel != 'staff') {
                 || $emnum != 4892 || $emnum != 3337 || $emnum != 6436 || $emnum != 6209 || $emnum != 6244 || $emnum != 6245
                 || $emnum != 6438
             ) {
-                ?>
+            ?>
                 <!-- DataTales Example -->
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
@@ -2946,7 +2874,7 @@ if ($userlevel != 'staff') {
                                     while ($row = $query->fetch_array()) {
                                         $name = $row['name'];
 
-                                        ?>
+                                    ?>
                                         <tr>
                                             <td>
                                                 <center>
@@ -2976,7 +2904,7 @@ if ($userlevel != 'staff') {
                                             </td>
                                         </tr>
 
-                                        <?php
+                                    <?php
 
 
                                     }
@@ -2988,7 +2916,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -3001,7 +2929,7 @@ if ($userlevel != 'staff') {
                 || $emnum != 3080 || $emnum != 3156 || $emnum != 3612 || $emnum != 4001 || $emnum != 5263 || $emnum != 5430 || $emnum != 4892
                 || $emnum != 3337 || $emnum != 6436 || $emnum != 6209 || $emnum != 6244 || $emnum != 6245 || $emnum != 6438
             ) {
-                ?>
+            ?>
                 <!-- DataTales Example -->
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
@@ -3079,7 +3007,7 @@ if ($userlevel != 'staff') {
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -3128,7 +3056,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
 
-                                            <?php
+                                    <?php
                                         }
                                     }
                                     ?>
@@ -3138,7 +3066,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -3147,7 +3075,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS MOD - PENDING
 
             if (isset($_GET["pending"]) == "pending" and $userlevel == 'mod' and $emnum != 309 || $emnum != 158 || $emnum != 3110 || $emnum != 4451) {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -3168,11 +3096,11 @@ if ($userlevel != 'staff') {
                     </li>
                     <?php
                     if ($emnum == 2957) {
-                        ?>
+                    ?>
                         <li class="nav-item">
                             <a class="effect-shine nav-link" href="filedconcerns.php?sum=admin"><b>View Summary</b></a>
                         </li>
-                        <?php
+                    <?php
                     }
                     ?>
                 </ul>
@@ -3226,23 +3154,23 @@ if ($userlevel != 'staff') {
                                     if (@$_SESSION['useridd'] != null) {
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
-                                        $BrokenOT = 'File Broken Sched OT';
+                                        $BrokenOT = 'File broken sched overtime';
                                         $forgot1 = 'Failure/Forgot to click half day';
                                         $forgot2 = 'Failure/Forgot to click broken schedule';
                                         $forgot3 = 'Failure/Forgot to time in or time out';
                                         $forgot4 = 'Failure/Forgot to break in or break out';
-                                        $wrong = 'Wrong format/filing of OBP';
-                                        $timeInterval = 'Not following time interval';
-                                        $removeLogs = 'Remove Time Inputs';
-                                        $cancel1 = 'Cancellation of Overtime';
-                                        $cancel2 = 'Cancellation of Leave';
+                                        $wrong = 'Wrong filing of OBP';
+                                        $timeInterval = 'Not following break out and break in interval';
+                                        $removeLogs = 'Remove time inputs';
+                                        $cancel1 = 'Wrong filing of overtime';
+                                        $cancel2 = 'Wrong filing of leave';
 
                                         if ($userlevel == 'mod') {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel = 'staff' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                             $query = $HRconnect->query($sql);
                                             while ($row = $query->fetch_array()) {
                                                 $name = $row['name'];
-                                                ?>
+                                    ?>
                                                 <tr>
                                                     <td>
                                                         <center>
@@ -3282,7 +3210,7 @@ if ($userlevel != 'staff') {
                                                     </td>
                                                 </tr>
 
-                                                <?php
+                                    <?php
                                             }
                                         }
                                     }
@@ -3293,7 +3221,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -3301,7 +3229,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS MOD - BROKEN OT
 
             if (isset($_GET["brokenot"]) == "approval" and $userlevel == 'mod') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -3371,13 +3299,13 @@ if ($userlevel != 'staff') {
                                     if (@$_SESSION['useridd'] != null) {
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
-                                        $BrokenOT = 'File Broken Sched OT';
+                                        $BrokenOT = 'File broken sched overtime';
                                         if ($userlevel == 'mod') {
                                             $sql = "SELECT DISTINCT `name`,`branch`,`ConcernDate`,`ottype`,`empno`,`concern`,`errortype` FROM dtr_concerns WHERE status = 'Pending' AND userlevel = 'staff' AND userid = '$userid' AND concern = '$BrokenOT' AND ConcernDate BETWEEN '$prevdate1' AND '$prevdate2'";
                                             $query = $HRconnect->query($sql);
                                             while ($row = $query->fetch_array()) {
                                                 $name = $row['name'];
-                                                ?>
+                                    ?>
                                                 <tr>
                                                     <td>
                                                         <center>
@@ -3417,7 +3345,7 @@ if ($userlevel != 'staff') {
                                                     </td>
                                                 </tr>
 
-                                                <?php
+                                    <?php
                                             }
                                         }
                                     }
@@ -3428,14 +3356,14 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
             <?php
             // IF USER LEVEL IS MOD - APPROVED CONCERNS
 
             if (isset($_GET["approved"]) == "approved" and $userlevel == 'mod') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -3456,11 +3384,11 @@ if ($userlevel != 'staff') {
                     </li>
                     <?php
                     if ($emnum == 2957) {
-                        ?>
+                    ?>
                         <li class="nav-item">
                             <a class="effect-shine nav-link" href="filedconcerns.php?sum=admin"><b>View Summary</b></a>
                         </li>
-                        <?php
+                    <?php
                     }
                     ?>
                 </ul>
@@ -3522,7 +3450,7 @@ if ($userlevel != 'staff') {
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -3571,7 +3499,7 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
 
-                                            <?php
+                                    <?php
                                         }
                                     }
                                     ?>
@@ -3581,7 +3509,7 @@ if ($userlevel != 'staff') {
                         </div>
                     </div>
                 </div>
-                <?php
+            <?php
             }
             ?>
 
@@ -3589,7 +3517,7 @@ if ($userlevel != 'staff') {
             // IF USER LEVEL IS MOD - VIEW SUMMARY
 
             if (isset($_GET["view"]) == "summary" and $userlevel == 'mod') {
-                ?>
+            ?>
                 <!-- DataTales Example -->
 
                 <ul class="nav nav-tabs">
@@ -3660,7 +3588,7 @@ if ($userlevel != 'staff') {
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
 
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td>
                                                     <center>
@@ -3690,101 +3618,101 @@ if ($userlevel != 'staff') {
                                                 </td>
                                             </tr>
 
-                                            <?php
+                                <?php
 
                                         }
                                     }
-            }
-            ?>
-                            </tbody>
-                        </table>
+                                }
+                                ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.container-fluid -->
+
                     </div>
-                    <!-- /.container-fluid -->
+                    <!-- End of Main Content -->
+
+                    <?php if (@$_GET['m'] == 3) { ?>
+                        <script>
+                            $(function() {
+                                $(".thanks").delay(2500).fadeOut();
+
+                            });
+                        </script>
+
+                        <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
+                            <div class="thanks toast fade show" style="position: fixed; top: 15px; right: 5px;">
+                                <div class="toast-header bg-success">
+                                    <h4 class="mr-auto my-0 text-light"><i class="fa fa-check-circle" aria-hidden="true"></i> DTR
+                                        Concern</h5>
+                                        <small class="text-light">just now</small>
+                                </div>
+                                <div class="toast-body">
+                                    You have <b class="text-success">Successfully Approved</b> the DTR Concern. Thank you!
+                                </div>
+                            </div>
+                        </div>
+
+                    <?php } ?>
+
+                    <?php if (@$_GET['m'] == 4) { ?>
+                        <script>
+                            $(function() {
+                                $(".thanks").delay(2500).fadeOut();
+
+                            });
+                        </script>
+
+                        <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
+                            <div class="thanks toast fade show" style="position: fixed; top: 15px; right: 5px;">
+                                <div class="toast-header bg-warning">
+                                    <h4 class="mr-auto my-0 text-light"><i class="fa fa-check-circle" aria-hidden="true"></i> DTR
+                                        Concern</h5>
+                                        <small class="text-light">just now</small>
+                                </div>
+                                <div class="toast-body">
+                                    You have <b class="text-warning">Successfully Cancelled</b> the DTR Concern Thank you!
+                                </div>
+                            </div>
+                        </div>
+
+                    <?php } ?>
+
+                    <?php if (@$_GET['m'] == 5) { ?>
+                        <script>
+                            $(function() {
+                                $(".thanks").delay(2500).fadeOut();
+
+                            });
+                        </script>
+
+                        <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
+                            <div class="thanks toast fade show" style="position: fixed; top: 15px; right: 5px;">
+                                <div class="toast-header bg-warning">
+                                    <h4 class="mr-auto my-0 text-light"><i class="fa fa-check-circle" aria-hidden="true"></i> DTR
+                                        Concern</h5>
+                                        <small class="text-light">just now</small>
+                                </div>
+                                <div class="toast-body">
+                                    You have <b class="text-warning">Successfully Changed</b> the type of DTR Concern Thank you!
+                                </div>
+                            </div>
+                        </div>
+
+                    <?php } ?>
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright © Mary Grace Foods Inc. 2019</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
 
                 </div>
-                <!-- End of Main Content -->
-
-                <?php if (@$_GET['m'] == 3) { ?>
-                    <script>
-                        $(function () {
-                            $(".thanks").delay(2500).fadeOut();
-
-                        });
-                    </script>
-
-                    <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
-                        <div class="thanks toast fade show" style="position: fixed; top: 15px; right: 5px;">
-                            <div class="toast-header bg-success">
-                                <h4 class="mr-auto my-0 text-light"><i class="fa fa-check-circle" aria-hidden="true"></i> DTR
-                                    Concern</h5>
-                                    <small class="text-light">just now</small>
-                            </div>
-                            <div class="toast-body">
-                                You have <b class="text-success">Successfully Approved</b> the DTR Concern. Thank you!
-                            </div>
-                        </div>
-                    </div>
-
-                <?php } ?>
-
-                <?php if (@$_GET['m'] == 4) { ?>
-                    <script>
-                        $(function () {
-                            $(".thanks").delay(2500).fadeOut();
-
-                        });
-                    </script>
-
-                    <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
-                        <div class="thanks toast fade show" style="position: fixed; top: 15px; right: 5px;">
-                            <div class="toast-header bg-warning">
-                                <h4 class="mr-auto my-0 text-light"><i class="fa fa-check-circle" aria-hidden="true"></i> DTR
-                                    Concern</h5>
-                                    <small class="text-light">just now</small>
-                            </div>
-                            <div class="toast-body">
-                                You have <b class="text-warning">Successfully Cancelled</b> the DTR Concern Thank you!
-                            </div>
-                        </div>
-                    </div>
-
-                <?php } ?>
-
-                <?php if (@$_GET['m'] == 5) { ?>
-                    <script>
-                        $(function () {
-                            $(".thanks").delay(2500).fadeOut();
-
-                        });
-                    </script>
-
-                    <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
-                        <div class="thanks toast fade show" style="position: fixed; top: 15px; right: 5px;">
-                            <div class="toast-header bg-warning">
-                                <h4 class="mr-auto my-0 text-light"><i class="fa fa-check-circle" aria-hidden="true"></i> DTR
-                                    Concern</h5>
-                                    <small class="text-light">just now</small>
-                            </div>
-                            <div class="toast-body">
-                                You have <b class="text-warning">Successfully Changed</b> the type of DTR Concern Thank you!
-                            </div>
-                        </div>
-                    </div>
-
-                <?php } ?>
-
-                <!-- Footer -->
-                <footer class="sticky-footer">
-                    <div class="container my-auto">
-                        <div class="copyright text-center my-auto">
-                            <span>Copyright © Mary Grace Foods Inc. 2019</span>
-                        </div>
-                    </div>
-                </footer>
-                <!-- End of Footer -->
-
-            </div>
-            <!-- End of Content Wrapper -->
+                <!-- End of Content Wrapper -->
 
         </div>
         <!-- End of Page Wrapper -->
@@ -3833,7 +3761,7 @@ if ($userlevel != 'staff') {
         <script src="js/demo/datatables-demo.js"></script>
 
         <script>
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#example1').dataTable({
                     stateSave: true
                 });
@@ -3845,18 +3773,18 @@ if ($userlevel != 'staff') {
         <script src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
 
         <script>
-            $(document).ready(function () {
+            $(document).ready(function() {
                 var table = $('#example').DataTable({
                     stateSave: true,
                     dom: 'Bfrtip',
-                    buttons: [
-                        {
+                    buttons: [{
 
                         },
 
                         {
 
-                        }]
+                        }
+                    ]
                 });
 
             });

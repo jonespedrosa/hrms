@@ -18,7 +18,6 @@ $stmtUserInfo->bind_param("s", $loggedInEmpno);
 $stmtUserInfo->execute();
 $queryUserInfo = $stmtUserInfo->get_result();
 $row_userInfo = $queryUserInfo->fetch_assoc();
-
 $branch = $_SESSION['userid'];
 $name = $row_userInfo['name'];
 $empnoWhoLogin = $row_userInfo['empno'];
@@ -39,7 +38,6 @@ $stmtUserdB->bind_param("s", $username);
 $stmtUserdB->execute();
 $queryUserdB = $stmtUserdB->get_result();
 $row_userdB = $queryUserdB->fetch_assoc();
-
 $areatype = $row_userdB['areatype'];
 $userid = $_SESSION['userid'];
 
@@ -59,6 +57,7 @@ if ($row_dtrConcerns) {
     $ConcernDate = $row_dtrConcerns['ConcernDate'];
     $concernType = $row_dtrConcerns['concern'];
     $errorType = $row_dtrConcerns['errortype'];
+    $vltype = $row_dtrConcerns['vltype'];
     $actualIN = $row_dtrConcerns['actualIN'];
     $actualbOUT = $row_dtrConcerns['actualbOUT'];
     $actualbIN = $row_dtrConcerns['actualbIN'];
@@ -68,14 +67,88 @@ if ($row_dtrConcerns) {
     $newbIN = $row_dtrConcerns['newbIN'];
     $newOUT = $row_dtrConcerns['newOUT'];
     $reason = $row_dtrConcerns['reason'];
+    $attachment1 = $row_dtrConcerns['attachment1'];
+
+    // Prepare and execute query to fetch data from sched_time, overunder, vlform, and user_info
+    $sqlSchedTime = "
+                    SELECT
+                        sched_time.schedto,
+                        sched_time.M_timein,
+                        sched_time.M_timeout,
+                        sched_time.A_timein,
+                        sched_time.A_timeout,
+                        sched_time.timein4,
+                        sched_time.timeout4,
+                        overunder.otdatefrom,
+                        overunder.ottype,
+                        overunder.othours,
+                        vlform.vldatefrom,
+                        vlform.vlhours,
+                        user_info.vl
+                    FROM sched_time
+                    LEFT JOIN overunder
+                        ON sched_time.empno = overunder.empno
+                        AND sched_time.datefromto = overunder.otdatefrom
+                    LEFT JOIN vlform
+                        ON sched_time.empno = vlform.empno
+                        AND sched_time.datefromto = vlform.vldatefrom
+                    LEFT JOIN user_info
+                        ON sched_time.empno = user_info.empno
+                    WHERE sched_time.empno = ? AND sched_time.datefromto = ?";
+
+    $stmtSchedTime = $HRconnect->prepare($sqlSchedTime);
+    $stmtSchedTime->bind_param("ss", $empno, $ConcernDate); // Bind parameters
+    $stmtSchedTime->execute();
+    $querySchedTime = $stmtSchedTime->get_result();
+    $row_schedTime = $querySchedTime->fetch_assoc();
+
+    if ($row_schedTime) {
+        $schedto = $row_schedTime['schedto'];
+
+        $M_timein = $row_schedTime['M_timein'];
+        $M_timeout = $row_schedTime['M_timeout'];
+        $A_timein = $row_schedTime['A_timein'];
+        $A_timeout = $row_schedTime['A_timeout'];
+        $timein4 = $row_schedTime['timein4'];
+        $timeout4 = $row_schedTime['timeout4'];
+
+        $otdatefrom = $row_schedTime['otdatefrom'];
+        $ottype = $row_schedTime['ottype'];
+        $othours = $row_schedTime['othours'];
+        $vldatefrom = $row_schedTime['vldatefrom'];
+        $vlhours = $row_schedTime['vlhours'];
+        $vl = $row_schedTime['vl'];
+
+        // You can now use these values in your logic
+        // echo "schedto: " . htmlspecialchars($schedto) . "<br>";
+        // echo "M_timein: " . htmlspecialchars($M_timein) . "<br>";
+        // echo "M_timeout: " . htmlspecialchars($M_timeout) . "<br>";
+        // echo "A_timein: " . htmlspecialchars($A_timein) . "<br>";
+        // echo "A_timeout: " . htmlspecialchars($A_timeout) . "<br>";
+        // echo "timein4: " . htmlspecialchars($timein4) . "<br>";
+        // echo "timeout4: " . htmlspecialchars($timeout4) . "<br>";
+        // echo "OT Date: " . htmlspecialchars($otdatefrom) . "<br>";
+        // echo "OT Type: " . htmlspecialchars($ottype) . "<br>";
+        // echo "OT Hours: " . htmlspecialchars($othours) . "<br>";
+        // echo "VL Date: " . htmlspecialchars($vldatefrom) . "<br>";
+        // echo "VL Hours: " . htmlspecialchars($vlhours) . "<br>";
+        // echo "VL Column: " . htmlspecialchars($vl) . "<br>";
+
+    } else {
+        echo "No data found.";
+    }
 } else {
     echo "No records found.";
 }
+
+// echo "empno: " . htmlspecialchars($empno) . "<br>";
+// echo "ConcernDate: " . htmlspecialchars($attachment1) . "<br>";
 
 // Clean up
 $stmtUserInfo->close();
 $stmtUserdB->close();
 $stmtDRTConcerns->close();
+$stmtSchedTime->close();
 $ORconnect->close();
 $HRconnect->close();
 ?>
@@ -183,6 +256,21 @@ $HRconnect->close();
         .swal-button-green:hover {
             background-color: #48BF81 !important;
         }
+
+        .swal-button-red {
+            background-color: #D52B1A !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 5px !important;
+            padding: 10px 20px !important;
+            cursor: pointer !important;
+            outline: none !important;
+        }
+
+        .swal-button-red:hover {
+            background-color: #D52B1A !important;
+        }
+
 
         /* Default styles for larger screens */
         .responsive-container {
@@ -387,8 +475,6 @@ $HRconnect->close();
                 <!-- Page Content End -->
                 <!----------------------------------------------------------------------------------------------------------------------------->
 
-
-
             </div>
             <!-- Footer -->
             <footer class="sticky-footer">
@@ -437,6 +523,7 @@ $HRconnect->close();
             var ConcernDate = "<?php echo $ConcernDate; ?>";
             var concernType = "<?php echo $concernType; ?>";
             var errorType = "<?php echo $errorType; ?>";
+            var vltype = "<?php echo $vltype; ?>";
             var actualIN = "<?php echo $actualIN; ?>";
             var actualbOUT = "<?php echo $actualbOUT; ?>";
             var actualbIN = "<?php echo $actualbIN; ?>";
@@ -445,12 +532,60 @@ $HRconnect->close();
             var newbOUT = "<?php echo $newbOUT; ?>";
             var newbIN = "<?php echo $newbIN; ?>";
             var newOUT = "<?php echo $newOUT; ?>";
+            var schedto = "<?php echo $schedto; ?>";
+            var M_timein = "<?php echo $M_timein; ?>";
+            var M_timeout = "<?php echo $M_timeout; ?>";
+            var A_timein = "<?php echo $A_timein; ?>";
+            var A_timeout = "<?php echo $A_timeout; ?>";
+            var timein4 = "<?php echo $timein4; ?>";
+            var timeout4 = "<?php echo $timeout4; ?>";
+            var othours = "<?php echo $othours; ?>";
+            var vlhours = "<?php echo $vlhours; ?>";
+            var vl = "<?php echo $vl; ?>";
+            var attachment1 = "<?php echo $attachment1; ?>";
+
+            // Extract time from datetime (assuming format: YYYY-MM-DD HH:mm)
+            var schedto_ = schedto.substring(11, 16);
+            var M_timein_ = M_timein.substring(11, 16);
+            var M_timeout_ = M_timeout.substring(11, 16);
+            var A_timein_ = A_timein.substring(11, 16);
+            var A_timeout_ = A_timeout.substring(11, 16);
+            var timein4_ = timein4.substring(11, 16);
+            var timeout4_ = timeout4.substring(11, 16);
 
             const empno = "<?php echo htmlspecialchars($empno); ?>";
             const concernName = "<?php echo htmlspecialchars($concernName); ?>";
 
+            // Log all variables to the console
+            console.log('ConcernDate:', ConcernDate);
+            console.log('concernType:', concernType);
+            console.log('errorType:', errorType);
+            console.log('vltype:', vltype);
+            console.log('actualIN:', actualIN);
+            console.log('actualbOUT:', actualbOUT);
+            console.log('actualbIN:', actualbIN);
+            console.log('actualOUT:', actualOUT);
+            console.log('newIN:', newIN);
+            console.log('newbOUT:', newbOUT);
+            console.log('newbIN:', newbIN);
+            console.log('newOUT:', newOUT);
+            console.log('empno:', empno);
+            console.log('concernName:', concernName);
+            // Log to console
+            console.log("actualOUT: " + schedto_);
+            console.log("M_timein: " + M_timein_);
+            console.log("M_timeout: " + M_timeout_);
+            console.log("A_timein: " + A_timein_);
+            console.log("A_timeout: " + A_timeout_);
+            console.log("timein4: " + timein4_);
+            console.log("timeout4: " + timeout4_);
+            console.log("othours: " + othours);
+            console.log("vlhours: " + vlhours);
+            console.log("vl: " + vl);
+            console.log("attachment1: " + attachment1);
+
             // Check the value of the concerns variable
-            if (dtrconcerns === "Failure/Forgot to time in or time out" || dtrconcerns === "Failure/Forgot to break in or break out" || dtrconcerns === "Failure/Forgot to click half day") {
+            if (dtrconcerns === "Failure/Forgot to time in or time out" || dtrconcerns === "Failure/Forgot to break in or break out" || dtrconcerns === "Failure/Forgot to click half day" || dtrconcerns === "Wrong filing of OBP" || dtrconcerns === "Not following break out and break in interval") {
                 // Determine the type of concern based on dtrconcerns
                 let type_concern;
                 // Determine type_concern based on selectedConcern value
@@ -460,6 +595,10 @@ $HRconnect->close();
                     type_concern = 2;
                 } else if (dtrconcerns === "Failure/Forgot to click half day") {
                     type_concern = 4;
+                } else if (dtrconcerns === "Wrong filing of OBP") {
+                    type_concern = 7;
+                } else if (dtrconcerns === "Not following break out and break in interval") {
+                    type_concern = 8;
                 }
 
                 const url = `concerns-failure-forgot-time-in-out-break-out-in.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&type_of_concern=${encodeURIComponent(type_concern)}`;
@@ -481,6 +620,7 @@ $HRconnect->close();
                     $('#newBreakOut').val(newbOUT);
                     $('#newBreakIn').val(newbIN);
                     $('#newTimeOut').val(newOUT);
+
                     // Add click event listener for the "Approved" button
                     $(document).on('click', 'input[name="btnApproved"]', function(event) {
                         event.preventDefault(); // Prevent the default form submission
@@ -490,7 +630,7 @@ $HRconnect->close();
                         Swal.fire({
                             icon: 'warning',
                             title: 'Confirmation',
-                            html: `Do you want to approve this concern?`,
+                            html: `Do you want to <span style="color: #16A270; font-weight: bold;">Approve</span> this concern?`,
                             confirmButtonText: 'Yes',
                             showCloseButton: true, // Show the "X" button in the top-right corner
                             customClass: {
@@ -500,16 +640,6 @@ $HRconnect->close();
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 // Perform the AJAX call to update the concern
-                                // Log the data before the AJAX call
-                                console.log({
-                                    empno: empno,
-                                    ConcernDate: ConcernDate,
-                                    newIN: newIN,
-                                    newbOUT: newbOUT,
-                                    newbIN: newbIN,
-                                    newOUT: newOUT,
-                                    approverRemarks: approverRemarks // Pass the remarks value
-                                });
                                 $.ajax({
                                     url: 'update-concerns.php',
                                     type: 'POST',
@@ -521,7 +651,65 @@ $HRconnect->close();
                                         newbIN: newbIN,
                                         newOUT: newOUT,
                                         dtrconcerns: dtrconcerns, // Include the concern type
-                                        approverRemarks: approverRemarks // Pass the remarks value
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'approve' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    $(document).on('click', 'input[name="btnDisapproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #C92818; font-weight: bold;">Disapprove</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-red'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'disapprove' // Add the action parameter
                                     },
                                     success: function(response) {
                                         // Handle success
@@ -572,13 +760,10 @@ $HRconnect->close();
                     $('#employeeNumber').val("<?php echo $empno; ?>");
                     $('#employeeBranch').val("<?php echo $departmentBranch; ?>");
                     $('#capturedTimeIn').val(actualIN);
-                    $('#capturedBreakOut').val(actualbOUT);
-                    $('#capturedBreakIn').val(actualbIN);
                     $('#capturedTimeOut').val(actualOUT);
                     $('#newTimeIN').val(newIN);
-                    $('#newBreakOut').val(newbOUT);
-                    $('#newBreakIn').val(newbIN);
                     $('#newTimeOut').val(newOUT);
+
                     // Add click event listener for the "Approved" button
                     $(document).on('click', 'input[name="btnApproved"]', function(event) {
                         event.preventDefault(); // Prevent the default form submission
@@ -588,7 +773,7 @@ $HRconnect->close();
                         Swal.fire({
                             icon: 'warning',
                             title: 'Confirmation',
-                            html: `Do you want to approve this concern?`,
+                            html: `Do you want to <span style="color: #16A270; font-weight: bold;">Approve</span> this concern?`,
                             confirmButtonText: 'Yes',
                             showCloseButton: true, // Show the "X" button in the top-right corner
                             customClass: {
@@ -598,16 +783,597 @@ $HRconnect->close();
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 // Perform the AJAX call to update the concern
-                                // Log the data before the AJAX call
-                                console.log({
-                                    empno: empno,
-                                    ConcernDate: ConcernDate,
-                                    newIN: newIN,
-                                    newbOUT: newbOUT,
-                                    newbIN: newbIN,
-                                    newOUT: newOUT,
-                                    approverRemarks: approverRemarks // Pass the remarks value
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        newIN: newIN,
+                                        newOUT: newOUT,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'approve' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
                                 });
+                            }
+                        });
+                    });
+
+                    $(document).on('click', 'input[name="btnDisapproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #C92818; font-weight: bold;">Disapprove</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-red'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'disapprove' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                });
+            } else if (dtrconcerns === "Wrong filing of overtime") {
+                // Determine the type of concern based on dtrconcerns
+                let type_concern;
+                // Determine type_concern based on selectedConcern value
+                if (dtrconcerns === "Wrong filing of overtime") {
+                    type_concern = 4;
+                }
+                const url = `concerns-wrong-filing-of-overtime.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&type_of_concern=${encodeURIComponent(type_concern)}`;
+
+                // Use AJAX to load the PHP file content into #dynamicDiv with the constructed URL
+                $('#dynamicDiv').load(url, function() {
+                    // Once the content is loaded, set the form field values
+                    $('#dateOfConcerns').val(ConcernDate);
+                    $('#typeOfConcerns').val(concernType);
+                    $('#typeOfError').val(errorType);
+                    $('#employeeName').val("<?php echo $concernName; ?>");
+                    $('#employeeNumber').val("<?php echo $empno; ?>");
+                    $('#employeeBranch').val("<?php echo $departmentBranch; ?>");
+                    // Set the input values to the extracted time
+                    $('#capturedScheduleOut').val(schedto_);
+                    $('#capturedTimeOut').val(A_timeout_);
+                    $('#filedOThours').val(othours);
+
+                    // Function to convert time (HH:mm) to minutes
+                    function timeToMinutes(time) {
+                        var timeParts = time.split(':');
+                        return parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+                    }
+
+                    // Convert actualOUT and schedto times to minutes
+                    var actualOUTMinutes = timeToMinutes(A_timeout_);
+                    var schedtoMinutes = timeToMinutes(schedto_);
+
+                    // Calculate overtime in minutes (if actualOUT is greater than schedto)
+                    var overtimeMinutes = actualOUTMinutes - schedtoMinutes;
+
+                    // Calculate full overtime hours by only considering full 60-minute blocks
+                    var overtimeHours = Math.floor(overtimeMinutes / 60); // Only count full hours
+
+                    // Display overtime in the console log
+                    if (overtimeMinutes >= 60) { // Only log overtime if there's at least 1 hour
+                        console.log("Overtime: " + overtimeHours + " hour(s)");
+                    } else {
+                        console.log("No overtime. Worked within the scheduled time or less than 1 hour overtime.");
+                    }
+
+                    $('#overTimeCalculation').val(overtimeHours);
+
+                    // Add click event listener for the "Approved" button
+                    $(document).on('click', 'input[name="btnApproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #16A270; font-weight: bold;">Approve</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-green'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'approve' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    $(document).on('click', 'input[name="btnDisapproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #C92818; font-weight: bold;">Disapprove</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-red'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'disapprove' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+            } else if (dtrconcerns === "Wrong filing of leave") {
+                // Determine the type of concern based on dtrconcerns
+                let type_concern;
+                // Determine type_concern based on selectedConcern value
+                if (dtrconcerns === "Wrong filing of leave") {
+                    type_concern = 6;
+                }
+                const url = `concerns-wrong-filing-of-leave.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&type_of_concern=${encodeURIComponent(type_concern)}`;
+
+                // Use AJAX to load the PHP file content into #dynamicDiv with the constructed URL
+                $('#dynamicDiv').load(url, function() {
+                    // Once the content is loaded, set the form field values
+                    $('#dateOfConcerns').val(ConcernDate);
+                    $('#typeOfConcerns').val(concernType);
+                    $('#typeOfError').val(errorType);
+                    $('#employeeName').val("<?php echo $concernName; ?>");
+                    $('#employeeNumber').val("<?php echo $empno; ?>");
+                    $('#employeeBranch').val("<?php echo $departmentBranch; ?>");
+                    $('#currentTotalLeave').val("<?php echo $vl; ?>");
+                    $('#filedLeave').val("<?php echo $vlhours; ?>");
+
+                    // Add click event listener for the "Approved" button
+                    $(document).on('click', 'input[name="btnApproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #16A270; font-weight: bold;">Approve</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-green'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        vl: vl,
+                                        vlhours: vlhours,
+                                        ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'approve' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    $(document).on('click', 'input[name="btnDisapproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #C92818; font-weight: bold;">Disapprove</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-red'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'disapprove' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+            } else if (dtrconcerns === "Remove time inputs") {
+                // Determine the type of concern based on dtrconcerns
+                let type_concern;
+                // Determine type_concern based on selectedConcern value
+                if (dtrconcerns === "Remove time inputs") {
+                    type_concern = 9;
+                }
+                const url = `concerns-remove-time-inputs.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&type_of_concern=${encodeURIComponent(type_concern)}`;
+
+                // Use AJAX to load the PHP file content into #dynamicDiv with the constructed URL
+                $('#dynamicDiv').load(url, function() {
+                    // Once the content is loaded, set the form field values
+                    $('#dateOfConcerns').val(ConcernDate);
+                    $('#typeOfConcerns').val(concernType);
+                    $('#typeOfError').val(errorType);
+                    $('#employeeName').val("<?php echo $concernName; ?>");
+                    $('#employeeNumber').val("<?php echo $empno; ?>");
+                    $('#employeeBranch').val("<?php echo $departmentBranch; ?>");
+                    $('#capturedTimeIn').val(M_timein_);
+                    $('#capturedBreakOut').val(M_timeout_);
+                    $('#capturedBreakIn').val(A_timein_);
+                    $('#capturedTimeOut').val(A_timeout_);
+                    $('#brokenSchedTimeIn').val(timein4_);
+                    $('#brokenSchedTimeOut').val(timeout4_);
+                    $('#removeTimeInputs').val(vltype);
+
+                    // Add click event listener for the "Approved" button
+                    $(document).on('click', 'input[name="btnApproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #16A270; font-weight: bold;">Approve</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-green'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                                // Perform the AJAX call to update the concern
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        vltype: vltype,
+                                        ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'approve' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    $(document).on('click', 'input[name="btnDisapproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #C92818; font-weight: bold;">Disapprove</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-red'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'disapprove' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+            } else if (dtrconcerns === "Time inputs did not sync" || dtrconcerns === "Misaligned time inputs" || dtrconcerns === "Persona error" || dtrconcerns === "Hardware malfunction" || dtrconcerns === "Emergency time out" || dtrconcerns === "Fingerprint problem") {
+
+                const url = `concerns-time-inputs-not-sync.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&attachment1=${encodeURIComponent(attachment1)}`;
+
+                // Use AJAX to load the PHP file content into #dynamicDiv with the constructed URL
+                $('#dynamicDiv').load(url, function() {
+                    // Once the content is loaded, set the form field values
+                    $('#dateOfConcerns').val(ConcernDate);
+                    $('#typeOfConcerns').val(concernType);
+                    $('#typeOfError').val(errorType);
+                    $('#employeeName').val("<?php echo $concernName; ?>");
+                    $('#employeeNumber').val("<?php echo $empno; ?>");
+                    $('#employeeBranch').val("<?php echo $departmentBranch; ?>");
+                    $('#capturedTimeIn').val(M_timein_);
+                    $('#capturedBreakOut').val(M_timeout_);
+                    $('#capturedBreakIn').val(A_timein_);
+                    $('#capturedTimeOut').val(A_timeout_);
+                    $('#newTimeIN').val(newIN);
+                    $('#newBreakOut').val(newbOUT);
+                    $('#newBreakIn').val(newbIN);
+                    $('#newTimeOut').val(newOUT);
+
+                    // Add click event listener for the "Approved" button
+                    $(document).on('click', 'input[name="btnApproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #16A270; font-weight: bold;">Approve</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-green'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                                // Perform the AJAX call to update the concern
                                 $.ajax({
                                     url: 'update-concerns.php',
                                     type: 'POST',
@@ -619,7 +1385,202 @@ $HRconnect->close();
                                         newbIN: newbIN,
                                         newOUT: newOUT,
                                         dtrconcerns: dtrconcerns, // Include the concern type
-                                        approverRemarks: approverRemarks // Pass the remarks value
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'approve' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    $(document).on('click', 'input[name="btnDisapproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #C92818; font-weight: bold;">Disapprove</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-red'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'disapprove' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+            } else if (dtrconcerns === "Broken Schedule did not sync") {
+
+                const url = `concerns-broken-schedules-did-not-sync.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&attachment1=${encodeURIComponent(attachment1)}`;
+
+                // Use AJAX to load the PHP file content into #dynamicDiv with the constructed URL
+                $('#dynamicDiv').load(url, function() {
+                    // Once the content is loaded, set the form field values
+                    $('#dateOfConcerns').val(ConcernDate);
+                    $('#typeOfConcerns').val(concernType);
+                    $('#typeOfError').val(errorType);
+                    $('#employeeName').val("<?php echo $concernName; ?>");
+                    $('#employeeNumber').val("<?php echo $empno; ?>");
+                    $('#employeeBranch').val("<?php echo $departmentBranch; ?>");
+                    $('#capturedBrokenSchedTimeIn').val(timein4_);
+                    $('#capturedBrokenSchedTimeOut').val(timeout4_);
+                    $('#brokenSchedTimeIn').val(newIN);
+                    $('#brokenSchedTimeOut').val(newOUT);
+
+                    // Add click event listener for the "Approved" button
+                    $(document).on('click', 'input[name="btnApproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #16A270; font-weight: bold;">Approve</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-green'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        newIN: newIN,
+                                        newOUT: newOUT,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'approve' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    $(document).on('click', 'input[name="btnDisapproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #C92818; font-weight: bold;">Disapprove</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-red'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'disapprove' // Add the action parameter
                                     },
                                     success: function(response) {
                                         // Handle success
