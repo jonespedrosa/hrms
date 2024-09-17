@@ -396,7 +396,8 @@ $HRconnect->close();
                 "Misaligned time inputs",
                 "Broken Schedule did not sync",
                 "Persona error",
-                "Hardware malfunction"
+                "Hardware malfunction",
+                "Wrong computation"
             ],
             others: [
                 "Emergency time out",
@@ -879,11 +880,11 @@ $HRconnect->close();
                             const capturedBrokenSchedOut = document.getElementById('capturedBrokenSchedOut');
                             const proposedBrokenSchedIn = document.getElementById('proposedBrokenSchedIn').value; // New input
                             const proposedBrokenSchedOut = document.getElementById('proposedBrokenSchedOut').value; // New input
-                            const timein4 = capturedBrokenSchedIn ? capturedBrokenSchedIn.value : 'No Logs';
-                            const timeout4 = capturedBrokenSchedOut ? capturedBrokenSchedOut.value : 'No Logs';
+                            const timein4 = capturedBrokenSchedIn ? capturedBrokenSchedIn.value : '';
+                            const timeout4 = capturedBrokenSchedOut ? capturedBrokenSchedOut.value : '';
                             // Handle timein4 and timeout4 values
-                            const timein4Processed = timein4 !== '' ? timein4 : 'No Logs';
-                            const timeout4Processed = timeout4 !== '' ? timeout4 : 'No Logs';
+                            const timein4Processed = timein4 !== '' ? timein4 : '';
+                            const timeout4Processed = timeout4 !== '' ? timeout4 : '';
 
                             // Check if any of the proposed time inputs are empty
                             if (!proposedBrokenSchedIn || !proposedBrokenSchedOut) {
@@ -1530,6 +1531,7 @@ $HRconnect->close();
                     .catch(error => console.error('Error fetching content:', error));
 
             } else if (selectedConcern === "Remove time inputs") {
+
                 // Handle loading the "Wrong filing of overtime" form
                 const url = `remove-timeinputs.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
 
@@ -2806,6 +2808,164 @@ $HRconnect->close();
                         });
                     })
                     .catch(error => console.error('Error fetching content:', error));
+            } else if (selectedConcern === "Wrong computation") {
+
+                // Handle loading the "Wrong filing of overtime" form
+                const url = `wrong-computation.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        displayDiv.innerHTML = html;
+
+                        // Fetch and display time data based on concernDate
+                        function fetchTimeData(concernDate) {
+                            const empno = "<?php echo htmlspecialchars($empno); ?>";
+
+                            if (concernDate) {
+                                fetch('fetch-time-inputs.php?empno=' + encodeURIComponent(empno) + '&date=' + encodeURIComponent(concernDate))
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Fetched data:', data); // Log the entire fetched data object
+
+                                    })
+                                    .catch(error => console.error('Error fetching time inputs:', error));
+                            }
+                        }
+
+                        // Call the fetchTimeData function immediately after defining it
+                        fetchTimeData(concernDate);
+
+                        document.getElementById('btnSubmit').addEventListener('click', function() {
+                            // Gather data from form fields
+                            const concernDate = document.getElementById('concernDate').value;
+                            const selectedConcern = document.getElementById('specificConcern').value;
+                            const concernType = document.getElementById('concernType').value; // e.g., userError
+                            const agreementCheckbox = document.getElementById('agreementCheckbox').checked;
+                            const concern_reason = document.getElementById('concern_reason').value;
+                            const wrongComputation = document.getElementById('wrongComputation').value;
+
+                            // Check if the agreement checkbox is not checked
+                            if (!agreementCheckbox) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Agreement Required',
+                                    text: 'You must agree to the terms before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Check if reason is empty or null
+                            if (!concern_reason || concern_reason.trim() === "") {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Reason Required',
+                                    text: 'You must provide a reason for the concern before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Check if removeTimeinputs is not selected
+                            if (!wrongComputation) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Selection Required',
+                                    text: 'You must select a wrong computation before submitting.',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    },
+                                });
+                                return; // Prevent form submission
+                            }
+
+                            // Map wrongComputation to its descriptive label
+                            let wrongComputationLabel =
+                                wrongComputation === 'working_days' ? 'Number of Working Days' :
+                                wrongComputation === 'overtime' ? 'Overtime Hours' :
+                                wrongComputation === 'undertime' ? 'Undertime Hours' :
+                                wrongComputation === 'regular_holiday' ? 'Regular Public Holiday' :
+                                wrongComputation === 'special_holiday' ? 'Special Public Holiday' :
+                                wrongComputation === 'night_differential' ? 'Night Differential Pay' :
+                                wrongComputation === 'leave' ? 'Leave Taken' :
+                                wrongComputation === 'late' ? 'Late Arrival' :
+                                wrongComputation === 'working_day_off' ? 'Working Day Off' :
+                                '';
+
+                            const data = {
+                                empno: "<?php echo htmlspecialchars($empno); ?>",
+                                name: "<?php echo htmlspecialchars($name); ?>",
+                                userlevel: userlevelMapped, // Use the mapped userlevel
+                                branch: "<?php echo htmlspecialchars($branch); ?>",
+                                userid: "<?php echo htmlspecialchars($userid); ?>",
+                                area: "<?php echo htmlspecialchars($area_type); ?>",
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                concernDate: concernDate,
+                                selectedConcern: selectedConcern,
+                                concernType: concernTypeLabel, // Use the descriptive label
+                                wrongComputation: wrongComputationLabel, // Use the mapped label
+                                concern_reason: concern_reason,
+                                status: "Pending",
+                            };
+
+                            // Log the data to the console
+                            console.log('Submitting data:', data);
+
+                            fetch('insert-concerns.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(data)
+                                })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern successfully submitted!',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                            willClose: () => {
+                                                const empno = "<?php echo $empno; ?>";
+                                                const mindate = "<?php echo $mindate; ?>";
+                                                const maxdate = "<?php echo $maxdate; ?>";
+                                                const redirectUrl = `/hrms/pdf/print_concerns.php?dtr=filedconcerns&filed=&empno=${empno}&cutfrom=${mindate}&cutto=${maxdate}`;
+                                                window.location.href = redirectUrl;
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: result.message || 'There was an issue submitting the concern.',
+                                            confirmButtonText: 'OK',
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                        });
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+                    })
+                    .catch(error => console.error('Error fetching content:', error));
+
             }
 
         });

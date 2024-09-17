@@ -113,14 +113,13 @@
                                 <label for="stateofIncident">State the Incident <span style="color:red;">*</span></label>
                                 <textarea class="form-control" id="stateofIncident" placeholder="Enter State of Incident" rows="4" disabled></textarea>
                             </div>
-
                             <div class="form-group mt-3">
                                 <label for="nameSuperior">Name of Immediate Superior <i>(Surname, First Name, Middle Initial)</i> <span style="color:red;">*</span></label>
                                 <input type="text" class="form-control" id="nameSuperior" placeholder="Enter Immediate Superior" required>
                             </div>
                             <div class="form-group mt-3">
-                                <label for="dateServingIncident">Date of Serving the incident/offense to the Employee <span style="color:red;">*</span></label>
-                                <input type="date" class="form-control" id="dateServingIncident" style="max-width: 200px; width: 100%;" required>
+                            <label for="dateServingIncident">Date of Serving the incident/offense to the Employee <span style="color:red;">*</span></label>
+                                <input type="datetime-local" class="form-control" id="dateServingIncident" style="max-width: 220px; width: 100%;"  disabled>
                             </div>
                             <div class="form-group mt-3">
                                 <label for="employeeExplanation">Employee's Explanation <span style="color:red;">*</span></label>
@@ -199,6 +198,26 @@
             return urlParams.get(param);
         }
 
+        // Get the current date and time
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = ('0' + (now.getMonth() + 1)).slice(-2);
+        var day = ('0' + now.getDate()).slice(-2);
+        var hours = ('0' + now.getHours()).slice(-2);
+        var minutes = ('0' + now.getMinutes()).slice(-2);
+
+        // Create the date string in the format YYYY-MM-DD HH:MM (without 'T')
+        var nowDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
+
+        // Set the value of the input to the current date and time without the 'T'
+        document.getElementById('dateServingIncident').value = nowDateTime;
+
+        // Function to reformat the datetime-local value to 'YYYY-MM-DD HH:MM'
+        function formatDateTime(dateTimeLocalValue) {
+            // Replace 'T' with a space to match 'YYYY-MM-DD HH:MM'
+            return dateTimeLocalValue.replace('T', ' ');
+        }
+
         // Set the Concern value into the stateofIncident textarea
         var concernValue = getQueryParam('Concern');
         if (concernValue) {
@@ -219,7 +238,7 @@
                 place_of_incident: $('#placeIncident').val(),
                 state_of_incident: $('#stateofIncident').val(),
                 name_superior: $('#nameSuperior').val(),
-                date_of_serving: $('#dateServingIncident').val(),
+                date_of_serving: formatDateTime($('#dateServingIncident').val()),
                 employee_explanation: $('#employeeExplanation').val(),
                 state_your_goal: $('#stateYourGoal').val(),
                 state_your_realities: $('#stateRealities').val(),
@@ -228,13 +247,28 @@
             };
         }
 
-
         // Event listener for the submit button
         $('#submitButton').on('click', function(e) {
             e.preventDefault(); // Prevent default form submission
 
             // Update employeeDetails object with the latest values
             var employeeDetails = updateEmployeeDetails();
+
+            const attachment = document.getElementById('attachmentImages');
+
+            // Check if the file input is empty (no file selected)
+            if (attachment.files.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Attachment Required',
+                    text: 'Please attach a file before submitting.',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        confirmButton: 'swal-button-green'
+                    },
+                });
+                return; // Prevent form submission
+            }
 
             // Validate required fields
             var isValid = true;
@@ -300,8 +334,7 @@
                 contentType: false, // Prevent jQuery from setting the content type header
                 success: function(response) {
                     // Handle success response
-                    console.log(response);
-
+                    console.log(wrappedData);
                     Swal.fire({
                         position: "center",
                         icon: "success",

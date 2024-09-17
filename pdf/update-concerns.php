@@ -137,6 +137,11 @@ if ($action === 'approve') {
         $updateDtrConcernSql = "UPDATE dtr_concerns
             SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
             WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
+    } else if ($dtrconcerns === "Wrong computation") {
+        // Update query for dtr_concern
+        $updateDtrConcernSql = "UPDATE dtr_concerns
+            SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
+            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
     }
 
     // Execute the update queries

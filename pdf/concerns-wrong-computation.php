@@ -3,13 +3,11 @@ $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 
 $empno = isset($_GET['empno']) ? $_GET['empno'] : null;
 $ConcernDate = isset($_GET['concernDate']) ? $_GET['concernDate'] : null;
-$attachment1 = isset($_GET['attachment1']) ? $_GET['attachment1'] : null;
+$type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : null;
 
-// Use the attachment1 value as is, no need to prepend 'hrms/pdf/'
-$attachmentUrl = $attachment1;  // This already contains the correct path
-
-// Debugging: You can remove this echo later
-// echo "attachment1: " . htmlspecialchars($attachment1) . "<br>";
+// echo "empno: " . htmlspecialchars($empno) . "<br>";
+// echo "ConcernDate: " . htmlspecialchars($ConcernDate) . "<br>";
+// echo "type_of_concern: " . htmlspecialchars($type_concern) . "<br>";
 
 ?>
 <div class="responsive-container">
@@ -55,57 +53,20 @@ $attachmentUrl = $attachment1;  // This already contains the correct path
     <div class="box">
         <div id="">
             <div class="form-group mb-1" style="text-align: left;">
-                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Captured Time Inputs:</label>
-                <div class="table-responsive mb-0">
-                    <table class="table table-bordered rounded-">
-                        <thead>
-                            <tr>
-                                <th>Time In</th>
-                                <th>Break Out</th>
-                                <th>Break In</th>
-                                <th>Time Out</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="capturedTimeIn" name="capturedTimeIn" placeholder="--:--" readonly></td>
-                                <td><input class="form-control bg-gray-100 text-center" type="text" id="capturedBreakOut" name="capturedBreakOut" placeholder="--:--" readonly></td>
-                                <td><input class="form-control bg-gray-100 text-center" type="text" id="capturedBreakIn" name="capturedBreakIn" placeholder="--:--" readonly></td>
-                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="capturedTimeOut" name="capturedTimeOut" placeholder="--:--" readonly></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="form-group mb-1" style="text-align: left;">
-                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Requested Time Inputs:</label>
+                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Requested To Fix:</label>
                 <div class="table-responsive">
                     <table class="table table-bordered rounded-">
                         <thead>
                             <tr>
-                                <th>Time In</th>
-                                <th>Break Out</th>
-                                <th>Break In</th>
-                                <th>Time Out</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="newTimeIN" name="newTimeIN" placeholder="--:--" readonly></td>
-                                <td><input class="form-control bg-gray-100 text-center" type="text" id="newBreakOut" name="newBreakOut" placeholder="--:--" readonly></td>
-                                <td><input class="form-control bg-gray-100 text-center" type="text" id="newBreakIn" name="newBreakIn" placeholder="--:--" readonly></td>
-                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="newTimeOut" name="newTimeOut" placeholder="--:--" readonly></td>
+                                <td><input class="form-control bg-gray-100 text-center text-uppercase" type="text" id="wrongComputation" name="wrongComputation" readonly></td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-            </div>
-            <div class="form-group text-center mb-4">
-                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Attached Document's:</label>
-                <div class="d-flex justify-content-center">
-                    <a href="<?php echo htmlspecialchars($attachmentUrl); ?>" target="_blank" class="btn btn-primary mt-1 w-100" style="display: block; font-size: 1.1rem; font-weight: bold;  max-width: 400px;">
-                        Click here to view logs history attachment
-                    </a>
                 </div>
             </div>
             <div class="form-group mb-1" style="text-align: left;">

@@ -215,7 +215,7 @@ if ($userlevel == 'master') {
 
     <?php
     // QUERY TO GET THE PENDING CUT OFF DATE USING LEFT JOIN TO ACCESS OTHER INFO
-    $getDateSQL = "SELECT si.datefrom, si.dateto FROM user_info ui LEFT JOIN sched_info si 
+    $getDateSQL = "SELECT si.datefrom, si.dateto FROM user_info ui LEFT JOIN sched_info si
     ON si.empno = ui.empno
     WHERE si.status = 'Pending' AND ui.empno = $empno;";
     $querybuilder = $HRconnect->query($getDateSQL);
@@ -817,28 +817,28 @@ if ($userlevel == 'master') {
                                                 <span class="badge">
                                                     <?php
                                                     // QUERY TO GET THE PENDING CUT OFF DATE USING LEFT JOIN TO ACCESS OTHER INFO
-                                                    $getDateSQL = "SELECT si.datefrom, si.dateto FROM user_info ui LEFT JOIN sched_info si 
+                                                    $getDateSQL = "SELECT si.datefrom, si.dateto FROM user_info ui LEFT JOIN sched_info si
                                                                 ON si.empno = ui.empno
                                                                 WHERE si.status = 'Pending' AND ui.empno = $empno;";
                                                     $querybuilder = $HRconnect->query($getDateSQL);
                                                     $rowCutOff = $querybuilder->fetch_array();
                                                     $datestart = $rowCutOff['datefrom'];
                                                     $dateend = $rowCutOff['dateto'];
-
                                                     $emergency = 'Emergency time out';
                                                     $FPError = 'Fingerprint problem';
-                                                    $BrokenOT = 'File Broken Sched OT';
+                                                    $BrokenOT = 'File broken sched overtime';
                                                     $forgot1 = 'Forgot to click no break';
-                                                    $forgot2 = 'Forgot/Wrong inputs of broken sched';
-                                                    $forgot3 = 'Forgot/Wrong time IN/OUT or break OUT/IN';
-                                                    $wrong = 'Wrong format/filing of OBP';
-                                                    $timeInterval = 'Not following time interval';
-                                                    $removeLogs = 'Remove Time Inputs';
-                                                    $cancel1 = 'Cancellation of Overtime';
-                                                    $cancel2 = 'Cancellation of Leave';
+                                                    $forgot2 = 'Failure/Forgot to click broken schedule';
+                                                    $forgot3 = 'Failure/Forgot to time in or time out';
+                                                    $forgot4 = 'Failure/Forgot to break in or break out';
+                                                    $wrong = 'Wrong filing of OBP';
+                                                    $timeInterval = 'Not following break out and break in interval';
+                                                    $removeLogs = 'Remove time inputs';
+                                                    $cancel1 = 'Wrong filing of overtime';
+                                                    $cancel2 = 'Wrong filing of leave';
 
                                                     if ($userlevel == 'master') {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND concern IN ('Hardware/Persona Malfunction','Sync/Network error','Wrong Computations' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND concern IN ('Hardware malfunction','Time inputs did not sync','Misaligned time inputs','Broken Schedule did not sync','Persona error','Wrong computation') AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if (
                                                         $userlevel == 'ac' and $_SESSION['empno'] != 819 and $_SESSION['empno'] != 4378 and $_SESSION['empno'] != 1331 and $_SESSION['empno'] != 24 and $_SESSION['empno'] != 2221 and $_SESSION['empno'] != 1844 and $_SESSION['empno'] != 1073
@@ -849,95 +849,95 @@ if ($userlevel == 'master') {
                                                         and $_SESSION['empno'] != 170 and $_SESSION['empno'] != 38 and $_SESSION['empno'] != 112 and $_SESSION['empno'] != 254 and $_SESSION['empno'] != 302 and $_SESSION['empno'] != 460 and $_SESSION['empno'] != 2094 and $_SESSION['empno'] != 159
                                                         and $_SESSION['empno'] != 4484 and $_SESSION['empno'] != 5975 and $_SESSION['empno'] != 885 and $_SESSION['empno'] != 5834 and $_SESSION['empno'] != 5834 and $_SESSION['empno'] != 3183 and $_SESSION['empno'] != 5584 and $_SESSION['empno'] != 6207
                                                     ) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1','$BrokenOT', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2') AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1','$BrokenOT', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2') AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 1) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(5928,3294,271,3027,1073,2221,107,3071,1331,24,5752,3111,3336,4378,4827,5975,885,4625,5356,5584,2203,5834,6207,6619) AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(5928,3294,271,3027,1073,2221,107,3071,1331,24,5752,3111,3336,4378,4827,5975,885,4625,5356,5584,2203,5834,6207,6619) AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 2) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE empno in(5928,3294,271,3027,1073,2221,107,3071,1331,24,5752,3111,3336,4378,4827,5975,885,4625,5356,5584,2203,5834,6207,6619) AND status = 'Pending' AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE empno in(5928,3294,271,3027,1073,2221,107,3071,1331,24,5752,3111,3336,4378,4827,5975,885,4625,5356,5584,2203,5834,6207,6619) AND status = 'Pending' AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 4) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(107) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval','$BrokenOT', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(107) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval','$BrokenOT', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 4378) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(1348,1964,6082,2957) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(1348,1964,6082,2957) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 1331) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(38,63,76,97,109,124,819,45,71,1404,3183) AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(38,63,76,97,109,124,819,45,71,1404,3183) AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
 
                                                     } else if ($_SESSION['empno'] == 24) { //jones added
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(241) AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(241) AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
 
                                                     } else if ($_SESSION['empno'] == 1073) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid in (3,80,167,92,168,169,217,166) AND concern IN ('$emergency', '$FPError', '$BrokenOT', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) OR empno = 1844 AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid in (3,80,167,92,168,169,217,166) AND concern IN ('$emergency', '$FPError', '$BrokenOT', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) OR empno = 1844 AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 4298) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid in (171,172) AND concern IN ('$emergency', '$BrokenOT', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid in (171,172) AND concern IN ('$emergency', '$BrokenOT', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 3178) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid in (170) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid in (170) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 2684) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid in (166,165,232) AND concern IN ('$emergency', '$FPError','$BrokenOT', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid in (166,165,232) AND concern IN ('$emergency', '$FPError','$BrokenOT', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 3071) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(2203,2264) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$BrokenOT','$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(2203,2264) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$BrokenOT','$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 76) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(37,53,45,69,124,2720) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3','$BrokenOT', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(37,53,45,69,124,2720) AND concern IN ('$emergency', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4','$BrokenOT', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 37 || $_SESSION['empno'] == 53 || $_SESSION['empno'] == 45 || $_SESSION['empno'] == 69 || $_SESSION['empno'] == 124 || $_SESSION['empno'] == 2720) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'SOUTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'SOUTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 109) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(63,88,97,170) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(63,88,97,170) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 63 || $_SESSION['empno'] == 88 || $_SESSION['empno'] == 97 || $_SESSION['empno'] == 170) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'MFO' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'MFO' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 819) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(38,112,254,302,4484,1562,4709) AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(38,112,254,302,4484,1562,4709) AND concern IN ('$emergency', '$BrokenOT','$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 38 || $_SESSION['empno'] == 112 || $_SESSION['empno'] == 254 || $_SESSION['empno'] == 302 || $_SESSION['empno'] == 460 || $_SESSION['empno'] == 2094 || $_SESSION['empno'] == 4484) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND concern IN ('$emergency', '$FPError','$BrokenOT', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'NORTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND concern IN ('$emergency', '$FPError','$BrokenOT', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND area = 'NORTH' AND userlevel = 'mod' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 71) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(309,197,158) AND concern IN ('$emergency','$BrokenOT', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND empno in(309,197,158) AND concern IN ('$emergency','$BrokenOT', '$FPError', '$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 5928) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(3167,1075,5928,884) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(3167,1075,5928,884) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 5752) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(159) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(159) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
 
                                                     } else if ($_SESSION['empno'] == 3336) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(401,3780,4814,4888) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(401,3780,4814,4888) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 3111) {
 
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(469,4408,5132,5184,5611) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(469,4408,5132,5184,5611) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 2221) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 1844) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(2485) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(2485) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 3183) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(167,3974,4294,4388,5158,44,166,5973) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND empno in(167,3974,4294,4388,5158,44,166,5973) AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 5584) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 6207) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 885) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 6538) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 5834) {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$BrokenOT','$forgot1', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' )  AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else if ($_SESSION['empno'] == 204) {
                                                         $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND department = 'NORTH' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     } else {
-                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1','$BrokenOT', '$forgot2', '$forgot3', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND userlevel = 'staff' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
+                                                        $sql0 = "SELECT COUNT(*) FROM dtr_concerns WHERE status = 'Pending' AND userid = '$userid' AND concern IN ('$emergency', '$FPError', '$forgot1','$BrokenOT', '$forgot2', '$forgot3', '$forgot4', '$wrong', '$timeInterval', '$removeLogs', '$cancel1', '$cancel2' ) AND userlevel = 'staff' AND ConcernDate BETWEEN '$datestart' AND '$dateend'";
                                                     }
 
                                                     $query0 = $HRconnect->query($sql0);
@@ -962,7 +962,7 @@ if ($userlevel == 'master') {
                                                 <b>Working Day Off</b>
                                                 <span class="badge">
                                                     <?php
-                                                    // From pdf hrms 
+                                                    // From pdf hrms
                                                     if ($userlevel == 'master') {
                                                         echo $Totalpendingwdo;
 
@@ -988,7 +988,7 @@ if ($userlevel == 'master') {
 
                                                     }
                                                     if ($userlevel == 'ac' and $_SESSION['empno'] == 1331) {
-                                                        // echo $Totalpendingwdo +=  $Totalpendingwdoh;													
+                                                        // echo $Totalpendingwdo +=  $Totalpendingwdoh;
                                                         echo $Totalpendingwdo;
                                                         // new added by jones
                                                     }
@@ -1062,7 +1062,7 @@ if ($userlevel == 'master') {
                                                 <b>Change Schedule</b>
                                                 <span class="badge">
                                                     <?php
-                                                    // From pdf hrms 
+                                                    // From pdf hrms
                                                     if ($userlevel == 'master') {
                                                         echo $Totalpendingcs;
 
@@ -1350,7 +1350,7 @@ if ($userlevel == 'master') {
                 //     and $_SESSION['empno'] != 159 and $_SESSION['empno'] != 5752 and $_SESSION['empno'] != 3027 and $_SESSION['empno'] != 107 and $_SESSION['empno'] != 3178 and $_SESSION['empno'] != 5361
                 //     and $_SESSION['empno'] != 2684 and $_SESSION['empno'] != 5975 and $_SESSION['empno'] != 885 and $_SESSION['empno'] != 5584 and $_SESSION['empno'] != 6207 and $_SESSION['empno'] != 5585
                 //     /* HR */    and $_SESSION['empno'] != 1233 and $_SESSION['empno'] != 5583 and $_SESSION['empno'] != 2165 and $_SESSION['empno'] != 4072; /* END */
-            
+
                 $employeeAccess = [1, 2, 4, 1348, 1331, 76, 45, 38, 63, 69, 819, 97, 109, 124, 4378, 170, 112, 1073, 37, 53];
                 return $userlevel == 'master' || in_array($_SESSION['empno'], $employeeAccess);
             }
@@ -1372,10 +1372,10 @@ if ($userlevel == 'master') {
             ?>
             <!-- <div class="col-xl-3 col-lg-3 mb-3">
                                 <div class="card shadow border-left-warning">
-                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">                            
-                                        
-                                    </div> 
-                                </div> 
+                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+
+                                    </div>
+                                </div>
                             </div> -->
             <div class="row">
                 <!-- Total Late (Per Cut-off) -->
@@ -1923,7 +1923,7 @@ if ($userlevel == 'master') {
             }
         };
 
-        // removes all option elements in select box 
+        // removes all option elements in select box
         // removeGrp (optional) boolean to remove optgroups
         function removeAllOptions(sel, removeGrp) {
             var len, groups, par;
@@ -2053,7 +2053,7 @@ if ($userlevel == 'master') {
             var relName = 'choices';
             var relName2 = 'choices2';
 
-            // reference to associated select box 
+            // reference to associated select box
             var relList = this.form.elements[relName];
             var relList2 = this.form.elements[relName2];
 
@@ -2075,7 +2075,7 @@ if ($userlevel == 'master') {
             // name of associated select box
             var relName2 = 'choices2';
 
-            // reference to associated select box 
+            // reference to associated select box
             var relList2 = this.form.elements[relName2];
 
             // get data from object literal based on selection in controlling select box (this.value)

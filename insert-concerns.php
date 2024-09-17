@@ -208,7 +208,6 @@ if ($row['concern_count'] > 0) {
         }
         exit;
     } else if ($concern === "File broken sched overtime") {
-
         // Different SQL and binding for overtime concern
         $sql = "INSERT INTO overunder
             (empno, otdatefrom, ottype, othours, otreason, otstatus, timedate)
@@ -233,6 +232,46 @@ if ($row['concern_count'] > 0) {
             $stmt->close();
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to prepare statement']);
+        }
+        exit;
+    } else if ($concern === "Wrong computation") {
+        $sql = "INSERT INTO dtr_concerns
+                (filing_date, empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, vltype, reason, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        if ($stmt = $HRconnect->prepare($sql)) {
+            $stmt->bind_param(
+                "sssssssssssss",
+                $filling_date,
+                $empno,
+                $name,
+                $userlevel,
+                $branch,
+                $userid,
+                $area,
+                $concernDate,
+                $concern,
+                $errortype,
+                $data['wrongComputation'],
+                $data['concern_reason'],
+                $status
+            );
+            if ($stmt->execute()) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Failed to execute statement',
+                    'error' => $stmt->error // Detailed SQL error
+                ]);
+            }
+            $stmt->close();
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to prepare statement',
+                'error' => $HRconnect->error // Detailed MySQL connection error
+            ]);
         }
         exit;
     }

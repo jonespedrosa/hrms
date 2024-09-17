@@ -1612,6 +1612,140 @@ $HRconnect->close();
                         });
                     });
                 });
+            } else if (dtrconcerns === "Wrong computation") {
+
+                const url = `concerns-wrong-computation.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}`;
+
+                // Use AJAX to load the PHP file content into #dynamicDiv with the constructed URL
+                $('#dynamicDiv').load(url, function() {
+                    // Once the content is loaded, set the form field values
+                    $('#dateOfConcerns').val(ConcernDate);
+                    $('#typeOfConcerns').val(concernType);
+                    $('#typeOfError').val(errorType);
+                    $('#employeeName').val("<?php echo $concernName; ?>");
+                    $('#employeeNumber').val("<?php echo $empno; ?>");
+                    $('#employeeBranch').val("<?php echo $departmentBranch; ?>");
+                    $('#wrongComputation').val(vltype);
+
+                    // Add click event listener for the "Approved" button
+                    $(document).on('click', 'input[name="btnApproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #16A270; font-weight: bold;">Approve</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-green'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                                // Perform the AJAX call to update the concern
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        vltype: vltype,
+                                        ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'approve' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    $(document).on('click', 'input[name="btnDisapproved"]', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Get the value from the remarks textarea
+                        const approverRemarks = $('#approverRemarks').val();
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Confirmation',
+                            html: `Do you want to <span style="color: #C92818; font-weight: bold;">Disapprove</span> this concern?`,
+                            confirmButtonText: 'Yes',
+                            showCloseButton: true, // Show the "X" button in the top-right corner
+                            customClass: {
+                                confirmButton: 'swal-button-red'
+                            },
+                            reverseButtons: true // Optional: reverse the order of the buttons
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the AJAX call to update the concern
+
+                                $.ajax({
+                                    url: 'update-concerns.php',
+                                    type: 'POST',
+                                    data: {
+                                        empno: empno,
+                                        ConcernDate: ConcernDate,
+                                        approverRemarks: approverRemarks, // Pass the remarks value
+                                        action: 'disapprove' // Add the action parameter
+                                    },
+                                    success: function(response) {
+                                        // Handle success
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Concern has been updated successfully!',
+                                            timer: 1500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false, // Hide the "OK" button
+                                            willClose: () => {
+                                                setTimeout(() => {
+                                                    window.location.href = '/hrms/filedconcerns.php?pending=pending';
+                                                }, 1500);
+                                            }
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        // Handle error
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Something went wrong! Please try again.',
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
             }
         });
     </script>

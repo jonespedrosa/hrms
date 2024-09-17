@@ -98,7 +98,7 @@ $attachmentUrl = $attachment1;  // This already contains the correct path
             <div class="form-group text-center mb-4">
                 <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Attached Document's:</label>
                 <div class="d-flex justify-content-center">
-                    <a href="<?php echo htmlspecialchars($attachmentUrl); ?>" target="_blank" class="btn btn-primary mt-1 w-100" style="display: block; font-size: 0.9rem; font-weight: bold;  max-width: 400px;">
+                    <a href="<?php echo htmlspecialchars($attachmentUrl); ?>" target="_blank" class="btn btn-primary mt-1 w-100" style="display: block; font-size: 1.1rem; font-weight: bold;  max-width: 400px;">
                         Click here to view logs history attachment
                     </a>
                 </div>

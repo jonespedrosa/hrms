@@ -471,7 +471,7 @@ if ($userlevel != 'staff') {
                                                     </center>
                                                 </td>
                                                 <?php
-                                                if ($row['concern'] == 'Wrong filing of overtime' || $row['concern'] == 'Wrong filing of leave' || $row['concern'] == 'Wrong Computations' || $row['concern'] == 'File broken sched overtime') {
+                                                if ($row['concern'] == 'Wrong filing of overtime' || $row['concern'] == 'Wrong filing of leave' || $row['concern'] == 'Wrong computation' || $row['concern'] == 'File broken sched overtime') {
                                                 ?>
                                                     <td>
                                                         <center>Attachment is <br> not needed</center>
@@ -490,7 +490,7 @@ if ($userlevel != 'staff') {
                                                         <center>Attachment is <br> not needed</center>
                                                     </td>
                                                 <?php
-                                                } else if ($row['concern'] == 'Time inputs did not sync' || $row['concern'] == 'Misaligned time inputs' || $row['concern'] == 'Broken Schedule did not sync' || $row['concern'] == 'Persona error') {
+                                                } else if ($row['concern'] == 'Time inputs did not sync' || $row['concern'] == 'Misaligned time inputs' || $row['concern'] == 'Broken Schedule did not sync' || $row['concern'] == 'Persona error' || $row['concern'] == 'Wrong computation') {
                                                 ?>
                                                     <td>
                                                         <center><a href="pdf/<?php echo $row['attachment1']; ?>" target="_blank"> Click here
