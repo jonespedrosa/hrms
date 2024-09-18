@@ -109,7 +109,7 @@ $type_concern = mysqli_real_escape_string($HRconnect, $_GET['type_concern']);
 
 
 // Query to fetch data from the database
-$query = "SELECT responses, attachment FROM hear_you_out WHERE empno = '$empno' AND date_submitted = '$date_concern' AND type_concern = '$type_concern'";
+$query = "SELECT responses, attachment FROM hear_you_out WHERE empno = '$empno' AND date_submitted = '$date_concern' AND type_concern = '$type_concern' AND status = 'Active'";
 $result = mysqli_query($HRconnect, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
@@ -130,6 +130,9 @@ if ($result && mysqli_num_rows($result) > 0) {
     $stateRealities = $employeeDetails['state_your_realities'];
     $stateOptions = $employeeDetails['state_your_option'];
     $wayForward = $employeeDetails['way_forward'];
+
+    // Format the date and time to YYYY-MM-DDTHH:MM
+    $dateOfServingFormatted = date('Y-m-d\TH:i', strtotime($dateOfServing));
 
     // Retrieve the attachment file name
     $attachment = $row['attachment'];
@@ -201,7 +204,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                             </div>
                             <div class="form-group mt-3">
                                 <label for="dateServingIncident">Date of Serving the incident/offense to the Employee <span style="color:red;">*</span></label>
-                                <input type="date" class="form-control" id="dateServingIncident" value="<?php echo htmlspecialchars($dateOfServing); ?>" style="max-width: 200px; width: 100%;" readonly>
+                                <input type="datetime-local" class="form-control" id="dateServingIncident" value="<?php echo htmlspecialchars($dateOfServingFormatted); ?>" style="max-width: 220px; width: 100%;" readonly>
                             </div>
                             <div class="form-group mt-3">
                                 <label for="employeeExplanation">Employee's Explanation <span style="color:red;">*</span></label>

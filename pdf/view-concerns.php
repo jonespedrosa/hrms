@@ -552,37 +552,8 @@ $HRconnect->close();
             var A_timeout_ = A_timeout.substring(11, 16);
             var timein4_ = timein4.substring(11, 16);
             var timeout4_ = timeout4.substring(11, 16);
-
             const empno = "<?php echo htmlspecialchars($empno); ?>";
             const concernName = "<?php echo htmlspecialchars($concernName); ?>";
-
-            // Log all variables to the console
-            console.log('ConcernDate:', ConcernDate);
-            console.log('concernType:', concernType);
-            console.log('errorType:', errorType);
-            console.log('vltype:', vltype);
-            console.log('actualIN:', actualIN);
-            console.log('actualbOUT:', actualbOUT);
-            console.log('actualbIN:', actualbIN);
-            console.log('actualOUT:', actualOUT);
-            console.log('newIN:', newIN);
-            console.log('newbOUT:', newbOUT);
-            console.log('newbIN:', newbIN);
-            console.log('newOUT:', newOUT);
-            console.log('empno:', empno);
-            console.log('concernName:', concernName);
-            // Log to console
-            console.log("actualOUT: " + schedto_);
-            console.log("M_timein: " + M_timein_);
-            console.log("M_timeout: " + M_timeout_);
-            console.log("A_timein: " + A_timein_);
-            console.log("A_timeout: " + A_timeout_);
-            console.log("timein4: " + timein4_);
-            console.log("timeout4: " + timeout4_);
-            console.log("othours: " + othours);
-            console.log("vlhours: " + vlhours);
-            console.log("vl: " + vl);
-            console.log("attachment1: " + attachment1);
 
             // Check the value of the concerns variable
             if (dtrconcerns === "Failure/Forgot to time in or time out" || dtrconcerns === "Failure/Forgot to break in or break out" || dtrconcerns === "Failure/Forgot to click half day" || dtrconcerns === "Wrong filing of OBP" || dtrconcerns === "Not following break out and break in interval") {
@@ -626,6 +597,21 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
+
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -708,6 +694,7 @@ $HRconnect->close();
                                     data: {
                                         empno: empno,
                                         ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
                                         approverRemarks: approverRemarks, // Pass the remarks value
                                         action: 'disapprove' // Add the action parameter
                                     },
@@ -767,8 +754,24 @@ $HRconnect->close();
                     // Add click event listener for the "Approved" button
                     $(document).on('click', 'input[name="btnApproved"]', function(event) {
                         event.preventDefault(); // Prevent the default form submission
+
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
+
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -829,6 +832,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -849,6 +865,7 @@ $HRconnect->close();
                                     data: {
                                         empno: empno,
                                         ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
                                         approverRemarks: approverRemarks, // Pass the remarks value
                                         action: 'disapprove' // Add the action parameter
                                     },
@@ -936,6 +953,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -994,6 +1024,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1014,6 +1057,7 @@ $HRconnect->close();
                                     data: {
                                         empno: empno,
                                         ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
                                         approverRemarks: approverRemarks, // Pass the remarks value
                                         action: 'disapprove' // Add the action parameter
                                     },
@@ -1073,6 +1117,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1133,6 +1190,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1154,6 +1224,7 @@ $HRconnect->close();
                                     data: {
                                         empno: empno,
                                         ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
                                         approverRemarks: approverRemarks, // Pass the remarks value
                                         action: 'disapprove' // Add the action parameter
                                     },
@@ -1218,6 +1289,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1278,6 +1362,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1299,6 +1396,7 @@ $HRconnect->close();
                                     data: {
                                         empno: empno,
                                         ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
                                         approverRemarks: approverRemarks, // Pass the remarks value
                                         action: 'disapprove' // Add the action parameter
                                     },
@@ -1359,6 +1457,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1422,6 +1533,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1443,6 +1567,7 @@ $HRconnect->close();
                                     data: {
                                         empno: empno,
                                         ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
                                         approverRemarks: approverRemarks, // Pass the remarks value
                                         action: 'disapprove' // Add the action parameter
                                     },
@@ -1499,6 +1624,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1559,6 +1697,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1579,6 +1730,7 @@ $HRconnect->close();
                                     data: {
                                         empno: empno,
                                         ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
                                         approverRemarks: approverRemarks, // Pass the remarks value
                                         action: 'disapprove' // Add the action parameter
                                     },
@@ -1632,6 +1784,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1692,6 +1857,19 @@ $HRconnect->close();
                         event.preventDefault(); // Prevent the default form submission
                         // Get the value from the remarks textarea
                         const approverRemarks = $('#approverRemarks').val();
+                        // Check if approverRemarks is empty or null
+                        if (!approverRemarks || approverRemarks.trim() === "") {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reason Required',
+                                text: 'You must provide a reason for the concern before submitting.',
+                                confirmButtonText: 'OK',
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                },
+                            });
+                            return; // Prevent form submission
+                        }
                         // Show SweetAlert2 confirmation dialog
                         Swal.fire({
                             icon: 'warning',
@@ -1713,6 +1891,7 @@ $HRconnect->close();
                                     data: {
                                         empno: empno,
                                         ConcernDate: ConcernDate,
+                                        dtrconcerns: dtrconcerns, // Include the concern type
                                         approverRemarks: approverRemarks, // Pass the remarks value
                                         action: 'disapprove' // Add the action parameter
                                     },

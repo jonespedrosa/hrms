@@ -109,7 +109,7 @@ $attachmentUrl = $attachment1;  // This already contains the correct path
                 </div>
             </div>
             <div class="form-group mb-1" style="text-align: left;">
-                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Approver's Remarks:</label>
+                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Approver's Remarks: <span style="color: red;">*</span></label>
                 <textarea pattern="^[-@.\/#&+\w\s]*$" style="height:100px;" maxlength="1000" class="form-control text-left" id="approverRemarks" name="approverRemarks" placeholder="Enter your remark" required></textarea>
             </div>
             <div class="d-flex flex-column mt-4">

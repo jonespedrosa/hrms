@@ -85,17 +85,6 @@ if ($empno && $concernDate) {
                 <div style="font-weight: bold;">Reason <span style="color: red;">*</span></div>
                 <textarea id="concern_reason" name="concern_reason" style="width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none;" rows="3" required placeholder="Please, enter your reason"></textarea>
             </div>
-            <!-- Attachments Section -->
-            <div class="attachments-container">
-                <p style="font-weight:bold; margin-bottom: 0;">Attachments <span style="color:red;">*</span></p>
-                <div class="input-group mt-3 d-flex justify-content-center">
-                    <a href="#" onclick="<?php echo $linkAction; ?>"
-                        style="color: <?php echo (isset($formSubmitted) && $formSubmitted) ? '#6c757d' : '#007bff'; ?>; text-decoration: underline; font-size: 20px;">
-                        <?php echo $linkText; ?>
-                    </a>
-                </div>
-            </div>
-            <hr>
             <!-- Agreement Section -->
             <div class="agreement-container mt-2">
                 <p style="font-weight: bold; margin-bottom: 10px;">Agreement <span style="color: red;">*</span></p>

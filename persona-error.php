@@ -1,6 +1,15 @@
 <?php
 $btnDisabled = false; // Default value
 $selectedConcern = isset($_GET['Concern']) ? $_GET['Concern'] : null;
+
+// Determine the label text based on the value of $selectedConcern
+$attachmentLabel = '';
+
+if ($selectedConcern === "Hardware malfunction") {
+    $attachmentLabel = "(Proof of hardware malfunction)";
+} elseif ($selectedConcern === "Persona error") {
+    $attachmentLabel = "(Proof of persona applications error or device error)";
+}
 ?>
 <div class="card border-0 shadow-sm mt-3">
     <div class="card-body p-0 ml-4 mr-4">
@@ -11,6 +20,18 @@ $selectedConcern = isset($_GET['Concern']) ? $_GET['Concern'] : null;
         <hr>
         <div>
             <div>
+                <!-- Attachments image select Section -->
+                <div class="attachments-container">
+                    <p style="font-weight:bold; margin-bottom: 0;">Attachments
+                        <i id="attachmentLabel" style="color: #2E59D9;"><?php echo htmlspecialchars($attachmentLabel); ?></i>
+                        <span style="color:red;">*</span>
+                    </p>
+                    <div class="input-group mt-3 d-flex justify-content-center">
+                        <!-- File input field -->
+                        <input type="file" name="attachment1" id="attachment1" class="form-control" style="height: 45px;" accept=".jpg,.jpeg,.png" />
+                    </div>
+                </div>
+                <hr>
                 <!-- Table-like structure for time inputs -->
                 <div class="time-inputs-container">
                     <p style="font-weight:bold; margin-bottom: 0;">Captured Time Inputs</p>
@@ -57,15 +78,7 @@ $selectedConcern = isset($_GET['Concern']) ? $_GET['Concern'] : null;
                         <input type="text" id="proposedTimeOut" class="form-control" placeholder="00:00">
                     </div>
                 </div>
-                <!-- Attachments image select Section -->
-                <div class="attachments-container">
-                    <p style="font-weight:bold; margin-bottom: 0;">Attachments <span style="color:red;">*</span></p>
-                    <div class="input-group mt-3 d-flex justify-content-center">
-                        <!-- File input field -->
-                        <input type="file" name="attachment1" id="attachment1" class="form-control" style="height: 45px;" accept=".jpg,.jpeg,.png" />
-                    </div>
-                </div>
-                <hr>
+
                 <!-- Agreement Section -->
                 <div class="agreement-container mt-2">
                     <p style="font-weight: bold; margin-bottom: 10px;">Agreement <span style="color: red;">*</span></p>

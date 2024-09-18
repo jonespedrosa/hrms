@@ -71,16 +71,15 @@ if ($action === 'approve') {
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
             SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
-            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
+            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
     } else if ($dtrconcerns === "Failure/Forgot to click broken schedule") {
         // Update query for sched_time
         $updateSchedTimeSql = "UPDATE sched_time
-            SET M_timein = '$M_timein', M_timeout = '$M_timeout', A_timein = '$A_timein', A_timeout = '$A_timeout'
-            WHERE empno = '$empno' AND datefromto = '$ConcernDate'";
+        SET timein4 = '$M_timein', timeout4 = '$A_timeout' WHERE empno = '$empno' AND datefromto = '$ConcernDate'";
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
             SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
-            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
+            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
     } else if ($dtrconcerns === "Wrong filing of overtime") {
         // Update query for overunder
         $updateSchedTimeSql = "UPDATE overunder
@@ -88,7 +87,7 @@ if ($action === 'approve') {
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
         SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
-        WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
+        WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
     } else if ($dtrconcerns === "Wrong filing of leave") {
         // Update query to add the value of $vlhours to the existing vl value in user_info
         $updateSchedTimeSql = "UPDATE user_info
@@ -96,7 +95,7 @@ if ($action === 'approve') {
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
             SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
-            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
+            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
     } else if ($dtrconcerns === "Remove time inputs") {
         // Check the value of vltype and set the corresponding update query
         if ($vltype === "Time In") {
@@ -128,7 +127,7 @@ if ($action === 'approve') {
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
                     SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
-                    WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
+                    WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
     } else if ($dtrconcerns === "Broken Schedule did not sync") {
         // Update query for sched_time
         $updateSchedTimeSql = "UPDATE sched_time
@@ -136,12 +135,12 @@ if ($action === 'approve') {
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
             SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
-            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
+            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
     } else if ($dtrconcerns === "Wrong computation") {
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
             SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
-            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
+            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
     }
 
     // Execute the update queries
@@ -151,7 +150,7 @@ if ($action === 'approve') {
     // Update query for dtr_concern
     $updateDtrConcernSql = "UPDATE dtr_concerns
         SET status = 'Disapproved', date_approved = '$dateApproved', remarks = '$approverRemarks'
-        WHERE empno = '$empno' AND ConcernDate = '$ConcernDate'";
+        WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
 
     // Execute the update query
     mysqli_query($HRconnect, $updateDtrConcernSql);

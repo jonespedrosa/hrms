@@ -25,7 +25,7 @@ $type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : nul
                 <label for="" class="mb-1" style="font-weight: bold;">Employee Name:</label>
                 <input type="text" class="form-control form-control-user bg-gray-100 text-center text-uppercase mb-2" name="employeeName" id="employeeName" style="font-size: 1rem;" readonly />
             </div>
-           <div class="form-group mb-1 mt-2" style="text-align: left;">
+            <div class="form-group mb-1 mt-2" style="text-align: left;">
                 <label for="" class="mb-1" style="font-weight: bold;">Branch:</label>
                 <input type="text" class="form-control form-control-user bg-gray-100 text-center" name="employeeBranch" id="employeeBranch" style="font-size:100%" readonly />
             </div>
@@ -34,7 +34,7 @@ $type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : nul
                     Concerns Details
                 </h5>
                 <hr style="margin: 0; margin-bottom: 10px">
-               <div class="form-group mb-1 mt-2" style="text-align: left;">
+                <div class="form-group mb-1 mt-2" style="text-align: left;">
                     <label for="" class="mb-1" style="font-weight: bold;">Date of Concerns:</label>
                     <input type="text" class="form-control bg-gray-100 text-center text-uppercase" name="dateOfConcerns" id="dateOfConcerns" style="font-size:100%" readonly />
                 </div>
@@ -42,7 +42,7 @@ $type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : nul
                     <label for="" class="mb-1" style="font-weight: bold;">Type of Concerns:</label>
                     <input type="text" class="form-control bg-gray-100 text-center text-uppercase" name="typeOfConcerns" id="typeOfConcerns" style="font-size:100%" readonly />
                 </div>
-               <div class="form-group mb-1 mt-2" style="text-align: left;">
+                <div class="form-group mb-1 mt-2" style="text-align: left;">
                     <label for="" class="mb-1" style="font-weight: bold;">Type of Errors:</label>
                     <input type="text" class="form-control bg-gray-100 text-center text-uppercase" name="typeOfError" id="typeOfError" style="font-size:100%" readonly />
                 </div>
@@ -76,7 +76,7 @@ $type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : nul
                 </div>
             </div>
             <div class="form-group mb-1" style="text-align: left;">
-                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Approver's Remarks:</label>
+                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Approver's Remarks: <span style="color: red;">*</span></label>
                 <textarea pattern="^[-@.\/#&+\w\s]*$" style="height:100px;" maxlength="1000" class="form-control text-left" id="approverRemarks" name="approverRemarks" placeholder="Enter your remark" required></textarea>
             </div>
             <div class="d-flex flex-column mt-4">

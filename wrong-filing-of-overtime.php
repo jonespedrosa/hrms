@@ -35,7 +35,7 @@ $btnDisabled = false; // Default value
                 <input type="text" id="final-approver" name="final-approver" style="width: 100%; font-weight: bold; padding: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; cursor: not-allowed;" disabled>
             </div>
             <div style="margin-bottom: 10px;">
-                <div style="font-weight: bold;">Reason:</div>
+                <div style="font-weight: bold;">Reason <span style="color: red;">*</span></div>
                 <textarea id="concern_reason" name="concern_reason" style="width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none;" rows="3"></textarea>
             </div>
             <hr>

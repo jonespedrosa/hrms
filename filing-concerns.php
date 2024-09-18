@@ -377,7 +377,6 @@ $HRconnect->close();
             }
         });
 
-
         // Define concerns data
         const concerns = {
             userError: [

@@ -1081,6 +1081,8 @@ body {
 
 				<?php
 
+
+
                 $sql5 = "SELECT * FROM dtr_concerns WHERE empno = '$empNUM' AND ConcernDate BETWEEN '$datestart' AND '$dateend' ORDER BY `ConcernDate` ASC";
                 $query5=$HRconnect->query($sql5);
                 while($row5=$query5->fetch_array())
@@ -1104,6 +1106,10 @@ body {
 						?>
 						<td><center><a href="print_concerns.php?cancel=yes&id=<?php echo $concernid; ?>&empno=<?php echo $empNUM; ?>&date=<?php echo $row5['ConcernDate']; ?>" class="btn btn-info btn-user btn-block bg-gradient-info" onclick="return confirm('Are you sure you want to Cancel this concern?');">Cancel</a> </center></td>
 						<?php
+
+
+
+
 						}else{
 						?>
 						<td><center></center></td>
@@ -1237,42 +1243,55 @@ body {
 
 
 				<?php
+// Check if the 'cancel' parameter is set and perform the update if it's confirmed
+if (isset($_GET['cancel']) && $_GET['cancel'] == 'yes') {
+    $empNUM = $_GET['empno'];        // Get the employee number from the URL
+    $concernDate = $_GET['date'];    // Get the concern date from the URL
 
-                $sql7 = "SELECT * FROM dtr_concerns WHERE empno = '$empNUM' AND ConcernDate BETWEEN '$backfrom' AND '$backto' ORDER BY `ConcernDate` ASC";
-                $query7=$HRconnect->query($sql7);
+    // Update the 'hear_you_out' table to set the status to 'Cancelled'
+    $sql_update = "UPDATE hear_you_out SET status = 'Cancelled' WHERE empno = '$empNUM' AND date_submitted = '$concernDate'";
 
-                while($row7=$query7->fetch_array())
-                {
+    // Execute the query and check for success
+    if ($HRconnect->query($sql_update) === TRUE) {
+        echo "<script>alert('Concern successfully cancelled.');</script>";
+    } else {
+        echo "Error updating record: " . $HRconnect->error;
+    }
 
-				$status = $row7['status'];
-				$concernid = $row7['id'];
-                ?>
-					<tr>
-						<td><center><?php echo $row7['ConcernDate']; ?><center></td>
-						<td><center><?php echo $row7['concern']; ?><center></td>
-						<td><center><?php echo $row7['errortype']; ?><center></td>
-						<td><center><?php echo $row7['newIN']; ?><center></td>
-						<td><center><?php echo $row7['newbOUT']; ?></center></td>
-						<td><center><?php echo $row7['newbIN']; ?></center></td>
-						<td><center><?php echo $row7['newOUT']; ?></center></td>
-						<td><center><?php echo $row7['status']; ?></center></td>
-						<td><center><?php echo $row7['approver']; ?></center></td>
-						<td><center><?php echo $row7['remarks']; ?></center></td>
-						<?php
-						if($status == 'Pending'){
-						?>
-						<td><center><a href="print_concerns.php?cancel=yes&id=<?php echo $concernid; ?>&empno=<?php echo $empNUM; ?>&date=<?php echo $row7['ConcernDate']; ?>" class="btn btn-info btn-user btn-block bg-gradient-info" onclick="return confirm('Are you sure you want to Cancel this concern?');">Cancel</a> </center></td>
-						<?php
-						}else{
-						?>
-						<td><center> </center></td>
-						<?php
-						}
-						?>
-					</tr>
-			<?php
-				}
-				?>
+    // (Optional) You may want to redirect to avoid re-triggering the update on page refresh
+    // header("Location: concerns_list.php");  // Redirect to another page after the update
+}
+
+// Now proceed with fetching and displaying the list of concerns as you already do
+$sql7 = "SELECT * FROM dtr_concerns WHERE empno = '$empNUM' AND ConcernDate BETWEEN '$backfrom' AND '$backto' ORDER BY `ConcernDate` ASC";
+$query7 = $HRconnect->query($sql7);
+
+while ($row7 = $query7->fetch_array()) {
+    $status = $row7['status'];
+    $concernid = $row7['id'];
+?>
+    <tr>
+        <td><center><?php echo $row7['ConcernDate']; ?><center></td>
+        <td><center><?php echo $row7['concern']; ?><center></td>
+        <td><center><?php echo $row7['errortype']; ?><center></td>
+        <td><center><?php echo $row7['newIN']; ?><center></td>
+        <td><center><?php echo $row7['newbOUT']; ?></center></td>
+        <td><center><?php echo $row7['newbIN']; ?></center></td>
+        <td><center><?php echo $row7['newOUT']; ?></center></td>
+        <td><center><?php echo $row7['status']; ?></center></td>
+        <td><center><?php echo $row7['approver']; ?></center></td>
+        <td><center><?php echo $row7['remarks']; ?></center></td>
+        <?php if ($status == 'Pending') { ?>
+            <td><center>
+                <a href="print_concerns.php?cancel=yes&id=<?php echo $concernid; ?>&empno=<?php echo $empNUM; ?>&date=<?php echo $row7['ConcernDate']; ?>" class="btn btn-info btn-user btn-block bg-gradient-info" onclick="return confirm('Are you sure you want to Cancel this concern?');">Cancel</a>
+            </center></td>
+        <?php } else { ?>
+            <td><center></center></td>
+        <?php } ?>
+    </tr>
+<?php
+}
+?>
 
 				</tbody>
 			</table>

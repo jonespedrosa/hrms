@@ -25,7 +25,7 @@ $errortype = isset($data['concernType']) ? $data['concernType'] : '';
 $status = isset($data['status']) ? $data['status'] : '';
 
 // Check if the concern already exists for the same empno and ConcernDate
-$checkSql = "SELECT COUNT(*) AS concern_count FROM dtr_concerns WHERE empno = ? AND ConcernDate = ? AND concern = ?";
+$checkSql = "SELECT COUNT(*) AS concern_count FROM dtr_concerns WHERE empno = ? AND ConcernDate = ? AND concern = ? AND status IN('Pending','Approved')";
 $stmt = $HRconnect->prepare($checkSql);
 $stmt->bind_param("sss", $empno, $concernDate, $concern);
 $stmt->execute();
@@ -37,7 +37,7 @@ if ($row['concern_count'] > 0) {
     echo json_encode(['success' => false, 'message' => 'You have already filed the same concern on this date.']);
 } else {
 
-    if ($concern === "Time inputs did not sync" || $concern === "Misaligned time inputs" || $concern === "Persona error" || $concern === "Hardware malfunction" || $concern === "Emergency time out") {
+    if ($concern === "Time inputs did not sync" || $concern === "Misaligned time inputs" || $concern === "Persona error" || $concern === "Hardware malfunction" || $concern === "Emergency time out" || $concern === "Fingerprint problem") {
 
         // Handle file upload
         $attachment1Filename = null;

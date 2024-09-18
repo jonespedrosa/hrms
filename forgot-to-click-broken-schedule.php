@@ -12,8 +12,8 @@ $type_errors = isset($_GET['type_errors']) ? $_GET['type_errors'] : null;
 $btnDisabled = false; // Default value
 
 if ($empno && $concernDate) {
-    // Prepare and execute the query
-    $sql = "SELECT COUNT(*) AS submission_count FROM hear_you_out WHERE empno = ? AND date_submitted = ? AND type_concern = $type_concern";
+     // Prepare and execute the query using type_concern
+     $sql = "SELECT COUNT(*) AS submission_count FROM hear_you_out WHERE empno = ? AND date_submitted = ? AND type_concern = ? AND status = 'Active'";
     $stmt = $HRconnect->prepare($sql);
     $stmt->bind_param("is", $empno, $concernDate);
     $stmt->execute();
@@ -45,6 +45,17 @@ if ($empno && $concernDate) {
         <p style="margin-top: 0;">The staff forgot to check Broken Schedule for Gen Meet/Gen Cleaning. It is only applicable if you already completed 4 time inputs for that shift.</p>
         <hr>
         <div class="form-group">
+            <!-- Attachments Section -->
+            <div class="attachments-container">
+                <p style="font-weight:bold; margin-bottom: 0;">Attachments <span style="color:red;">*</span></p>
+                <div class="input-group mt-3 d-flex justify-content-center">
+                    <a href="#" onclick="<?php echo $linkAction; ?>"
+                        style="color: <?php echo (isset($formSubmitted) && $formSubmitted) ? '#6c757d' : '#007bff'; ?>; text-decoration: underline; font-size: 20px;">
+                        <?php echo $linkText; ?>
+                    </a>
+                </div>
+            </div>
+            <hr>
             <!-- Table-like structure for time inputs -->
             <div class="time-inputs-container">
                 <p style="font-weight:bold; margin-bottom: 0;">Captured Time Inputs</p>
@@ -76,16 +87,7 @@ if ($empno && $concernDate) {
                     <input type="text" id="proposedBrokenSchedOut" class="form-control" placeholder="00:00">
                 </div>
             </div>
-            <!-- Attachments Section -->
-            <div class="attachments-container">
-                <p style="font-weight:bold; margin-bottom: 0;">Attachments <span style="color:red;">*</span></p>
-                <div class="input-group mt-3 d-flex justify-content-center">
-                    <a href="#" onclick="<?php echo $linkAction; ?>"
-                        style="color: <?php echo (isset($formSubmitted) && $formSubmitted) ? '#6c757d' : '#007bff'; ?>; text-decoration: underline; font-size: 20px;">
-                        <?php echo $linkText; ?>
-                    </a>
-                </div>
-            </div>
+
             <hr>
             <!-- Agreement Section -->
             <div class="agreement-container mt-2">

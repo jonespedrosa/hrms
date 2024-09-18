@@ -10,6 +10,15 @@ $btnDisabled = false; // Default value
         <hr>
         <div>
             <div>
+                <!-- Attachments image select Section -->
+                <div class="attachments-container">
+                    <p style="font-weight:bold; margin-bottom: 0;">Attachments <i style="color: #2E59D9;">(Logs History)</i> <span style="color:red;">*</span></p>
+                    <div class="input-group mt-3 d-flex justify-content-center">
+                        <!-- File input field -->
+                        <input type="file" name="attachment1" id="attachment1" class="form-control" style="height: 45px;" accept=".jpg,.jpeg,.png" />
+                    </div>
+                </div>
+                <hr>
                 <!-- Table-like structure for time inputs -->
                 <div class="time-inputs-container">
                     <p style="font-weight:bold; margin-bottom: 0;">Captured Time Inputs</p>
@@ -56,15 +65,6 @@ $btnDisabled = false; // Default value
                         <input type="text" id="proposedTimeOut" class="form-control" placeholder="00:00">
                     </div>
                 </div>
-                <!-- Attachments image select Section -->
-                <div class="attachments-container">
-                    <p style="font-weight:bold; margin-bottom: 0;">Attachments <span style="color:red;">*</span></p>
-                    <div class="input-group mt-3 d-flex justify-content-center">
-                        <!-- File input field -->
-                        <input type="file" name="attachment1" id="attachment1" class="form-control" style="height: 45px;" accept=".jpg,.jpeg,.png" />
-                    </div>
-                </div>
-                <hr>
                 <!-- Agreement Section -->
                 <div class="agreement-container mt-2">
                     <p style="font-weight: bold; margin-bottom: 10px;">Agreement <span style="color: red;">*</span></p>

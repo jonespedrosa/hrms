@@ -45,6 +45,17 @@ if ($empno && $concernDate) {
         <p style="margin-top: 0;">The staff incorrectly filed an OBP, requiring correction or adjustment.</p>
         <hr>
         <div class="form-group">
+            <!-- Attachments Section -->
+            <div class="attachments-container">
+                <p style="font-weight:bold; margin-bottom: 0;">Attachments <span style="color:red;">*</span></p>
+                <div class="input-group mt-3 d-flex justify-content-center">
+                    <a href="#" onclick="<?php echo $linkAction; ?>"
+                        style="color: <?php echo (isset($formSubmitted) && $formSubmitted) ? '#6c757d' : '#007bff'; ?>; text-decoration: underline; font-size: 20px;">
+                        <?php echo $linkText; ?>
+                    </a>
+                </div>
+            </div>
+            <hr>
             <!-- Table-like structure for time inputs -->
             <div class="time-inputs-container">
                 <p style="font-weight:bold; margin-bottom: 0;">Captured Time Inputs</p>
@@ -91,17 +102,6 @@ if ($empno && $concernDate) {
                     <input type="text" id="proposedTimeOut" class="form-control" placeholder="00:00">
                 </div>
             </div>
-            <!-- Attachments Section -->
-            <div class="attachments-container">
-                <p style="font-weight:bold; margin-bottom: 0;">Attachments <span style="color:red;">*</span></p>
-                <div class="input-group mt-3 d-flex justify-content-center">
-                    <a href="#" onclick="<?php echo $linkAction; ?>"
-                        style="color: <?php echo (isset($formSubmitted) && $formSubmitted) ? '#6c757d' : '#007bff'; ?>; text-decoration: underline; font-size: 20px;">
-                        <?php echo $linkText; ?>
-                    </a>
-                </div>
-            </div>
-            <hr>
             <!-- Agreement Section -->
             <div class="agreement-container mt-2">
                 <p style="font-weight: bold; margin-bottom: 10px;">Agreement <span style="color: red;">*</span></p>

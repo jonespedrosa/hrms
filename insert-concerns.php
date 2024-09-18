@@ -46,7 +46,7 @@ function insertConcern($HRconnect, $params)
 }
 
 // Check if the concern already exists for the same empno and ConcernDate
-$checkSql = "SELECT COUNT(*) AS concern_count FROM dtr_concerns WHERE empno = ? AND ConcernDate = ? AND concern = ?";
+$checkSql = "SELECT COUNT(*) AS concern_count FROM dtr_concerns WHERE empno = ? AND ConcernDate = ? AND concern = ? AND status IN('Pending','Approved')";
 $stmt = $HRconnect->prepare($checkSql);
 $stmt->bind_param("sss", $empno, $concernDate, $concern);
 $stmt->execute();
