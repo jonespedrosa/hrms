@@ -148,11 +148,7 @@ $branch = $row['branch'];
         }
         ?>
 
-
-
-
-        <?php if ($empno  == '6115' || $empno  == '6114' || $empno  == '2525' || $empno  == '5182' || $empno  == '2008' || $empno  == '71' || $empno  == '4209' || $empno  == '158' || $empno  == '2706' || $empno  == '1926' || $empno  == '6144' || $empno  == '6233' || $empno  == '2052' || $empno  == '197') { ?>
-
+        <?php if ($empno  == '6115' || $empno  == '6114' || $empno  == '2525' || $empno  == '5182' || $empno  == '2008' || $empno  == '71' || $empno  == '4209' || $empno  == '158' || $empno  == '2706' || $empno  == '1926' || $empno  == '6144' || $empno  == '6233' || $empno  == '2052' || $empno  == '197'  || $empno  == '4068' || $empno  == '401') { ?>
 
             <hr class="sidebar-divider">
             <!-- Heading -->
