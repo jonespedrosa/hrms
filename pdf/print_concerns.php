@@ -30,7 +30,7 @@ if (isset($_GET['cancel']) == 'yes') {
             WHERE id = '$concernID'";
 	$HRconnect->query($updatecancel);
 
-     // Determine type_concern based on selectedConcern valu
+     // Determine type_concern based on selectedConcern value
 	 if ($selectedConcern === "Failure/Forgot to time in or time out") {
 		$type_concern = 1;
 	} else if ($selectedConcern === "Failure/Forgot to break in or break out") {
@@ -1225,7 +1225,7 @@ if (isset($_POST["dtr"]) == "concerns") {
 								if ($status == 'Pending') {
 								?>
 									<td>
-										<center><a href="print_concerns.php?cancel=yes&id=<?php echo $concernid; ?>&empno=<?php echo $empNUM; ?>&date=<?php echo $row5['ConcernDate']; ?>" class="btn btn-info btn-user btn-block bg-gradient-info" onclick="return confirm('Are you sure you want to Cancel this concern?');">Cancel</a> </center>
+										<center><a href="print_concerns.php?cancel=yes&id=<?php echo $concernid; ?>&empno=<?php echo $empNUM; ?>&date=<?php echo $row5['ConcernDate']; ?>&selectedConcern=<?php echo $row5['concern']; ?>" class="btn btn-info btn-user btn-block bg-gradient-info" onclick="return confirm('Are you sure you want to Cancel this concern?');">Cancel</a> </center>
 									</td>
 								<?php
 
