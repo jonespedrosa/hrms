@@ -89,9 +89,17 @@ if ($action === 'approve') {
         SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
         WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
     } else if ($dtrconcerns === "Wrong filing of leave") {
+
+
         // Update query to add the value of $vlhours to the existing vl value in user_info
         $updateSchedTimeSql = "UPDATE user_info
             SET vl = vl + '$vlhours' WHERE empno = '$empno'";
+
+        // Update query for vlform
+        $updateVlFormSql = "UPDATE vlform
+        SET vlstatus = 'canceled'
+        WHERE empno = '$empno' AND vldatefrom = '$ConcernDate'";
+
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
             SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
@@ -145,6 +153,7 @@ if ($action === 'approve') {
 
     // Execute the update queries
     mysqli_query($HRconnect, $updateSchedTimeSql);
+    mysqli_query($HRconnect, $updateVlFormSql); // Execute vlform update
     mysqli_query($HRconnect, $updateDtrConcernSql);
 } else if ($action === 'disapprove') {
     // Update query for dtr_concern

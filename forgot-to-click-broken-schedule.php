@@ -1,7 +1,7 @@
 <?php
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 
-// Retrieve the empno, concernDate, name, position, and Concern from the URL parameters
+// Retrieve the parameters from the URL
 $empno = isset($_GET['empno']) ? $_GET['empno'] : null;
 $concernDate = isset($_GET['concernDate']) ? $_GET['concernDate'] : null;
 $name = isset($_GET['name']) ? $_GET['name'] : null;
@@ -12,10 +12,10 @@ $type_errors = isset($_GET['type_errors']) ? $_GET['type_errors'] : null;
 $btnDisabled = false; // Default value
 
 if ($empno && $concernDate) {
-     // Prepare and execute the query using type_concern
-     $sql = "SELECT COUNT(*) AS submission_count FROM hear_you_out WHERE empno = ? AND date_submitted = ? AND type_concern = ? AND status = 'Active'";
+    // Prepare and execute the query using type_concern
+    $sql = "SELECT COUNT(*) AS submission_count FROM hear_you_out WHERE empno = ? AND date_submitted = ? AND type_concern = ? AND status = 'Active'";
     $stmt = $HRconnect->prepare($sql);
-    $stmt->bind_param("is", $empno, $concernDate);
+    $stmt->bind_param("sss", $empno, $concernDate, $type_concern);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
@@ -36,7 +36,6 @@ if ($empno && $concernDate) {
     }
 }
 ?>
-
 <div class="card border-0 shadow-sm mt-3">
     <div class="card-body p-0 ml-4 mr-4">
         <h5 class="mt-4" style="margin-bottom: 0;">

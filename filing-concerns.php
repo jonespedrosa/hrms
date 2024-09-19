@@ -796,6 +796,7 @@ $HRconnect->close();
                     .catch(error => console.error('Error fetching content:', error));
 
             } else if (selectedConcern === "Failure/Forgot to click broken schedule") {
+
                 // Handle loading the "Failure/Forgot to click broken schedule" form
                 const url = `forgot-to-click-broken-schedule.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
 

@@ -41,14 +41,14 @@ $row_userdB = $queryUserdB->fetch_assoc();
 $areatype = $row_userdB['areatype'];
 $userid = $_SESSION['userid'];
 
-// Prepare and execute query to fetch DTR concerns data based on empno and ConcernDate
-$sqlDRTConcerns = "SELECT empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, ottype, othours, vltype, actualIN, actualbOUT, actualbIN, actualOUT, newIN, newbOUT, newbIN, newOUT, attachment1, attachment2, status, reason, approver
+// Prepare and execute query to fetch DTR concerns data based on empno, ConcernDate, and concern
+$sqlDTRConcerns = "SELECT empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, ottype, othours, vltype, actualIN, actualbOUT, actualbIN, actualOUT, newIN, newbOUT, newbIN, newOUT, attachment1, attachment2, status, reason, approver
 FROM dtr_concerns
-WHERE empno = ? AND ConcernDate = ?";
-$stmtDRTConcerns = $HRconnect->prepare($sqlDRTConcerns);
-$stmtDRTConcerns->bind_param("ss", $empno, $dateConcerns); // Bind both parameters
-$stmtDRTConcerns->execute();
-$queryDTRConcerns = $stmtDRTConcerns->get_result();
+WHERE empno = ? AND ConcernDate = ? AND concern = ?";
+$stmtDTRConcerns = $HRconnect->prepare($sqlDTRConcerns);
+$stmtDTRConcerns->bind_param("sss", $empno, $dateConcerns, $dtrconcerns); // Bind all three parameters
+$stmtDTRConcerns->execute();
+$queryDTRConcerns = $stmtDTRConcerns->get_result();
 $row_dtrConcerns = $queryDTRConcerns->fetch_assoc();
 
 if ($row_dtrConcerns) {
@@ -147,7 +147,7 @@ if ($row_dtrConcerns) {
 // Clean up
 $stmtUserInfo->close();
 $stmtUserdB->close();
-$stmtDRTConcerns->close();
+$stmtDTRConcerns->close();
 $stmtSchedTime->close();
 $ORconnect->close();
 $HRconnect->close();
@@ -554,6 +554,44 @@ $HRconnect->close();
             var timeout4_ = timeout4.substring(11, 16);
             const empno = "<?php echo htmlspecialchars($empno); ?>";
             const concernName = "<?php echo htmlspecialchars($concernName); ?>";
+
+
+            // Log all variables
+            console.log({
+                dtrconcerns,
+                ConcernDate,
+                concernType,
+                errorType,
+                vltype,
+                actualIN,
+                actualbOUT,
+                actualbIN,
+                actualOUT,
+                newIN,
+                newbOUT,
+                newbIN,
+                newOUT,
+                schedto,
+                M_timein,
+                M_timeout,
+                A_timein,
+                A_timeout,
+                timein4,
+                timeout4,
+                othours,
+                vlhours,
+                vl,
+                attachment1,
+                schedto_,
+                M_timein_,
+                M_timeout_,
+                A_timein_,
+                A_timeout_,
+                timein4_,
+                timeout4_,
+                empno,
+                concernName
+            });
 
             // Check the value of the concerns variable
             if (dtrconcerns === "Failure/Forgot to time in or time out" || dtrconcerns === "Failure/Forgot to break in or break out" || dtrconcerns === "Failure/Forgot to click half day" || dtrconcerns === "Wrong filing of OBP" || dtrconcerns === "Not following break out and break in interval") {
@@ -1430,6 +1468,7 @@ $HRconnect->close();
                         });
                     });
                 });
+
             } else if (dtrconcerns === "Time inputs did not sync" || dtrconcerns === "Misaligned time inputs" || dtrconcerns === "Persona error" || dtrconcerns === "Hardware malfunction" || dtrconcerns === "Emergency time out" || dtrconcerns === "Fingerprint problem") {
 
                 const url = `concerns-time-inputs-not-sync.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&attachment1=${encodeURIComponent(attachment1)}`;

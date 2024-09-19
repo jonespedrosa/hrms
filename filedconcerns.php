@@ -611,7 +611,7 @@ if ($userlevel != 'staff') {
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
 
-                                        $sql = "SELECT `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `userid` = '$userid' AND `ConcernDate` BETWEEN '$prevdate1' AND '$prevdate2' GROUP BY `empno` DESC";
+                                        $sql = "SELECT `id`, `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `userid` = '$userid' AND `ConcernDate` BETWEEN '$prevdate1' AND '$prevdate2' GROUP BY `empno` DESC";
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
@@ -730,15 +730,17 @@ if ($userlevel != 'staff') {
 
 
                                         if ($emnum == 2957) {
-                                            $sql = "SELECT `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `ConcernDate` BETWEEN '$prevdate1' AND '$prevdate2' GROUP BY `empno` DESC";
+                                            $sql = "SELECT `id`, `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `ConcernDate` BETWEEN '$prevdate1' AND '$prevdate2' GROUP BY `empno` DESC";
                                         } else {
-                                            $sql = "SELECT `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `userid` = '$userid'  AND `ConcernDate` BETWEEN '$prevdate1' AND '$prevdate2' GROUP BY `empno` DESC";
+                                            $sql = "SELECT `id`, `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `userid` = '$userid'  AND `ConcernDate` BETWEEN '$prevdate1' AND '$prevdate2' GROUP BY `empno` DESC";
                                         }
 
 
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
+                                            $id = $row['id'];
+
 
                                     ?>
                                             <tr>
@@ -1738,7 +1740,7 @@ if ($userlevel != 'staff') {
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
 
-                                        $sql = "SELECT `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `userid` = '$userid' AND `ConcernDate` BETWEEN '$prevdate1' AND '$prevdate2' GROUP BY `empno` DESC";
+                                        $sql = "SELECT `id`, `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `userid` = '$userid' AND `ConcernDate` BETWEEN '$prevdate1' AND '$prevdate2' GROUP BY `empno` DESC";
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
@@ -2179,7 +2181,7 @@ if ($userlevel != 'staff') {
 
                                     <?php
 
-                                    $sql = "SELECT `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `ConcernDate` BETWEEN '$datestart' AND '$dateend' GROUP BY `empno` DESC";
+                                    $sql = "SELECT `id`, `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `ConcernDate` BETWEEN '$datestart' AND '$dateend' GROUP BY `empno` DESC";
                                     $query = $HRconnect->query($sql);
                                     while ($row = $query->fetch_array()) {
                                         $name = $row['name'];
@@ -2869,7 +2871,7 @@ if ($userlevel != 'staff') {
 
                                     <?php
 
-                                    $sql = "SELECT `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `ConcernDate` BETWEEN '$datestart' AND '$dateend' GROUP BY `empno` DESC";
+                                    $sql = "SELECT `id`, `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `ConcernDate` BETWEEN '$datestart' AND '$dateend' GROUP BY `empno` DESC";
                                     $query = $HRconnect->query($sql);
                                     while ($row = $query->fetch_array()) {
                                         $name = $row['name'];
@@ -3583,7 +3585,7 @@ if ($userlevel != 'staff') {
                                         $emergency = 'Emergency time out';
                                         $FPError = 'Fingerprint problem';
 
-                                        $sql = "SELECT `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `userid` = '$userid' AND `ConcernDate` BETWEEN '$datestart' AND '$dateend' GROUP BY `empno` DESC";
+                                        $sql = "SELECT `id`, `name`,`branch`,`ConcernDate`,`empno`,`errortype`,`concern`, count(*) as `concerncount` FROM dtr_concerns WHERE `userid` = '$userid' AND `ConcernDate` BETWEEN '$datestart' AND '$dateend' GROUP BY `empno` DESC";
                                         $query = $HRconnect->query($sql);
                                         while ($row = $query->fetch_array()) {
                                             $name = $row['name'];
