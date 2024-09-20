@@ -176,16 +176,15 @@ function approvalLeave($empno, $reason, $datefrom, $session_arr, $timestamp, $HR
         $vl_hours_filed = $leave_credits;
     }
 
-    $is_already_approved = "SELECT vlstatus FROM `hrms`.`vlform` WHERE empno = ? and vldatefrom = ?";
+    $is_already_approved = "SELECT vlstatus FROM `hrms`.`vlform` WHERE empno = ? AND vldatefrom = ? AND vlstatus = 'approved'";
     $stmt = $HRconnect->prepare($is_already_approved);
     $stmt->bind_param("is", $empno, $datefrom);
     $stmt->execute();
     $result_already_approved = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-
     $status = false;
-    if ($result_already_approved["vlstatus"] == "approved") {
+    if ($result_already_approved !== null) {
         $response = array(
             "status" => $status,
             "remaining_leave" => number_format($leave_credits, 2),
@@ -193,6 +192,7 @@ function approvalLeave($empno, $reason, $datefrom, $session_arr, $timestamp, $HR
         );
         return json_encode($response);
     }
+
 
     if ($leave_difference >= 0) {
         $vlstatus = "approved";
@@ -203,7 +203,7 @@ function approvalLeave($empno, $reason, $datefrom, $session_arr, $timestamp, $HR
         $stmt->execute();
         $stmt->close();
 
-        $update_leave_status = "UPDATE `hrms`.`vlform` SET vlstatus = ?, approver = ?, apptimedate = ?, vlduration = ?, vlhours = ? WHERE empno = ? AND vldatefrom = ?";
+        $update_leave_status = "UPDATE `hrms`.`vlform` SET vlstatus = ?, approver = ?, apptimedate = ?, vlduration = ?, vlhours = ? WHERE empno = ? AND vldatefrom = ? AND vlstatus = 'pending'";
         $stmt = $HRconnect->prepare($update_leave_status);
         $stmt->bind_param("ssssdis", $vlstatus, $approver_name, $timestamp, $vl_duration_filed, $vl_hours_filed, $empno, $datefrom);
         $stmt->execute();

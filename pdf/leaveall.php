@@ -2,27 +2,21 @@
 <?php
 $connect = mysqli_connect("localhost", "root", "", "db");
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
-
 session_start();
-
 if (empty($_SESSION['user'])) {
 	header('location:login.php');
 }
 
-$sql = "SELECT * FROM user_info WHERE empno = '" . $_SESSION['empno'] . "'";
+$sql = "SELECT name, empno, userlevel, userid FROM user_info WHERE empno = '" . $_SESSION['empno'] . "'";
 $query = $HRconnect->query($sql);
 $row = $query->fetch_array();
-
 $user = $row['name'];
 $userlevel = $row['userlevel'];
-
 $userid = $row['userid'];
-
 
 if ($userlevel != 'staff') {
 
 ?>
-
 	<!DOCTYPE html>
 	<html lang="en">
 
@@ -32,76 +26,56 @@ if ($userlevel != 'staff') {
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<meta name="description" content="">
 		<meta name="author" content="">
-
 		<title> </title>
 		<link rel="icon" href="../images/logoo.png">
 
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+		<!-- Custom fonts for this template-->
+		<link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+		<link
+			href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+			rel="stylesheet">
+
+		<!-- Custom styles for this template-->
+		<link href="../css/sb-admin-2.min.css" rel="stylesheet">
 		<!-- Custom fonts for this template-->
 		<link href="../../Projection/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 		<!-- Custom styles for this template-->
 		<link href="../../Projection/css/sb-admin.css" rel="stylesheet">
-		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
-		<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-
-		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
 		<!-- Include DataTables CSS -->
 		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-		<!-- Include jQuery -->
-		<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-		<!-- Include DataTables JS -->
-		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
-		<style type="text/css" class="init"> </style>
-
-		<script type="text/javascript" src="/media/js/site.js?_=09b203e247031aa5935209252694085f"></script>
-		<script type="text/javascript" src="/media/js/dynamic.php?comments-page=extensions%2Fbuttons%2Fexamples%2Fhtml5%2FtitleMessage.html" async></script>
-		<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-		<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-		<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
-		<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-		<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-		<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-		<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
-		<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
-		<script type="text/javascript" language="javascript" src="../../../../examples/resources/demo.js"></script>
-
-
-		<script type="text/javascript" class="init">
-			// $(document).ready(function() {
-			// 	var printCounter = 0;
-			// 	// Append a caption to the table before the DataTables initialisation
-			// 	$('#example').append('<caption style="caption-side: top"></caption>');
-
-			// 	$('#example').DataTable({
-			// 		stateSave: true,
-			// 		dom: 'Bfrtip',
-			// 		buttons: [
-			// 			'copy',
-			// 			{
-			// 				extend: 'excel',
-
-			// 			},
-			// 			{
-			// 				extend: 'pdf',
-			// 				messageBottom: null
-			// 			},
-			// 			{
-			// 				extend: 'print',
-			// 				messageTop: '<center class="text-uppercase">' + 'COSOLIDATED LEAVE REPORT <?php
-																											// 																							$Today = date('y:m:d');
-																											// 																							$new = date('F d, Y', strtotime($Today));
-																											// 																							echo $new; 
-																											?> ' + '</center > '
-
-			// 			}
-			// 		]
-			// 	});
-			// });
-		</script>
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
+		<!-- Include only one version of jQuery -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<!-- Include DataTables JS after jQuery -->
+		<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+		<!-- Bootstrap core JavaScript-->
+		<script src="../../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+		<!-- Core plugin JavaScript-->
+		<script src="../../vendor/jquery-easing/jquery.easing.min.js"></script>
+		<!-- Page level plugin JavaScript-->
+		<script src="../../vendor/chart.js/Chart.min.js"></script>
+		<!-- Custom scripts for all pages-->
+		<script src="../../js/sb-admin.min.js"></script>
+		<!-- Demo scripts for this page-->
+		<script src="../../js/demo/datatables-demo.js"></script>
+		<script src="../../js/demo/chart-area-demo.js"></script>
+		<!-- Calendar Restriction-->
+		<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2020.3.1118/styles/kendo.default-v2.min.css" />
+		<script src="https://kendo.cdn.telerik.com/2020.3.1118/js/kendo.all.min.js"></script>
 
 
-		<style type="text/css">
+		<!-- Optional additional scripts -->
+		<script src="../../../../examples/resources/demo.js"></script>
+
+		<style>
 			@page {
 				size: portrait
 			}
@@ -111,7 +85,6 @@ if ($userlevel != 'staff') {
 				font-size: 15px;
 
 			}
-
 
 			@media print {
 
@@ -123,9 +96,7 @@ if ($userlevel != 'staff') {
 					background-color: transparent !important;
 				}
 			}
-		</style>
 
-		<style>
 			.myTable {
 				width: 100%;
 				font-size: 15px;
@@ -147,72 +118,45 @@ if ($userlevel != 'staff') {
 
 			}
 		</style>
-
 	</head>
 
 	<body>
-
 		<br>
-
 		<div class="container-fluid">
-
 			<?php
-
 			@$_SESSION['datedatefrom'] = $_POST['datefrom4'];
 			@$_SESSION['datedateto'] = $_POST['dateto4'];
 
 			@$datefrom = date("Y-m-d", strtotime($_SESSION['datedatefrom']));
 			@$dateto = date("Y-m-d", strtotime($_SESSION['datedateto']));
-
 			?>
-
-
 			<form class="user" method="post">
-
-
 				<div class="form-group row">
-
-
 					<?php if ($datefrom == "1970-01-01") { ?>
 						<div class="col-sm-2 text-center">
 							<label>Cut-Off Date From</label>
 							<input type="date" id="datePicker" class="form-control text-center" name="datefrom4" placeholder="Insert Date" autocomplete="off" required onkeypress="return false;" />
 						</div>
-
-
 						<div class="col-sm-2 text-center">
 							<label>Cut-Off Date To</label>
 							<input type="date" id="datePicker1" class="form-control text-center" name="dateto4" placeholder="Insert Date" autocomplete="off" required onkeypress="return false;" />
 						</div>
-
 					<?php } else { ?>
-
 						<div class="col-sm-2 text-center">
 							<label>Cut-Off Date From</label>
 							<input type="date" id="datePicker" class="form-control text-center" name="datefrom4" placeholder="Insert Date" value="<?php echo $datefrom; ?>" autocomplete="off" required onkeypress="return false;" />
 						</div>
-
 						<div class="col-sm-2 text-center">
 							<label>Cut-Off Date To</label>
 							<input type="date" id="datePicker1" class="form-control text-center" name="dateto4" placeholder="Insert Date" value="<?php echo $dateto; ?>" autocomplete="off" required onkeypress="return false;" />
 						</div>
-
-
-
 					<?php } ?>
-
-
-
 					<div class="col-xs-3 text-center d-none d-sm-inline-block">
-
 						<label class="invisible">.</label>
-
 						<div class="col-xs-3 text-center d-none d-sm-inline-block">
-
 						</div>
 						<input class="btn btn-primary btn-user btn-block bg-gradient-primary" type="submit" name="submit" id="submit" class="btn btn-info" value="Generate" onclick="return confirm('Are you sure you want to generate report?');" />
 					</div>
-
 					<div class="col-sm-3 text-center d-md-none">
 						<label class="invisible">.</label>
 						<input class="btn btn-primary btn-user btn-block bg-gradient-primary" type="submit" name="submit" id="submit" class="btn btn-info" value="Generate" onclick="return confirm('Are you sure you want to generate report?');" />
@@ -233,27 +177,13 @@ if ($userlevel != 'staff') {
 						<table class="myTable table-hover" id="example" width="100%" cellspacing="0">
 							<thead class="table-secondary text-uppercase">
 								<tr>
-									<th>
-										<center>ID</center>
-									</th>
-									<th>
-										<center>FULLNAME</center>
-									</th>
-									<th>
-										<center>BRANCH</center>
-									</th>
-									<th>
-										<center>APPROVED LEAVE</center>
-									</th>
-									<th>
-										<center>REMAINING LEAVE</center>
-									</th>
-									<th>
-										<center>TOTAL</center>
-									</th>
-									<th>
-										<center>ACTION</center>
-									</th>
+									<th class="text-center">ID</th>
+									<th class="text-center">FULLNAME</th>
+									<th class="text-center">BRANCH</th>
+									<th class="text-center">APPROVED LEAVE</th>
+									<th class="text-center">REMAINING LEAVE</th>
+									<th class="text-center">TOTAL</th>
+									<th class="text-center">ACTION</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -268,17 +198,14 @@ if ($userlevel != 'staff') {
 										$empno = $row_leave['empno'];
 										$name = $row_leave['name'];
 										$branch = $row_leave['branch'];
-
 										$sqlapprovedleave = "SELECT SUM(vlhours) as sum_vl FROM vlform WHERE empno = '$empno' AND (vldatefrom between '$datefrom' AND '$dateto') AND vlstatus = 'approved'";
 										$leaveapprove = $HRconnect->query($sqlapprovedleave);
 										$row_vlApproved = $leaveapprove->fetch_array();
 										$countApproveLeave = $row_vlApproved['sum_vl'];
-
 										$sqlVLremaining = "SELECT vl FROM user_info WHERE empno = '$empno'";
 										$queryRemainingVl = $HRconnect->query($sqlVLremaining);
 										$vlRemainingRow = $queryRemainingVl->fetch_array();
 										$vlRemaining = $vlRemainingRow['vl'];
-
 										$sumRemainingvsApprove = $countApproveLeave + $vlRemaining;
 								?>
 										<?php if ($row_vlApproved['sum_vl'] != 0) { ?>
@@ -335,31 +262,8 @@ if ($userlevel != 'staff') {
 					<a href="../leave.php?pending=pending" class="btn btn-secondary btn-user ">BACK</a>
 				</div>
 			</div>
-
 		</div>
 
-
-		<!-- Bootstrap core JavaScript-->
-
-		<script src="../../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-		<!-- Core plugin JavaScript-->
-		<script src="../../vendor/jquery-easing/jquery.easing.min.js"></script>
-
-		<!-- Page level plugin JavaScript-->
-		<script src="../../vendor/chart.js/Chart.min.js"></script>
-
-		<!-- Custom scripts for all pages-->
-		<script src="../../js/sb-admin.min.js"></script>
-
-		<!-- Demo scripts for this page-->
-		<script src="../../js/demo/datatables-demo.js"></script>
-		<script src="../../js/demo/chart-area-demo.js"></script>
-
-		<!-- Calendar Restriction-->
-		<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2020.3.1118/styles/kendo.default-v2.min.css" />
-
-		<script src="https://kendo.cdn.telerik.com/2020.3.1118/js/kendo.all.min.js"></script>
 
 		<script>
 			$("#datePicker").kendoDatePicker({

@@ -518,8 +518,6 @@ $HRconnect->close();
                 type_concern = 4;
             } else if (selectedConcern === "Wrong filing of overtime") {
                 type_concern = 5;
-            } else if (selectedConcern === "Wrong filing of leave") {
-                type_concern = 6;
             } else if (selectedConcern === "Wrong filing of OBP") {
                 type_concern = 7;
             } else if (selectedConcern === "Not following break out and break in interval") {
@@ -1146,8 +1144,9 @@ $HRconnect->close();
                     .catch(error => console.error('Error fetching content:', error));
 
             } else if (selectedConcern === "Wrong filing of leave") {
+
                 // Handle loading the "Wrong filing of overtime" form
-                const url = `wrong-filing-of-leave.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
+                const url = `wrong-filing-of-leave.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_errors=${encodeURIComponent(type_errors)}`;
 
                 fetch(url)
                     .then(response => response.text())
@@ -1171,7 +1170,7 @@ $HRconnect->close();
                                             document.getElementById('vlreason').value = data.vlreason || '';
                                             document.getElementById('final-approver').value = data.vl_approver || ''; // Assuming vl_approver is final approver
                                             // Check if vltype is empty after setting the value
-                                            if (document.getElementById('vltype').value === "" || document.getElementById('vlstatus').value == 'pending') {
+                                            if (document.getElementById('vlstatus').value !== 'approved') {
                                                 Swal.fire({
                                                     icon: 'warning',
                                                     title: 'You don\'t have a filed leave on this date',

@@ -84,6 +84,7 @@ if ($row_dtrConcerns) {
                         overunder.othours,
                         vlform.vldatefrom,
                         vlform.vlhours,
+                        vlform.timedate,
                         user_info.vl
                     FROM sched_time
                     LEFT JOIN overunder
@@ -94,7 +95,7 @@ if ($row_dtrConcerns) {
                         AND sched_time.datefromto = vlform.vldatefrom
                     LEFT JOIN user_info
                         ON sched_time.empno = user_info.empno
-                    WHERE sched_time.empno = ? AND sched_time.datefromto = ?";
+                    WHERE sched_time.empno = ? AND sched_time.datefromto = ? ORDER BY `vlform`.`timedate` DESC";
 
     $stmtSchedTime = $HRconnect->prepare($sqlSchedTime);
     $stmtSchedTime->bind_param("ss", $empno, $ConcernDate); // Bind parameters
@@ -1130,13 +1131,8 @@ $HRconnect->close();
                     });
                 });
             } else if (dtrconcerns === "Wrong filing of leave") {
-                // Determine the type of concern based on dtrconcerns
-                let type_concern;
-                // Determine type_concern based on selectedConcern value
-                if (dtrconcerns === "Wrong filing of leave") {
-                    type_concern = 6;
-                }
-                const url = `concerns-wrong-filing-of-leave.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&type_of_concern=${encodeURIComponent(type_concern)}`;
+
+                const url = `concerns-wrong-filing-of-leave.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}`;
 
                 // Use AJAX to load the PHP file content into #dynamicDiv with the constructed URL
                 $('#dynamicDiv').load(url, function() {

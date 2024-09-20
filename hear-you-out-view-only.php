@@ -261,8 +261,12 @@ if ($result && mysqli_num_rows($result) > 0) {
                             <label for="wayForward"><strong>Way Forward</strong> State your commitment.<span style="color:red;">*</span></label>
                             <textarea class="form-control" id="wayForward" placeholder="Your answer" rows="4" readonly><?php echo htmlspecialchars($wayForward); ?></textarea>
                         </div>
-                        <div class="d-flex justify-content-end mt-5">
-                            <button id="exitButton" class="btn btn-danger" style="font-weight: bold;">Close</button>
+                        <div class="d-flex justify-content-between mt-5">
+                            <button id="closeButton" class="btn btn-secondary" style="font-weight: bold;">Close</button>
+                            <div>
+                                <button id="editButton" class="btn btn-primary me-2" style="font-weight: bold;">Edit</button>
+                                <button id="cancelButton" class="btn btn-danger" style="font-weight: bold;">Cancel</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -336,7 +340,7 @@ if ($result && mysqli_num_rows($result) > 0) {
             reader.readAsDataURL(input.files[0]); // Convert image file to base64 string
         }
     }
-    document.getElementById('exitButton').addEventListener('click', function() {
+    document.getElementById('closeButton').addEventListener('click', function() {
         // Close the current window/tab
         window.close();
     });

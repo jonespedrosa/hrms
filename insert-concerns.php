@@ -24,6 +24,7 @@ $concernDate = $data['concernDate'];
 $concern = $data['selectedConcern'];
 $errortype = $data['concernType'];
 $status = $data['status'];
+$reason = $data['concern_reason']; // Fetch concern_reason from the AJAX request
 
 // Function to insert concern into the database
 function insertConcern($HRconnect, $params)
@@ -45,6 +46,7 @@ function insertConcern($HRconnect, $params)
     }
 }
 
+
 // Check if the concern already exists for the same empno and ConcernDate
 $checkSql = "SELECT COUNT(*) AS concern_count FROM dtr_concerns WHERE empno = ? AND ConcernDate = ? AND concern = ? AND status IN('Pending','Approved')";
 $stmt = $HRconnect->prepare($checkSql);
@@ -54,8 +56,33 @@ $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 
 if ($row['concern_count'] > 0) {
-    // Duplicate entry found
-    echo json_encode(['success' => false, 'message' => 'You have already filed the same concern on this date.']);
+    // // If the concern is "Wrong filing of leave", update the record
+    // if ($concern === "Wrong filing of leave") {
+    //     // Update the record in dtr_concerns for the specific concern
+    //     $sqlUpdateLeaveOnly = "UPDATE dtr_concerns
+    //                     SET status = 'Pending',
+    //                         reason = ?
+    //                     WHERE empno = ?
+    //                     AND ConcernDate = ?
+    //                     AND concern = ?";
+
+    //     if ($stmtUpdate = $HRconnect->prepare($sqlUpdateLeaveOnly)) {
+    //         // Bind the parameters (string for each field)
+    //         $stmtUpdate->bind_param("ssss", $reason, $empno, $concernDate, $concern);
+
+    //         if ($stmtUpdate->execute()) {
+    //             echo json_encode(['success' => true, 'message' => 'Concern updated successfully.']);
+    //         } else {
+    //             echo json_encode(['success' => false, 'message' => 'Failed to update concern.']);
+    //         }
+    //         $stmtUpdate->close();
+    //     } else {
+    //         echo json_encode(['success' => false, 'message' => 'Failed to prepare update statement.']);
+    //     }
+    // } else {
+    //     // Duplicate entry found for concerns other than "Wrong filing of leave"
+        echo json_encode(['success' => false, 'message' => 'You have already filed the same concern on this date.']);
+    // }
 } else {
     // Prepare the parameters for insertion based on the type of concern
     if ($concern === "Failure/Forgot to time in or time out" || $concern === "Failure/Forgot to break in or break out" || $concern === "Wrong filing of OBP" || $concern === "Not following break out and break in interval" || $concern === "Failure/Forgot to click half day") {

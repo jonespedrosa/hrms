@@ -41,8 +41,6 @@ if (isset($_GET['cancel']) == 'yes') {
 		$type_concern = 4;
 	} else if ($selectedConcern === "Wrong filing of overtime") {
 		$type_concern = 5;
-	} else if ($selectedConcern === "Wrong filing of leave") {
-		$type_concern = 6;
 	} else if ($selectedConcern === "Wrong filing of OBP") {
 		$type_concern = 7;
 	} else if ($selectedConcern === "Not following break out and break in interval") {

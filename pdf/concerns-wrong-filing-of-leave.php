@@ -3,7 +3,7 @@ $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 
 $empno = isset($_GET['empno']) ? $_GET['empno'] : null;
 $ConcernDate = isset($_GET['concernDate']) ? $_GET['concernDate'] : null;
-$type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : null;
+// $type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : null;
 
 // echo "empno: " . htmlspecialchars($empno) . "<br>";
 // echo "ConcernDate: " . htmlspecialchars($ConcernDate) . "<br>";
@@ -67,12 +67,6 @@ $type_concern = isset($_GET['type_of_concern']) ? $_GET['type_of_concern'] : nul
                             </tr>
                         </tbody>
                     </table>
-                </div>
-            </div>
-            <div class="form-group text-center mb-4">
-                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Attached Document's:</label>
-                <div class="d-flex justify-content-center">
-                    <a href="../hear-you-out-view-only.php?empno=<?php echo $empno; ?>&type_concern=<?php echo $type_concern; ?>&ConcernDate=<?php echo $ConcernDate; ?>" target="_blank" class="btn btn-primary mt-1 w-100" style="display: block; font-size: 1.1rem; font-weight: bold;  max-width: 400px;">Click here to view HYO attachment</a>
                 </div>
             </div>
             <div class="form-group mb-1" style="text-align: left;">

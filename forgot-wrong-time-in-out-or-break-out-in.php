@@ -11,30 +11,75 @@ $type_concern = isset($_GET['type_concern']) ? $_GET['type_concern'] : null;
 $type_errors = isset($_GET['type_errors']) ? $_GET['type_errors'] : null;
 $btnDisabled = false; // Default value
 
+
 if ($empno && $concernDate) {
     // Prepare and execute the query using type_concern
-    $sql = "SELECT COUNT(*) AS submission_count FROM hear_you_out WHERE empno = ? AND date_submitted = ? AND type_concern = ? AND status = 'Active'";
+    $sql = "SELECT ID, COUNT(*) AS submission_count
+            FROM hear_you_out
+            WHERE empno = ? AND date_submitted = ? AND type_concern = ? AND status = 'Active'
+            GROUP BY ID";
     $stmt = $HRconnect->prepare($sql);
     $stmt->bind_param("sss", $empno, $concernDate, $type_concern);
     $stmt->execute();
     $result = $stmt->get_result();
+
+    // Fetch the results
     $row = $result->fetch_assoc();
 
-    // Check if the user has already submitted the form
-    $formSubmitted = $row['submission_count'] > 0;
+    if ($row) {
+        // Access ID and submission_count from $row
+        $id = $row['ID'];
+        $submission_count = $row['submission_count'];
 
-    // Construct the URL based on whether the form was submitted or not
-    if ($formSubmitted) {
-        $hearYouOutUrl = "hear-you-out-view-only.php?empno=$empno&type_concern=" . urlencode($type_concern) . "&ConcernDate=" . urlencode($concernDate);
-        $linkText = "You already submitted HYO form, click to review";
-        $linkAction = "window.open('$hearYouOutUrl', '_blank'); return false;";
+        // Check if the user has already submitted the form
+        $formSubmitted = $submission_count > 0;
+
+        // Construct the URL based on whether the form was submitted or not
+        if ($formSubmitted) {
+            $hearYouOutUrl = "hear-you-out-view-only.php?id=$id&empno=$empno&type_concern=" . urlencode($type_concern) . "&ConcernDate=" . urlencode($concernDate);
+            $linkText = "You already submitted HYO form, click to review";
+            $linkAction = "window.open('$hearYouOutUrl', '_blank'); return false;";
+        } else {
+            $hearYouOutUrl = "hear-you-out.php?empno=$empno&name=" . urlencode($name) . "&position=" . urlencode($position) . "&ConcernDate=" . urlencode($concernDate) . "&type_concern=" . urlencode($type_concern) . "&Concern=" . urlencode($selectedConcern) . "&type_errors=" . urlencode($type_errors);
+            $linkText = "Click here to create and submit your HYO form";
+            $linkAction = "window.location.href='$hearYouOutUrl'; return false;";
+            $btnDisabled = true; // Disable the button if the form has not been submitted
+        }
     } else {
+        // Handle case where no records are returned
         $hearYouOutUrl = "hear-you-out.php?empno=$empno&name=" . urlencode($name) . "&position=" . urlencode($position) . "&ConcernDate=" . urlencode($concernDate) . "&type_concern=" . urlencode($type_concern) . "&Concern=" . urlencode($selectedConcern) . "&type_errors=" . urlencode($type_errors);
         $linkText = "Click here to create and submit your HYO form";
         $linkAction = "window.location.href='$hearYouOutUrl'; return false;";
         $btnDisabled = true; // Disable the button if the form has not been submitted
     }
 }
+
+
+
+// if ($empno && $concernDate) {
+//     // Prepare and execute the query using type_concern
+//     $sql = "SELECT COUNT(*) AS submission_count FROM hear_you_out WHERE empno = ? AND date_submitted = ? AND type_concern = ? AND status = 'Active'";
+//     $stmt = $HRconnect->prepare($sql);
+//     $stmt->bind_param("sss", $empno, $concernDate, $type_concern);
+//     $stmt->execute();
+//     $result = $stmt->get_result();
+//     $row = $result->fetch_assoc();
+
+//     // Check if the user has already submitted the form
+//     $formSubmitted = $row['submission_count'] > 0;
+
+//     // Construct the URL based on whether the form was submitted or not
+//     if ($formSubmitted) {
+//         $hearYouOutUrl = "hear-you-out-view-only.php?empno=$empno&type_concern=" . urlencode($type_concern) . "&ConcernDate=" . urlencode($concernDate);
+//         $linkText = "You already submitted HYO form, click to review";
+//         $linkAction = "window.open('$hearYouOutUrl', '_blank'); return false;";
+//     } else {
+//         $hearYouOutUrl = "hear-you-out.php?empno=$empno&name=" . urlencode($name) . "&position=" . urlencode($position) . "&ConcernDate=" . urlencode($concernDate) . "&type_concern=" . urlencode($type_concern) . "&Concern=" . urlencode($selectedConcern) . "&type_errors=" . urlencode($type_errors);
+//         $linkText = "Click here to create and submit your HYO form";
+//         $linkAction = "window.location.href='$hearYouOutUrl'; return false;";
+//         $btnDisabled = true; // Disable the button if the form has not been submitted
+//     }
+// }
 ?>
 
 <div class="card border-0 shadow-sm mt-3">
