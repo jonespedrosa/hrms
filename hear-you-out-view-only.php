@@ -89,6 +89,12 @@
             font-weight: bold;
             cursor: pointer;
         }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            /* Optional: makes the button look more visually disabled */
+        }
     </style>
 </head>
 
@@ -111,6 +117,7 @@ $type_concern = mysqli_real_escape_string($HRconnect, $_GET['type_concern']);
 // Query to fetch data from the database
 $query = "SELECT responses, attachment FROM hear_you_out WHERE empno = '$empno' AND date_submitted = '$date_concern' AND type_concern = '$type_concern' AND status = 'Active'";
 $result = mysqli_query($HRconnect, $query);
+
 
 if ($result && mysqli_num_rows($result) > 0) {
     $row = mysqli_fetch_assoc($result);
@@ -137,6 +144,40 @@ if ($result && mysqli_num_rows($result) > 0) {
     // Retrieve the attachment file name
     $attachment = $row['attachment'];
     $attachmentUrl = !empty($attachment) ? "hyo_attachments/" . htmlspecialchars($attachment) : "";
+
+    // Query to count DTR concerns
+    $dtrConcernQuery = "SELECT COUNT(id) AS dtr_concern_count FROM dtr_concerns WHERE empno = '$empno' AND ConcernDate = '$date_concern' AND concern = '$stateOfIncident' AND status IN('Pending','Approved')";
+    $dtrConcernResult = mysqli_query($HRconnect, $dtrConcernQuery);
+
+    if ($dtrConcernResult) {
+        $dtrConcernRow = mysqli_fetch_assoc($dtrConcernResult);
+        $dtrConcernCount = $dtrConcernRow['dtr_concern_count'];
+    } else {
+        $dtrConcernCount = 0; // Default to 0 if no result is found
+    }
+
+    // Prepare the response with both the hear_you_out data and DTR concern count
+    // $response = array(
+    //     'name' => $name,
+    //     'position' => $position,
+    //     'type_of_employment' => $typeOfEmployment,
+    //     'place_of_incident' => $placeOfIncident,
+    //     'state_of_incident' => $stateOfIncident,
+    //     'name_superior' => $nameSuperior,
+    //     'date_of_serving' => $dateOfServingFormatted,
+    //     'employee_explanation' => $employeeExplanation,
+    //     'state_your_goal' => $stateYourGoal,
+    //     'state_realities' => $stateRealities,
+    //     'state_options' => $stateOptions,
+    //     'way_forward' => $wayForward,
+    //     'attachment_url' => $attachmentUrl,
+    //     'dtr_concern_count' => $dtrConcernCount, // Include DTR concern count
+    //     'date_concern' => $date_concern // Include DTR concern count
+
+    // );
+
+    // // Send the response in JSON format
+    // echo json_encode($response);
 } else {
     echo "No record found.";
 }
@@ -167,11 +208,11 @@ if ($result && mysqli_num_rows($result) > 0) {
                             <hr>
                             <div class="form-group mt-3">
                                 <label for="fullName">Employee's Name <span style="color:red;">*</span></label>
-                                <input type="text" class="form-control" id="fullName" value="<?php echo htmlspecialchars($name); ?>" placeholder="Enter Employee's Name" readonly>
+                                <input type="text" class="form-control" id="fullName" value="<?php echo htmlspecialchars($name); ?>" placeholder="Enter Employee's Name" readonly required>
                             </div>
                             <div class="form-group mt-3">
                                 <label for="position">Position <span style="color:red;">*</span></label>
-                                <input type="text" class="form-control" id="position" value="<?php echo htmlspecialchars($position); ?>" placeholder="Enter Position" readonly>
+                                <input type="text" class="form-control" id="position" value="<?php echo htmlspecialchars($position); ?>" placeholder="Enter Position" readonly required>
                             </div>
                             <div class="form-group mt-3">
                                 <label for="typeEmployment">Type of Employment <span style="color:red;">*</span></label>
@@ -192,25 +233,25 @@ if ($result && mysqli_num_rows($result) > 0) {
                             </div>
                             <div class="form-group mt-3">
                                 <label for="placeIncident">Place of Incident <i>(Where did the incident take place?)</i> <span style="color:red;">*</span></label>
-                                <input type="text" class="form-control" id="placeIncident" value="<?php echo htmlspecialchars($placeOfIncident); ?>" placeholder="Enter Place of Incident" readonly>
+                                <input type="text" class="form-control" id="placeIncident" value="<?php echo htmlspecialchars($placeOfIncident); ?>" placeholder="Enter Place of Incident" readonly required>
                             </div>
                             <div class="form-group mt-3">
                                 <label for="stateofIncident">State the Incident <span style="color:red;">*</span></label>
-                                <textarea class="form-control" id="stateofIncident" placeholder="Enter State of Incident" rows="4" readonly><?php echo htmlspecialchars($stateOfIncident); ?></textarea>
+                                <textarea class="form-control" id="stateofIncident" placeholder="Enter State of Incident" rows="4" readonly required><?php echo htmlspecialchars($stateOfIncident); ?></textarea>
                             </div>
                             <div class="form-group mt-3">
                                 <label for="nameSuperior">Name of Immediate Superior <i>(Surname, First Name, Middle Initial)</i> <span style="color:red;">*</span></label>
-                                <input type="text" class="form-control" id="nameSuperior" value="<?php echo htmlspecialchars($nameSuperior); ?>" placeholder="Enter Immediate Superior" readonly>
+                                <input type="text" class="form-control" id="nameSuperior" value="<?php echo htmlspecialchars($nameSuperior); ?>" placeholder="Enter Immediate Superior" readonly required>
                             </div>
                             <div class="form-group mt-3">
                                 <label for="dateServingIncident">Date of Serving the incident/offense to the Employee <span style="color:red;">*</span></label>
-                                <input type="datetime-local" class="form-control" id="dateServingIncident" value="<?php echo htmlspecialchars($dateOfServingFormatted); ?>" style="max-width: 220px; width: 100%;" readonly>
+                                <input type="datetime-local" class="form-control" id="dateServingIncident" value="<?php echo htmlspecialchars($dateOfServingFormatted); ?>" style="max-width: 220px; width: 100%;" readonly required>
                             </div>
                             <div class="form-group mt-3">
                                 <label for="employeeExplanation">Employee's Explanation <span style="color:red;">*</span></label>
-                                <textarea class="form-control" id="employeeExplanation" placeholder="Enter Employee's Explanation" rows="4" readonly><?php echo htmlspecialchars($employeeExplanation); ?></textarea>
+                                <textarea class="form-control" id="employeeExplanation" placeholder="Enter Employee's Explanation" rows="4" readonly required><?php echo htmlspecialchars($employeeExplanation); ?></textarea>
                             </div>
-                            <div class="form-group mt-3">
+                            <div class="form-group mt-3" id="attachmentImagesContainer">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <label for="attachmentImages">Attachment <span style="color:red;">*</span></label>
                                     <em><strong style="color:red;">Note:</strong> Click the image to view it in full size.</em>
@@ -228,12 +269,15 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 <span class="close">&times;</span>
                                 <img class="modal-content" id="fullImage">
                             </div>
+                            <div class="form-group mt-3" id="attachmentImagesEditContainer" hidden>
+                                <label for="attachmentImagesEdit">Attachment (<em>Logbook or CCTV Picture</em>) <span style="color:red;">*</span></label>
+                                <input type="file" class="form-control-file" id="attachmentImagesEdit" name="attachmentImagesEdit" accept=".jpeg, .jpg, .png" required>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="card o-hidden border-0 shadow-lg my-4" style="max-width: 800px; width: 100%; margin: 0 auto;">
             <div class="card-header" style="background-color: #6D4C13; color: white; font-weight: bold;">
                 <!-- Card header content if needed -->
@@ -247,19 +291,19 @@ if ($result && mysqli_num_rows($result) > 0) {
                         <hr>
                         <div class="form-group mt-3">
                             <label for="stateYourGoal">State your Goal <span style="color:red;">*</span></label>
-                            <textarea class="form-control" id="stateYourGoal" placeholder="Your answer" rows="4" readonly><?php echo htmlspecialchars($stateYourGoal); ?></textarea>
+                            <textarea class="form-control" id="stateYourGoal" placeholder="Your answer" rows="4" readonly required><?php echo htmlspecialchars($stateYourGoal); ?></textarea>
                         </div>
                         <div class="form-group mt-3">
                             <label for="stateRealities">State the <strong>Realities</strong> why the offense or incident happened. <span style="color:red;">*</span></label>
-                            <textarea class="form-control" id="stateRealities" placeholder="Your answer" rows="4" readonly><?php echo htmlspecialchars($stateRealities); ?></textarea>
+                            <textarea class="form-control" id="stateRealities" placeholder="Your answer" rows="4" readonly required><?php echo htmlspecialchars($stateRealities); ?></textarea>
                         </div>
                         <div class="form-group mt-3">
                             <label for="stateOptions">State your <strong>Options</strong> to prevent the same offense or incident from happening again.<span style="color:red;">*</span></label>
-                            <textarea class="form-control" id="stateOptions" placeholder="Your answer" rows="4" readonly><?php echo htmlspecialchars($stateOptions); ?></textarea>
+                            <textarea class="form-control" id="stateOptions" placeholder="Your answer" rows="4" readonly required><?php echo htmlspecialchars($stateOptions); ?></textarea>
                         </div>
                         <div class="form-group mt-3">
                             <label for="wayForward"><strong>Way Forward</strong> State your commitment.<span style="color:red;">*</span></label>
-                            <textarea class="form-control" id="wayForward" placeholder="Your answer" rows="4" readonly><?php echo htmlspecialchars($wayForward); ?></textarea>
+                            <textarea class="form-control" id="wayForward" placeholder="Your answer" rows="4" readonly required><?php echo htmlspecialchars($wayForward); ?></textarea>
                         </div>
                         <div class="d-flex justify-content-between mt-5">
                             <button id="closeButton" class="btn btn-secondary" style="font-weight: bold;">Close</button>
@@ -271,9 +315,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                     </div>
                 </div>
             </div>
-
         </div>
-
     </div>
 </form>
 
@@ -288,7 +330,9 @@ if ($result && mysqli_num_rows($result) > 0) {
 <script src="js/sb-admin-2.min.js"></script>
 
 <script>
+    var dtrConcernCount = <?php echo $dtrConcernCount; ?>;
     document.addEventListener('DOMContentLoaded', function() {
+
         // Disable all input fields and textareas
         const formElements = document.querySelectorAll('#hearYouOutForm input, #hearYouOutForm textarea');
 
@@ -299,6 +343,138 @@ if ($result && mysqli_num_rows($result) > 0) {
                 element.setAttribute('readonly', true);
             }
         });
+
+        var editButton = document.getElementById('editButton');
+
+        // Enable the Edit button if dtrConcernCount is 0, disable it if it's 1 or more
+        if (dtrConcernCount === 0) {
+            editButton.removeAttribute('disabled');
+        } else if (dtrConcernCount >= 1) {
+            editButton.setAttribute('disabled', 'disabled');
+        }
+
+        // Add an event listener to the Edit button
+        editButton.addEventListener('click', function() {
+
+            if (this.textContent === 'Edit') {
+                // Change button text to "Submit"
+                this.textContent = 'Submit';
+
+                // Array of element IDs to make editable
+                const fieldsToEdit = [
+                    'placeIncident',
+                    'nameSuperior',
+                    'employeeExplanation',
+                    'stateYourGoal',
+                    'stateRealities',
+                    'stateOptions',
+                    'wayForward'
+                ];
+
+                // Loop through each element ID, check if the element exists, and remove readonly
+                fieldsToEdit.forEach(function(id) {
+                    var element = document.getElementById(id);
+                    if (element) {
+                        element.removeAttribute('readonly');
+                    }
+                });
+
+                // Handle the typeEmployment radio buttons
+                const typeEmploymentRadios = document.querySelectorAll('input[name="typeEmployment"]');
+                typeEmploymentRadios.forEach(function(radio) {
+                    radio.removeAttribute('disabled');
+                });
+
+                // Hide the "attachmentImagesContainer" div and show "attachmentImagesEditContainer" input field
+                const attachmentImagesContainer = document.getElementById('attachmentImagesContainer');
+                const attachmentImagesEditContainer = document.getElementById('attachmentImagesEditContainer');
+
+                if (attachmentImagesContainer && attachmentImagesEditContainer) {
+                    attachmentImagesContainer.style.display = 'none'; // Hide the current image container
+                    attachmentImagesEditContainer.removeAttribute('hidden'); // Show the file input field for uploading new image
+                }
+
+            } else if (this.textContent === 'Submit') {
+                // When the button says "Submit", perform the update via AJAX
+
+                const formData = new FormData();
+
+                // Get values from the editable fields
+                formData.append('placeIncident', document.getElementById('placeIncident').value);
+                formData.append('nameSuperior', document.getElementById('nameSuperior').value);
+                formData.append('employeeExplanation', document.getElementById('employeeExplanation').value);
+                formData.append('stateYourGoal', document.getElementById('stateYourGoal').value);
+                formData.append('stateRealities', document.getElementById('stateRealities').value);
+                formData.append('stateOptions', document.getElementById('stateOptions').value);
+                formData.append('wayForward', document.getElementById('wayForward').value);
+
+                // Get the selected value from the radio buttons for typeEmployment
+                const selectedEmployment = document.querySelector('input[name="typeEmployment"]:checked').value;
+                formData.append('typeEmployment', selectedEmployment); // Append the selected value to formData
+
+                // Get the 'empno' value from the URL
+                const empno = '<?php echo $_GET["empno"]; ?>';
+                const id = '<?php echo $_GET["id"]; ?>';
+
+                // Include both 'id' and 'empno' in the fetch URL
+                fetch(`update-hear-you-out.php?id=${id}&empno=${empno}`, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                position: "center",
+                                icon: "success",
+                                title: "Successfully updated Hear You Out form!",
+                                footer: "Please continue to fill up concern form", // Add footer with the message
+                                showConfirmButton: false, // Hide confirm button
+                                timer: 3000, // Auto-hide after 1.5 seconds
+                                timerProgressBar: true // Show progress bar
+                            });
+
+                            // After successful update, change the button text back to "Edit"
+                            editButton.textContent = 'Edit';
+
+                            // Make the fields read-only again
+                            const fieldsToEdit = [
+                                'placeIncident',
+                                'nameSuperior',
+                                'employeeExplanation',
+                                'stateYourGoal',
+                                'stateRealities',
+                                'stateOptions',
+                                'wayForward'
+                            ];
+
+                            fieldsToEdit.forEach(function(id) {
+                                var element = document.getElementById(id);
+                                if (element) {
+                                    element.setAttribute('readonly', 'readonly');
+                                }
+                            });
+
+                            // Disable the radio buttons again
+                            const typeEmploymentRadios = document.querySelectorAll('input[name="typeEmployment"]');
+                            typeEmploymentRadios.forEach(function(radio) {
+                                radio.setAttribute('disabled', 'disabled');
+                            });
+
+                            // Show the original image container and hide the edit container again
+                            if (attachmentImagesContainer && attachmentImagesEditContainer) {
+                                attachmentImagesContainer.style.display = 'block'; // Show the current image container
+                                attachmentImagesEditContainer.setAttribute('hidden', true); // Hide the file input field
+                            }
+
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+
 
         // Get the modal
         var modal = document.getElementById("imageModal");
