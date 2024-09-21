@@ -30,17 +30,39 @@ $stateRealities = $_POST['stateRealities'];
 $stateOptions = $_POST['stateOptions'];
 $wayForward = $_POST['wayForward'];
 
+// Check if a file was uploaded
+$attachmentFileName = null;
+
+if (isset($_FILES['attachmentImagesEdit']) && $_FILES['attachmentImagesEdit']['error'] === UPLOAD_ERR_OK) {
+    // Generate a unique filename
+    $tempFile = $_FILES['attachmentImagesEdit']['tmp_name'];
+    $originalFileName = $_FILES['attachmentImagesEdit']['name'];
+    $extension = pathinfo($originalFileName, PATHINFO_EXTENSION);
+    $attachmentFileName = md5(uniqid(rand(), true)) . '.' . $extension;
+
+    // Define the target directory
+    $targetDirectory = 'hyo_attachments/';
+    $targetFilePath = $targetDirectory . $attachmentFileName;
+
+    // Move the uploaded file to the target directory
+    if (!move_uploaded_file($tempFile, $targetFilePath)) {
+        echo json_encode(['success' => false, 'message' => 'Failed to upload attachment']);
+        exit;
+    }
+}
+
 // Fetch the existing 'responses' JSON from the database for the given 'id' and 'empno'
-$query = "SELECT responses FROM hear_you_out WHERE id = ? AND empno = ?";
+$query = "SELECT responses, attachment FROM hear_you_out WHERE id = ? AND empno = ?";
 $stmt = mysqli_prepare($HRconnect, $query);
 mysqli_stmt_bind_param($stmt, 'ii', $id, $empno);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 if ($result && mysqli_num_rows($result) > 0) {
-    // Get the current 'responses' data
+    // Get the current 'responses' and 'attachment' data
     $row = mysqli_fetch_assoc($result);
     $responses = json_decode($row['responses'], true); // Decode JSON to an array
+    $currentAttachment = $row['attachment'];
 
     if ($responses) {
         // Update the specific fields in the 'employee_details' part of the JSON
@@ -56,33 +78,37 @@ if ($result && mysqli_num_rows($result) > 0) {
         // Re-encode the modified data back to JSON
         $updatedResponses = json_encode($responses);
 
-        // Update the database with the modified JSON
-        $updateQuery = "UPDATE hear_you_out SET responses = ? WHERE id = ? AND empno = ?";
+        // If a new file was uploaded, update the attachment column
+        if ($attachmentFileName) {
+            // Optionally, you can delete the old file from the server if needed
+            if ($currentAttachment && file_exists($targetDirectory . $currentAttachment)) {
+                unlink($targetDirectory . $currentAttachment); // Remove old file
+            }
+        } else {
+            $attachmentFileName = $currentAttachment; // Keep the old filename if no new file uploaded
+        }
+
+        // Update the database with the modified JSON and attachment filename
+        $updateQuery = "UPDATE hear_you_out SET responses = ?, attachment = ? WHERE id = ? AND empno = ?";
         $updateStmt = mysqli_prepare($HRconnect, $updateQuery);
-        mysqli_stmt_bind_param($updateStmt, 'sii', $updatedResponses, $id, $empno);
+        mysqli_stmt_bind_param($updateStmt, 'ssii', $updatedResponses, $attachmentFileName, $id, $empno);
 
         if (mysqli_stmt_execute($updateStmt)) {
-            // Successfully updated
             echo json_encode(['success' => true, 'message' => 'Data updated successfully']);
         } else {
-            // Update failed
             echo json_encode(['success' => false, 'message' => 'Failed to update data']);
         }
 
         mysqli_stmt_close($updateStmt);
     } else {
-        // Invalid JSON format
         echo json_encode(['success' => false, 'message' => 'Invalid JSON data']);
     }
 } else {
-    // No data found for the given 'id' and 'empno'
     echo json_encode(['success' => false, 'message' => 'No data found for the given ID and Employee Number']);
 }
 
 mysqli_stmt_close($stmt);
 mysqli_close($HRconnect);
-
-
 
 
 

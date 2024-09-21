@@ -353,8 +353,15 @@ if ($result && mysqli_num_rows($result) > 0) {
             editButton.setAttribute('disabled', 'disabled');
         }
 
+
+
+
+
         // Add an event listener to the Edit button
         editButton.addEventListener('click', function() {
+
+            // Prevent the default action
+            event.preventDefault(); // Prevent page refresh
 
             if (this.textContent === 'Edit') {
                 // Change button text to "Submit"
@@ -412,6 +419,14 @@ if ($result && mysqli_num_rows($result) > 0) {
                 const selectedEmployment = document.querySelector('input[name="typeEmployment"]:checked').value;
                 formData.append('typeEmployment', selectedEmployment); // Append the selected value to formData
 
+
+
+                // Append the file (if any) from the file input
+                const fileInput = document.getElementById('attachmentImagesEdit');
+                if (fileInput.files.length > 0) {
+                    formData.append('attachmentImagesEdit', fileInput.files[0]);
+                }
+
                 // Get the 'empno' value from the URL
                 const empno = '<?php echo $_GET["empno"]; ?>';
                 const id = '<?php echo $_GET["id"]; ?>';
@@ -428,12 +443,13 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 position: "center",
                                 icon: "success",
                                 title: "Successfully updated Hear You Out form!",
-                                footer: "Please continue to fill up concern form", // Add footer with the message
-                                showConfirmButton: false, // Hide confirm button
-                                timer: 3000, // Auto-hide after 1.5 seconds
-                                timerProgressBar: true // Show progress bar
+                                footer: "Please continue to fill up concern form",
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true
+                            }).then(() => {
+                                location.reload(); // Reload the page after the alert closes
                             });
-
                             // After successful update, change the button text back to "Edit"
                             editButton.textContent = 'Edit';
 
@@ -474,6 +490,23 @@ if ($result && mysqli_num_rows($result) > 0) {
                     .catch(error => console.error('Error:', error));
             }
         });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         // Get the modal
