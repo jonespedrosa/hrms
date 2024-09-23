@@ -353,10 +353,6 @@ if ($result && mysqli_num_rows($result) > 0) {
             editButton.setAttribute('disabled', 'disabled');
         }
 
-
-
-
-
         // Add an event listener to the Edit button
         editButton.addEventListener('click', function() {
 
@@ -418,8 +414,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                 // Get the selected value from the radio buttons for typeEmployment
                 const selectedEmployment = document.querySelector('input[name="typeEmployment"]:checked').value;
                 formData.append('typeEmployment', selectedEmployment); // Append the selected value to formData
-
-
 
                 // Append the file (if any) from the file input
                 const fileInput = document.getElementById('attachmentImagesEdit');
@@ -490,24 +484,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                     .catch(error => console.error('Error:', error));
             }
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         // Get the modal
         var modal = document.getElementById("imageModal");
