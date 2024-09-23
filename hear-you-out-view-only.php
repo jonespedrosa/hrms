@@ -335,7 +335,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 <button id="cancelButton" class="btn btn-danger" style="font-weight: bold;">Cancel</button>
                             </div>
                         </div>
-                        <input type="hidden" name="dtrConcernCount" value="<?php echo $dtrConcernCount; ?>" />
                     </div>
                 </div>
             </div>
@@ -368,169 +367,101 @@ if ($result && mysqli_num_rows($result) > 0) {
         if (dtrConcernCount === 0) {
             editButton.removeAttribute('disabled');
             cancelButton.removeAttribute('disabled');
-
         } else if (dtrConcernCount >= 1) {
             editButton.setAttribute('disabled', 'disabled');
             cancelButton.setAttribute('disabled', 'disabled');
-
         }
 
         // Add an event listener to the Edit button
-        editButton.addEventListener('click', function() {
+        document.getElementById('editButton').addEventListener('click', function(event) {
+            // Embed PHP value into JavaScript
+            const dtrConcernCount = <?php echo $dtrConcernCount; ?>;
 
-            // Prevent the default action
-            event.preventDefault(); // Prevent page refresh
-
-            if (this.textContent === 'Edit') {
-                // Change button text to "Submit"
-                this.textContent = 'Submit';
-
-                // Array of element IDs to make editable
-                const fieldsToEdit = [
-                    'placeIncident',
-                    'nameSuperior',
-                    'employeeExplanation',
-                    'stateYourGoal',
-                    'stateRealities',
-                    'stateOptions',
-                    'wayForward'
-                ];
-
-                // Loop through each element ID, check if the element exists, and remove readonly
-                fieldsToEdit.forEach(function(id) {
-                    var element = document.getElementById(id);
-                    if (element) {
-                        element.removeAttribute('readonly');
-                    }
+            // If dtrConcernCount is 1, block editing
+            if (dtrConcernCount == 1) {
+                // Show error if DTR concern exists
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Action Blocked',
+                    text: 'Editing is not permitted because the DTR concerns have already been submitted for this date.',
+                    customClass: {
+                        confirmButton: 'swal-button-red'
+                    },
+                    buttonsStyling: false
                 });
+            } else {
+                // Prevent the default action
+                event.preventDefault(); // Prevent page refresh
 
-                // Handle the typeEmployment radio buttons
-                const typeEmploymentRadios = document.querySelectorAll('input[name="typeEmployment"]');
-                typeEmploymentRadios.forEach(function(radio) {
-                    radio.removeAttribute('disabled');
-                });
+                if (this.textContent === 'Edit') {
+                    // Change button text to "Submit"
+                    this.textContent = 'Submit';
 
-                // Hide the "attachmentImagesContainer" div and show "attachmentImagesEditContainer" input field
-                const attachmentImagesContainer = document.getElementById('attachmentImagesContainer');
-                const attachmentImagesEditContainer = document.getElementById('attachmentImagesEditContainer');
+                    // Array of element IDs to make editable
+                    const fieldsToEdit = [
+                        'placeIncident',
+                        'nameSuperior',
+                        'employeeExplanation',
+                        'stateYourGoal',
+                        'stateRealities',
+                        'stateOptions',
+                        'wayForward'
+                    ];
 
-                if (attachmentImagesContainer && attachmentImagesEditContainer) {
-                    attachmentImagesContainer.style.display = 'none'; // Hide the current image container
-                    attachmentImagesEditContainer.removeAttribute('hidden'); // Show the file input field for uploading new image
-                }
-
-            } else if (this.textContent === 'Submit') {
-                // When the button says "Submit", perform the update via AJAX
-
-                const formData = new FormData();
-
-                // Get values from the editable fields
-                formData.append('placeIncident', document.getElementById('placeIncident').value);
-                formData.append('nameSuperior', document.getElementById('nameSuperior').value);
-                formData.append('employeeExplanation', document.getElementById('employeeExplanation').value);
-                formData.append('stateYourGoal', document.getElementById('stateYourGoal').value);
-                formData.append('stateRealities', document.getElementById('stateRealities').value);
-                formData.append('stateOptions', document.getElementById('stateOptions').value);
-                formData.append('wayForward', document.getElementById('wayForward').value);
-
-                // Get the selected value from the radio buttons for typeEmployment
-                const selectedEmployment = document.querySelector('input[name="typeEmployment"]:checked').value;
-                formData.append('typeEmployment', selectedEmployment); // Append the selected value to formData
-
-                // Append the file (if any) from the file input
-                const fileInput = document.getElementById('attachmentImagesEdit');
-                if (fileInput.files.length > 0) {
-                    formData.append('attachmentImagesEdit', fileInput.files[0]);
-                }
-
-                // Get the 'empno' value from the URL
-                const empno = '<?php echo $_GET["empno"]; ?>';
-                const id = '<?php echo $_GET["id"]; ?>';
-
-                // Include both 'id' and 'empno' in the fetch URL
-                fetch(`update-hear-you-out.php?id=${id}&empno=${empno}`, {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                position: "center",
-                                icon: "success",
-                                title: "Successfully updated Hear You Out form!",
-                                footer: "Please continue to fill up concern form",
-                                showConfirmButton: false,
-                                timer: 2000,
-                                timerProgressBar: true
-                            }).then(() => {
-                                location.reload(); // Reload the page after the alert closes
-                            });
-                            // After successful update, change the button text back to "Edit"
-                            editButton.textContent = 'Edit';
-
-                            // Make the fields read-only again
-                            const fieldsToEdit = [
-                                'placeIncident',
-                                'nameSuperior',
-                                'employeeExplanation',
-                                'stateYourGoal',
-                                'stateRealities',
-                                'stateOptions',
-                                'wayForward'
-                            ];
-
-                            fieldsToEdit.forEach(function(id) {
-                                var element = document.getElementById(id);
-                                if (element) {
-                                    element.setAttribute('readonly', 'readonly');
-                                }
-                            });
-
-                            // Disable the radio buttons again
-                            const typeEmploymentRadios = document.querySelectorAll('input[name="typeEmployment"]');
-                            typeEmploymentRadios.forEach(function(radio) {
-                                radio.setAttribute('disabled', 'disabled');
-                            });
-
-                            // Show the original image container and hide the edit container again
-                            if (attachmentImagesContainer && attachmentImagesEditContainer) {
-                                attachmentImagesContainer.style.display = 'block'; // Show the current image container
-                                attachmentImagesEditContainer.setAttribute('hidden', true); // Hide the file input field
-                            }
-
-                        } else {
-                            alert('Error: ' + data.message);
+                    // Loop through each element ID and remove readonly
+                    fieldsToEdit.forEach(function(id) {
+                        var element = document.getElementById(id);
+                        if (element) {
+                            element.removeAttribute('readonly');
                         }
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-        });
+                    });
 
-        document.getElementById('cancelButton').addEventListener('click', function() {
-            // Show SweetAlert confirmation
-            Swal.fire({
-                title: "Are you sure?",
-                text: "Do you want to cancel this Hear You Out?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, cancel it",
-                cancelButtonText: "No, keep it",
-                customClass: {
-                    confirmButton: 'swal-button-green', // Apply your custom button class
-                    cancelButton: 'swal-button-red' // Optional: Add custom class for cancel button
-                },
-                buttonsStyling: false // Disables default SweetAlert2 button styling
-            }).then((result) => {
-                if (result.isConfirmed) {
+                    // Handle the typeEmployment radio buttons
+                    const typeEmploymentRadios = document.querySelectorAll('input[name="typeEmployment"]');
+                    typeEmploymentRadios.forEach(function(radio) {
+                        radio.removeAttribute('disabled');
+                    });
 
-                    // User confirmed, make the AJAX call to update the status to "Cancelled"
+                    // Hide the "attachmentImagesContainer" div and show "attachmentImagesEditContainer" input field
+                    const attachmentImagesContainer = document.getElementById('attachmentImagesContainer');
+                    const attachmentImagesEditContainer = document.getElementById('attachmentImagesEditContainer');
+
+                    if (attachmentImagesContainer && attachmentImagesEditContainer) {
+                        attachmentImagesContainer.style.display = 'none'; // Hide the current image container
+                        attachmentImagesEditContainer.removeAttribute('hidden'); // Show the file input field for uploading new image
+                    }
+
+                } else if (this.textContent === 'Submit') {
+                    // When the button says "Submit", perform the update via AJAX
+                    const formData = new FormData();
+
+                    // Get values from the editable fields
+                    formData.append('placeIncident', document.getElementById('placeIncident').value);
+                    formData.append('nameSuperior', document.getElementById('nameSuperior').value);
+                    formData.append('employeeExplanation', document.getElementById('employeeExplanation').value);
+                    formData.append('stateYourGoal', document.getElementById('stateYourGoal').value);
+                    formData.append('stateRealities', document.getElementById('stateRealities').value);
+                    formData.append('stateOptions', document.getElementById('stateOptions').value);
+                    formData.append('wayForward', document.getElementById('wayForward').value);
+
+                    // Get the selected value from the radio buttons for typeEmployment
+                    const selectedEmployment = document.querySelector('input[name="typeEmployment"]:checked').value;
+                    formData.append('typeEmployment', selectedEmployment); // Append the selected value to formData
+
+                    // Append the file (if any) from the file input
+                    const fileInput = document.getElementById('attachmentImagesEdit');
+                    if (fileInput.files.length > 0) {
+                        formData.append('attachmentImagesEdit', fileInput.files[0]);
+                    }
+
+                    // Get the 'empno' value from the URL
                     const empno = '<?php echo $_GET["empno"]; ?>';
                     const id = '<?php echo $_GET["id"]; ?>';
 
-                    // Make the AJAX request
-                    fetch(`update-to-cancel-hear-you-out.php?id=${id}&empno=${empno}`, {
-                            method: 'POST'
+                    // Include both 'id' and 'empno' in the fetch URL
+                    fetch(`update-hear-you-out.php?id=${id}&empno=${empno}`, {
+                            method: 'POST',
+                            body: formData
                         })
                         .then(response => response.json())
                         .then(data => {
@@ -538,39 +469,133 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 Swal.fire({
                                     position: "center",
                                     icon: "success",
-                                    title: "Hear You Out cancelled successfully!",
+                                    title: "Successfully updated Hear You Out form!",
+                                    footer: "Please continue to fill up concern form",
                                     showConfirmButton: false,
-                                    timer: 2000, // Auto-hide after 1.5 seconds
-                                    timerProgressBar: true, // Show progress bar
-                                    customClass: {
-                                        confirmButton: 'swal-button-green' // Apply custom button style for success
-                                    },
-                                    buttonsStyling: false // Disable default button styling
+                                    timer: 2000,
+                                    timerProgressBar: true
                                 }).then(() => {
-                                    const empno = "<?php echo $empno; ?>";
-                                    const date_concern = "<?php echo $date_concern; ?>";
-                                    const stateOfIncident = "<?php echo $stateOfIncident; ?>";
-                                    const type_concern = "<?php echo $type_concern; ?>";
-                                    // Build the redirect URL with query parameters
-                                    var redirectUrl = `/hrms/filing-concerns.php?concern=concern&empno=${empno}&date=${date_concern}&dtrconcern=${stateOfIncident}&type_errors=${type_concern}`;
-                                    // Redirect to the new URL
-                                    window.location.href = redirectUrl;
+                                    location.reload(); // Reload the page after the alert closes
                                 });
+                                // After successful update, change the button text back to "Edit"
+                                editButton.textContent = 'Edit';
+
+                                // Make the fields read-only again
+                                const fieldsToEdit = [
+                                    'placeIncident',
+                                    'nameSuperior',
+                                    'employeeExplanation',
+                                    'stateYourGoal',
+                                    'stateRealities',
+                                    'stateOptions',
+                                    'wayForward'
+                                ];
+
+                                fieldsToEdit.forEach(function(id) {
+                                    var element = document.getElementById(id);
+                                    if (element) {
+                                        element.setAttribute('readonly', 'readonly');
+                                    }
+                                });
+
+                                // Disable the radio buttons again
+                                const typeEmploymentRadios = document.querySelectorAll('input[name="typeEmployment"]');
+                                typeEmploymentRadios.forEach(function(radio) {
+                                    radio.setAttribute('disabled', 'disabled');
+                                });
+
+                                // Show the original image container and hide the edit container again
+                                if (attachmentImagesContainer && attachmentImagesEditContainer) {
+                                    attachmentImagesContainer.style.display = 'block'; // Show the current image container
+                                    attachmentImagesEditContainer.setAttribute('hidden', true); // Hide the file input field
+                                }
+
                             } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Failed to cancel Hear You Out: ' + data.message,
-                                    customClass: {
-                                        confirmButton: 'swal-button-green' // Apply custom button style for error
-                                    },
-                                    buttonsStyling: false
-                                });
+                                alert('Error: ' + data.message);
                             }
                         })
                         .catch(error => console.error('Error:', error));
                 }
-            });
+            }
+        });
+
+        document.getElementById('cancelButton').addEventListener('click', function() {
+            // Embed PHP value into JavaScript
+            const dtrConcernCount = <?php echo $dtrConcernCount; ?>;
+
+            if (dtrConcernCount == 1) {
+                // Show error if DTR concern exists
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Action Blocked',
+                    text: 'Cancellation is not permitted because the DTR concerns have already been submitted for this date.',
+                    customClass: {
+                        confirmButton: 'swal-button-red'
+                    },
+                    buttonsStyling: false
+                });
+            } else {
+                // Proceed with SweetAlert confirmation
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Do you want to cancel this Hear You Out?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, cancel it",
+                    cancelButtonText: "No, keep it",
+                    customClass: {
+                        confirmButton: 'swal-button-green',
+                        cancelButton: 'swal-button-red'
+                    },
+                    buttonsStyling: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // User confirmed, make the AJAX call to update the status to "Cancelled"
+                        const empno = '<?php echo $_GET["empno"]; ?>';
+                        const id = '<?php echo $_GET["id"]; ?>';
+
+                        fetch(`update-to-cancel-hear-you-out.php?id=${id}&empno=${empno}`, {
+                                method: 'POST'
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        position: "center",
+                                        icon: "success",
+                                        title: "Hear You Out cancelled successfully!",
+                                        showConfirmButton: false,
+                                        timer: 2000,
+                                        timerProgressBar: true,
+                                        customClass: {
+                                            confirmButton: 'swal-button-green'
+                                        },
+                                        buttonsStyling: false
+                                    }).then(() => {
+                                        // Redirect after successful cancellation
+                                        const empno = "<?php echo $empno; ?>";
+                                        const date_concern = "<?php echo $date_concern; ?>";
+                                        const stateOfIncident = "<?php echo $stateOfIncident; ?>";
+                                        const type_concern = "<?php echo $type_concern; ?>";
+                                        var redirectUrl = `/hrms/filing-concerns.php?concern=concern&empno=${empno}&date=${date_concern}&dtrconcern=${stateOfIncident}&type_errors=${type_concern}`;
+                                        window.location.href = redirectUrl;
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'Failed to cancel Hear You Out: ' + data.message,
+                                        customClass: {
+                                            confirmButton: 'swal-button-green'
+                                        },
+                                        buttonsStyling: false
+                                    });
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+                });
+            }
         });
 
         // Get the modal
@@ -628,7 +653,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         // Redirect to the previously constructed URL
         window.location.href = redirectUrl;
     });
-
 </script>
 
 </body>
