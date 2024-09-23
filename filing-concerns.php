@@ -2388,6 +2388,11 @@ $HRconnect->close();
                             if (pTag) {
                                 pTag.textContent = "The staff's fingerprints are not being detected by the Persona device, likely due to fading or issues with the thumbprint. "; // Update the text
                             }
+                        } else if (selectedConcern === "Emergency time out") {
+                            const pTag = displayDiv.querySelector('p');
+                            if (pTag) {
+                                pTag.textContent = "The employee has experienced an emergency and cannot continue using the Persona device."; // Update the text
+                            }
                         }
 
                         document.querySelectorAll('.time-inputs input').forEach(input => {

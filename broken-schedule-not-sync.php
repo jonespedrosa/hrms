@@ -7,7 +7,7 @@ $btnDisabled = false; // Default value
         <h5 class="mt-4" style="margin-bottom: 0;">
             <strong><?php echo htmlspecialchars($selectedConcern ?? 'Broken schedule did not sync'); ?></strong>
         </h5>
-        <p style="margin-top: 0;">The staff forgot to check Broken Schedule for Gen Meet/Gen Cleaning. It is only applicable if you already completed 4 time inputs for that shift.</p>
+        <p style="margin-top: 0;">The staff has broken schedule time inputs on the persona <i>(based on the logs history)</i> but did not reflect on his/her Web DTR.</p>
         <hr>
         <div class="form-group">
             <!-- Attachments image select Section -->

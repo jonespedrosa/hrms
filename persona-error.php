@@ -9,6 +9,10 @@ if ($selectedConcern === "Hardware malfunction") {
     $attachmentLabel = "(Proof of hardware malfunction)";
 } elseif ($selectedConcern === "Persona error") {
     $attachmentLabel = "(Proof of persona applications error or device error)";
+} elseif ($selectedConcern === "Emergency time out") {
+    $attachmentLabel = "(Logbook or proof of emergency)";
+} elseif ($selectedConcern === "Fingerprint problem") {
+    $attachmentLabel = "(Proof of faded fingerprint or unreadable by Persona)";
 }
 ?>
 <div class="card border-0 shadow-sm mt-3">
