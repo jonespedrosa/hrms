@@ -572,12 +572,13 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         },
                                         buttonsStyling: false
                                     }).then(() => {
-                                        // Redirect after successful cancellation
+                                        // Define the variables for building the redirect URL
                                         const empno = "<?php echo $empno; ?>";
                                         const date_concern = "<?php echo $date_concern; ?>";
                                         const stateOfIncident = "<?php echo $stateOfIncident; ?>";
                                         const type_concern = "<?php echo $type_concern; ?>";
-                                        var redirectUrl = `/hrms/filing-concerns.php?concern=concern&empno=${empno}&date=${date_concern}&dtrconcern=${stateOfIncident}&type_errors=${type_concern}`;
+                                        // Build the redirect URL with query parameters
+                                        var redirectUrl = `/hrms/filing-concerns.php?concern=concern&dtrconcern&empno=${empno}&date=${date_concern}&dtrconcern=${stateOfIncident}&type_errors=${type_concern}`;
                                         window.location.href = redirectUrl;
                                     });
                                 } else {

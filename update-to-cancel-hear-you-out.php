@@ -20,10 +20,16 @@ if (!$id || !$empno) {
     exit;
 }
 
-// Update the status to "Cancelled"
-$updateQuery = "UPDATE hear_you_out SET status = 'Cancelled' WHERE id = ? AND empno = ?";
+// Set the time zone to the Philippines time zone
+date_default_timezone_set('Asia/Manila');
+$updated_at = date('Y-m-d H:i:s');
+
+// Update the status to "Cancelled" and set the updated_at timestamp
+$updateQuery = "UPDATE hear_you_out SET status = 'Cancelled', updated_at = ? WHERE id = ? AND empno = ?";
 $stmt = mysqli_prepare($HRconnect, $updateQuery);
-mysqli_stmt_bind_param($stmt, 'ii', $id, $empno);
+
+// Bind the updated_at timestamp along with id and empno
+mysqli_stmt_bind_param($stmt, 'sii', $updated_at, $id, $empno);
 
 if (mysqli_stmt_execute($stmt)) {
     echo json_encode(['success' => true, 'message' => 'Hear You Out successfully cancelled']);

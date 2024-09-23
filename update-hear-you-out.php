@@ -88,10 +88,16 @@ if ($result && mysqli_num_rows($result) > 0) {
             $attachmentFileName = $currentAttachment; // Keep the old filename if no new file uploaded
         }
 
-        // Update the database with the modified JSON and attachment filename
-        $updateQuery = "UPDATE hear_you_out SET responses = ?, attachment = ? WHERE id = ? AND empno = ?";
+        // Set the time zone to the Philippines time zone
+        date_default_timezone_set('Asia/Manila');
+        $updated_at = date('Y-m-d H:i:s');
+
+        // Update the database with the modified JSON, attachment filename, and updated_at timestamp
+        $updateQuery = "UPDATE hear_you_out SET responses = ?, attachment = ?, updated_at = ? WHERE id = ? AND empno = ?";
         $updateStmt = mysqli_prepare($HRconnect, $updateQuery);
-        mysqli_stmt_bind_param($updateStmt, 'ssii', $updatedResponses, $attachmentFileName, $id, $empno);
+
+        // Bind the updated values, including the updated_at timestamp
+        mysqli_stmt_bind_param($updateStmt, 'sssii', $updatedResponses, $attachmentFileName, $updated_at, $id, $empno);
 
         if (mysqli_stmt_execute($updateStmt)) {
             echo json_encode(['success' => true, 'message' => 'Data updated successfully']);
