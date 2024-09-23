@@ -50,11 +50,35 @@
             padding: 10px 20px !important;
             cursor: pointer !important;
             outline: none !important;
+            font-weight: bold !important;
+            /* Makes the text bold */
+            margin: 0 10px !important;
+            /* Adds space between buttons */
         }
 
         .swal-button-green:hover {
-            background-color: #48BF81 !important;
-            /* Optional: darker shade on hover */
+            background-color: #3EA371 !important;
+            /* Darker shade on hover */
+        }
+
+        .swal-button-red {
+            background-color: #FF6F61 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 5px !important;
+            padding: 10px 20px !important;
+            cursor: pointer !important;
+            outline: none !important;
+            font-weight: bold !important;
+            /* Makes the text bold */
+            margin: 0 10px !important;
+            /* Adds space between buttons */
+        }
+
+
+        .swal-button-red:hover {
+            background-color: #E35D52 !important;
+            /* Darker shade on hover */
         }
 
         /* Style for the image modal */
@@ -156,7 +180,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         $dtrConcernCount = 0; // Default to 0 if no result is found
     }
 
-    // Prepare the response with both the hear_you_out data and DTR concern count
+    // // Prepare the response with both the hear_you_out data and DTR concern count
     // $response = array(
     //     'name' => $name,
     //     'position' => $position,
@@ -173,7 +197,6 @@ if ($result && mysqli_num_rows($result) > 0) {
     //     'attachment_url' => $attachmentUrl,
     //     'dtr_concern_count' => $dtrConcernCount, // Include DTR concern count
     //     'date_concern' => $date_concern // Include DTR concern count
-
     // );
 
     // // Send the response in JSON format
@@ -305,13 +328,14 @@ if ($result && mysqli_num_rows($result) > 0) {
                             <label for="wayForward"><strong>Way Forward</strong> State your commitment.<span style="color:red;">*</span></label>
                             <textarea class="form-control" id="wayForward" placeholder="Your answer" rows="4" readonly required><?php echo htmlspecialchars($wayForward); ?></textarea>
                         </div>
-                        <div class="d-flex justify-content-between mt-5">
-                            <button id="closeButton" class="btn btn-secondary" style="font-weight: bold;">Close</button>
+                        <div class="d-flex justify-content-between mt-5" id="onlyforUser">
+                            <button id="backButton" class="btn btn-secondary" style="font-weight: bold;">Go Back</button>
                             <div>
                                 <button id="editButton" class="btn btn-primary me-2" style="font-weight: bold;">Edit</button>
                                 <button id="cancelButton" class="btn btn-danger" style="font-weight: bold;">Cancel</button>
                             </div>
                         </div>
+                        <input type="hidden" name="dtrConcernCount" value="<?php echo $dtrConcernCount; ?>" />
                     </div>
                 </div>
             </div>
@@ -331,26 +355,24 @@ if ($result && mysqli_num_rows($result) > 0) {
 
 <script>
     var dtrConcernCount = <?php echo $dtrConcernCount; ?>;
+
     document.addEventListener('DOMContentLoaded', function() {
 
         // Disable all input fields and textareas
         const formElements = document.querySelectorAll('#hearYouOutForm input, #hearYouOutForm textarea');
 
-        formElements.forEach(element => {
-            if (element.tagName === 'INPUT' && element.type !== 'file') {
-                element.setAttribute('readonly', true);
-            } else if (element.tagName === 'TEXTAREA') {
-                element.setAttribute('readonly', true);
-            }
-        });
-
         var editButton = document.getElementById('editButton');
+        var cancelButton = document.getElementById('cancelButton');
 
         // Enable the Edit button if dtrConcernCount is 0, disable it if it's 1 or more
         if (dtrConcernCount === 0) {
             editButton.removeAttribute('disabled');
+            cancelButton.removeAttribute('disabled');
+
         } else if (dtrConcernCount >= 1) {
             editButton.setAttribute('disabled', 'disabled');
+            cancelButton.setAttribute('disabled', 'disabled');
+
         }
 
         // Add an event listener to the Edit button
@@ -439,7 +461,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 title: "Successfully updated Hear You Out form!",
                                 footer: "Please continue to fill up concern form",
                                 showConfirmButton: false,
-                                timer: 3000,
+                                timer: 2000,
                                 timerProgressBar: true
                             }).then(() => {
                                 location.reload(); // Reload the page after the alert closes
@@ -485,6 +507,72 @@ if ($result && mysqli_num_rows($result) > 0) {
             }
         });
 
+        document.getElementById('cancelButton').addEventListener('click', function() {
+            // Show SweetAlert confirmation
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to cancel this Hear You Out?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, cancel it",
+                cancelButtonText: "No, keep it",
+                customClass: {
+                    confirmButton: 'swal-button-green', // Apply your custom button class
+                    cancelButton: 'swal-button-red' // Optional: Add custom class for cancel button
+                },
+                buttonsStyling: false // Disables default SweetAlert2 button styling
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    // User confirmed, make the AJAX call to update the status to "Cancelled"
+                    const empno = '<?php echo $_GET["empno"]; ?>';
+                    const id = '<?php echo $_GET["id"]; ?>';
+
+                    // Make the AJAX request
+                    fetch(`update-to-cancel-hear-you-out.php?id=${id}&empno=${empno}`, {
+                            method: 'POST'
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "Hear You Out cancelled successfully!",
+                                    showConfirmButton: false,
+                                    timer: 2000, // Auto-hide after 1.5 seconds
+                                    timerProgressBar: true, // Show progress bar
+                                    customClass: {
+                                        confirmButton: 'swal-button-green' // Apply custom button style for success
+                                    },
+                                    buttonsStyling: false // Disable default button styling
+                                }).then(() => {
+                                    const empno = "<?php echo $empno; ?>";
+                                    const date_concern = "<?php echo $date_concern; ?>";
+                                    const stateOfIncident = "<?php echo $stateOfIncident; ?>";
+                                    const type_concern = "<?php echo $type_concern; ?>";
+                                    // Build the redirect URL with query parameters
+                                    var redirectUrl = `/hrms/filing-concerns.php?concern=concern&empno=${empno}&date=${date_concern}&dtrconcern=${stateOfIncident}&type_errors=${type_concern}`;
+                                    // Redirect to the new URL
+                                    window.location.href = redirectUrl;
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Failed to cancel Hear You Out: ' + data.message,
+                                    customClass: {
+                                        confirmButton: 'swal-button-green' // Apply custom button style for error
+                                    },
+                                    buttonsStyling: false
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            });
+        });
+
         // Get the modal
         var modal = document.getElementById("imageModal");
 
@@ -525,10 +613,22 @@ if ($result && mysqli_num_rows($result) > 0) {
             reader.readAsDataURL(input.files[0]); // Convert image file to base64 string
         }
     }
-    document.getElementById('closeButton').addEventListener('click', function() {
-        // Close the current window/tab
-        window.close();
+
+    // Define the variables for building the redirect URL
+    const empno = "<?php echo $empno; ?>";
+    const date_concern = "<?php echo $date_concern; ?>";
+    const stateOfIncident = "<?php echo $stateOfIncident; ?>";
+    const type_concern = "<?php echo $type_concern; ?>";
+
+    // Build the redirect URL with query parameters
+    var redirectUrl = `/hrms/filing-concerns.php?concern=concern&dtrconcern&empno=${empno}&date=${date_concern}&dtrconcern=${stateOfIncident}&type_errors=${type_concern}`;
+
+    // Add an event listener to the "Back" button
+    document.getElementById('backButton').addEventListener('click', function() {
+        // Redirect to the previously constructed URL
+        window.location.href = redirectUrl;
     });
+
 </script>
 
 </body>

@@ -143,7 +143,7 @@ function approvalLeave($empno, $reason, $datefrom, $session_arr, $timestamp, $HR
 {
     $check_remaining_leave = "SELECT ui.vl, vl.vlhours, vl.vlduration FROM `hrms`.`vlform` vl
         LEFT JOIN `hrms`.`user_info` ui ON ui.empno = vl.empno
-        WHERE vl.empno = ? and vl.vldatefrom = ?";
+        WHERE vl.empno = ? and vl.vldatefrom = ? and vl.vlstatus = 'pending'";
     $stmt = $HRconnect->prepare($check_remaining_leave);
     $stmt->bind_param("is", $empno, $datefrom);
     $stmt->execute();

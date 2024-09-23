@@ -384,11 +384,8 @@ $HRconnect->close();
                 "Failure/Forgot to break in or break out",
                 "Failure/Forgot to click broken schedule",
                 "Failure/Forgot to click half day",
-                "Wrong filing of overtime",
-                "Wrong filing of leave",
                 "Wrong filing of OBP",
                 "Not following break out and break in interval",
-                "Remove time inputs"
             ],
             systemError: [
                 "Time inputs did not sync",
@@ -399,6 +396,9 @@ $HRconnect->close();
                 "Wrong computation"
             ],
             others: [
+                "Wrong filing of overtime",
+                "Wrong filing of leave",
+                "Remove time inputs",
                 "Emergency time out",
                 "Fingerprint problem",
                 "File broken sched overtime"

@@ -24,7 +24,7 @@ $concernDate = $data['concernDate'];
 $concern = $data['selectedConcern'];
 $errortype = $data['concernType'];
 $status = $data['status'];
-$reason = $data['concern_reason']; // Fetch concern_reason from the AJAX request
+// $reason = $data['concern_reason']; Fetch concern_reason from the AJAX request
 
 // Function to insert concern into the database
 function insertConcern($HRconnect, $params)
@@ -46,7 +46,6 @@ function insertConcern($HRconnect, $params)
     }
 }
 
-
 // Check if the concern already exists for the same empno and ConcernDate
 $checkSql = "SELECT COUNT(*) AS concern_count FROM dtr_concerns WHERE empno = ? AND ConcernDate = ? AND concern = ? AND status IN('Pending','Approved')";
 $stmt = $HRconnect->prepare($checkSql);
@@ -56,9 +55,9 @@ $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 
 if ($row['concern_count'] > 0) {
-    // // If the concern is "Wrong filing of leave", update the record
+    // If the concern is "Wrong filing of leave", update the record
     // if ($concern === "Wrong filing of leave") {
-    //     // Update the record in dtr_concerns for the specific concern
+    // Update the record in dtr_concerns for the specific concern
     //     $sqlUpdateLeaveOnly = "UPDATE dtr_concerns
     //                     SET status = 'Pending',
     //                         reason = ?
@@ -67,7 +66,7 @@ if ($row['concern_count'] > 0) {
     //                     AND concern = ?";
 
     //     if ($stmtUpdate = $HRconnect->prepare($sqlUpdateLeaveOnly)) {
-    //         // Bind the parameters (string for each field)
+    // Bind the parameters (string for each field)
     //         $stmtUpdate->bind_param("ssss", $reason, $empno, $concernDate, $concern);
 
     //         if ($stmtUpdate->execute()) {
@@ -80,8 +79,8 @@ if ($row['concern_count'] > 0) {
     //         echo json_encode(['success' => false, 'message' => 'Failed to prepare update statement.']);
     //     }
     // } else {
-    //     // Duplicate entry found for concerns other than "Wrong filing of leave"
-        echo json_encode(['success' => false, 'message' => 'You have already filed the same concern on this date.']);
+    // Duplicate entry found for concerns other than "Wrong filing of leave"
+    echo json_encode(['success' => false, 'message' => 'You have already filed the same concern on this date.']);
     // }
 } else {
     // Prepare the parameters for insertion based on the type of concern
@@ -120,20 +119,20 @@ if ($row['concern_count'] > 0) {
             $concern,
             $errortype,
             $data['capturedBrokenSchedIn'],
-            "No Break", // Directly insert "No Break"
-            "No Break", // Directly insert "No Break"
+            "No Break",
+            "No Break",
             $data['capturedBrokenSchedOut'],
             $data['proposedBrokenSchedIn'],
-            "No Break", // Directly insert "No Break"
-            "No Break", // Directly insert "No Break"
+            "No Break",
+            "No Break",
             $data['proposedBrokenSchedOut'],
             $status
         ];
     } else if ($concern === "Wrong filing of overtime") {
         // Different SQL and binding for overtime concern
         $sql = "INSERT INTO dtr_concerns
-                (filing_date, empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, othours, reason, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            (filing_date, empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, othours, reason, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         if ($stmt = $HRconnect->prepare($sql)) {
             $stmt->bind_param(
                 "sssssssssssss",
@@ -164,8 +163,8 @@ if ($row['concern_count'] > 0) {
     } else if ($concern === "Wrong filing of leave") {
         // Different SQL and binding for overtime concern
         $sql = "INSERT INTO dtr_concerns
-                (filing_date, empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, vltype, reason, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            (filing_date, empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, vltype, reason, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         if ($stmt = $HRconnect->prepare($sql)) {
             $stmt->bind_param(
@@ -196,8 +195,8 @@ if ($row['concern_count'] > 0) {
         exit;
     } else if ($concern === "Remove time inputs") {
         $sql = "INSERT INTO dtr_concerns
-                (filing_date, empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, vltype, reason, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            (filing_date, empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, vltype, reason, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         if ($stmt = $HRconnect->prepare($sql)) {
             $stmt->bind_param(
@@ -237,8 +236,8 @@ if ($row['concern_count'] > 0) {
     } else if ($concern === "File broken sched overtime") {
         // Different SQL and binding for overtime concern
         $sql = "INSERT INTO overunder
-            (empno, otdatefrom, ottype, othours, otreason, otstatus, timedate)
-            VALUES (?, ?, ?, ?, ?, ?, ?)";
+        (empno, otdatefrom, ottype, othours, otreason, otstatus, timedate)
+        VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         if ($stmt = $HRconnect->prepare($sql)) {
             $stmt->bind_param(
@@ -263,8 +262,8 @@ if ($row['concern_count'] > 0) {
         exit;
     } else if ($concern === "Wrong computation") {
         $sql = "INSERT INTO dtr_concerns
-                (filing_date, empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, vltype, reason, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            (filing_date, empno, name, userlevel, branch, userid, area, ConcernDate, concern, errortype, vltype, reason, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         if ($stmt = $HRconnect->prepare($sql)) {
             $stmt->bind_param(
