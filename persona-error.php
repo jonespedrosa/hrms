@@ -48,10 +48,10 @@ if ($selectedConcern === "Hardware malfunction") {
                     </div>
                     <!-- Input Row -->
                     <div class="time-inputs captured-inputs d-flex justify-content-center align-items-center">
-                        <input type="text" id="capturedTimeIn" class="form-control text-center" disabled>
-                        <input type="text" id="capturedBreakOut" class="form-control text-center mx-2" disabled>
-                        <input type="text" id="capturedBreakIn" class="form-control text-center mx-2" disabled>
-                        <input type="text" id="capturedTimeOut" class="form-control text-center" disabled>
+                        <input type="text" id="capturedTimeIn" class="form-control" placeholder="00:00" disabled>
+                        <input type="text" id="capturedBreakOut" class="form-control" placeholder="00:00" disabled>
+                        <input type="text" id="capturedBreakIn" class="form-control" placeholder="00:00" disabled>
+                        <input type="text" id="capturedTimeOut" class="form-control" placeholder="00:00" disabled>
                     </div>
                 </div>
                 <!-- Table-like structure for proposed inputs -->
