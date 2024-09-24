@@ -2737,6 +2737,10 @@ $HRconnect->close();
                             const othours = document.getElementById('othours').value;
                             const concern_reason = document.getElementById('concern_reason').value;
 
+                            // Get the employee number and user level from PHP
+                            const empno = "<?php echo htmlspecialchars($empno); ?>";
+                            const userlevel = "<?php echo htmlspecialchars($userlevel); ?>";
+
                             // Check if the agreement checkbox is not checked
                             if (!agreementCheckbox) {
                                 Swal.fire({
@@ -2753,13 +2757,19 @@ $HRconnect->close();
 
                             // Prepare the data to send
                             const data = new FormData();
-                            data.append('empno', "<?php echo htmlspecialchars($empno); ?>");
+                            data.append('empno', empno);
                             data.append('selectedConcern', selectedConcern);
                             data.append('concernDate', concernDate);
                             data.append('ottype', "1");
                             data.append('othours', othours);
                             data.append('concern_reason', concern_reason);
-                            data.append('status', "pending");
+
+                            // Change the status based on the employee number or user level
+                            if (empno === '2525' || userlevel === 'mod') {
+                                data.append('status', 'pending2');
+                            } else {
+                                data.append('status', 'pending');
+                            }
 
                             // Directly log FormData contents
                             for (let [key, value] of data.entries()) {
@@ -2781,7 +2791,7 @@ $HRconnect->close();
                                         Swal.fire({
                                             icon: 'success',
                                             title: 'Success',
-                                            text: 'Concern successfully submitted!',
+                                            text: 'Broken sched overtime successfully submitted!',
                                             timer: 2000,
                                             timerProgressBar: true,
                                             showConfirmButton: false,
@@ -2810,6 +2820,9 @@ $HRconnect->close();
                                 })
                                 .catch(error => console.error('Error:', error));
                         });
+
+
+
                     })
                     .catch(error => console.error('Error fetching content:', error));
             } else if (selectedConcern === "Wrong computation") {
