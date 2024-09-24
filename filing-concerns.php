@@ -160,6 +160,12 @@ $HRconnect->close();
             width: 100px;
             /* Adjust width as needed */
         }
+        .time-inputs.captured-inputs .form-control {
+            text-align: center;
+            /* Center text inside inputs */
+            width: 100px;
+            /* Adjust width as needed */
+        }
 
         .input-group {
             display: flex;
@@ -206,6 +212,35 @@ $HRconnect->close();
             background-color: #48BF81 !important;
             /* Optional: darker shade on hover */
         }
+
+        @media (max-width: 440px) {
+            .form-flex {
+                flex-direction: column;
+                justify-content: start;
+                align-items: flex-start;
+                /* Ensures content aligns to the left */
+            }
+
+            .ml-2 {
+                margin-left: 0 !important;
+            }
+
+            .w-50 {
+                width: 100% !important;
+            }
+
+            /* Ensure h6 text aligns to the left */
+            h6 {
+                text-align: left !important;
+            }
+
+            /* Optional: Ensure label aligns to the left */
+            label {
+                text-align: left !important;
+                width: 100%;
+                /* To ensure label spans full width */
+            }
+        }
     </style>
 </head>
 
@@ -241,16 +276,19 @@ $HRconnect->close();
                         <h5 style="margin-bottom: 0;"><strong>Select Concern Type & Date</strong></h5>
                         <p style="margin-top: 0;">Choose the category of your concern and specify the date it occurred.</p>
                         <hr>
+
+
+
                         <div class="form-group">
                             <!-- Employees Name -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex form-flex justify-content-between align-items-center mb-3">
                                 <label for="employeeName" class="mb-0">
                                     <h6><strong>Employee Name </strong><span style="color: red;">*</span></h6>
                                 </label>
                                 <input type="text" class="form-control custom-select-width w-50 ml-2" id="employeeName" value="<?php echo htmlspecialchars($name); ?>" required disabled>
                             </div>
                             <!-- Concern Date with Date-Time Picker -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex form-flex justify-content-between align-items-center mb-3">
                                 <label for="concernDate" class="mb-0">
                                     <h6><strong>Concern Date </strong><span style="color: red;">*</span></h6>
                                 </label>
@@ -262,7 +300,7 @@ $HRconnect->close();
                                     required>
                             </div>
                             <!-- Concern Type Dropdown -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex form-flex justify-content-between align-items-center mb-3">
                                 <label for="concernType" class="mb-0">
                                     <h6><strong>Concern Type</strong> <span style="color: red;">*</span></h6>
                                 </label>
@@ -274,7 +312,7 @@ $HRconnect->close();
                                 </select>
                             </div>
                             <!-- Specific Concern Dropdown -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex form-flex justify-content-between align-items-center mb-3">
                                 <label for="specificConcern" class="mb-0">
                                     <h6><strong>Specific Concern</strong> <span style="color: red;">*</span></h6>
                                 </label>
@@ -282,11 +320,19 @@ $HRconnect->close();
                                     <option value="" disabled selected>Select Specific Concern</option>
                                 </select>
                             </div>
+
+
                             <!-- Proceed Button -->
                             <div class="text-right mt-3">
                                 <button type="button" class="btn btn-primary" id="btnProceed" style="font-weight: bold;">Proceed</button>
                             </div>
                         </div>
+
+
+
+
+
+
                     </div>
                 </div>
                 <div class="card border-0 shadow-sm mt-3" id="displayConcernSelected">

@@ -329,7 +329,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                             <textarea class="form-control" id="wayForward" placeholder="Your answer" rows="4" readonly required><?php echo htmlspecialchars($wayForward); ?></textarea>
                         </div>
                         <div class="d-flex justify-content-between mt-5">
-                            <button id="closeButton" class="btn btn-secondary" style="font-weight: bold;">Close</button>
+                            <button id="closeButton" class="btn btn-secondary">Close</button>
                         </div>
                     </div>
                 </div>

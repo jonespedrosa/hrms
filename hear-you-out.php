@@ -170,7 +170,7 @@
                             </h6>
                         </div>
                         <div class="d-flex justify-content-between mt-5">
-                            <button id="goBack" class="btn btn-secondary">Go Back</button>
+                            <button id="goBack" class="btn btn-secondary">Back</button>
                             <button id="submitButton" class="btn btn-primary" style="font-weight: bold;">Submit</button>
                         </div>
                     </div>

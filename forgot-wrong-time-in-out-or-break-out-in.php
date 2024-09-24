@@ -86,10 +86,10 @@ if ($empno && $concernDate) {
                 </div>
                 <!-- Input Row -->
                 <div class="time-inputs captured-inputs d-flex justify-content-center align-items-center">
-                    <input type="text" id="capturedTimeIn" class="form-control text-center" disabled>
-                    <input type="text" id="capturedBreakOut" class="form-control text-center mx-2" disabled>
-                    <input type="text" id="capturedBreakIn" class="form-control text-center mx-2" disabled>
-                    <input type="text" id="capturedTimeOut" class="form-control text-center" disabled>
+                    <input type="text" id="capturedTimeIn" class="form-control" placeholder="00:00" disabled>
+                    <input type="text" id="capturedBreakOut" class="form-control" placeholder="00:00" disabled>
+                    <input type="text" id="capturedBreakIn" class="form-control" placeholder="00:00" disabled>
+                    <input type="text" id="capturedTimeOut" class="form-control" placeholder="00:00" disabled>
                 </div>
             </div>
             <!-- Table-like structure for proposed inputs -->
@@ -113,7 +113,7 @@ if ($empno && $concernDate) {
                     <div class="header-item">TIME OUT</div>
                 </div>
                 <!-- Input Row -->
-                <div class="time-inputs proposed-inputs">
+                <div class="time-inputs proposed-inputs d-flex justify-content-center align-items-center">
                     <input type="text" id="proposedTimeIn" class="form-control" placeholder="00:00">
                     <input type="text" id="proposedBreakOut" class="form-control" placeholder="00:00">
                     <input type="text" id="proposedBreakIn" class="form-control" placeholder="00:00">
