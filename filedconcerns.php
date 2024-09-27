@@ -4,13 +4,25 @@ $ORconnect = mysqli_connect("localhost", "root", "", "db");
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 
 session_start();
+$emnum = $_SESSION['empno'];
 
 //For approval concern: para hindi sila makapag approve.
 //ito yong current cut off
+$queryCutOff = "SELECT id, datefrom, dateto
+            FROM sched_info
+            WHERE status = 'Pending'
+            AND empno = '$emnum'
+            ORDER BY id ASC
+            LIMIT 1;";
+$queryCutOff = $HRconnect->query($queryCutOff);
+$rowCutOff = $queryCutOff->fetch_array();
+$datestart = $rowCutOff['datefrom'];
+$dateend = $rowCutOff['dateto'];
+
 //cut-off date start
-$datestart = '2024-09-09';
+// $datestart = '2024-09-24';
 //cut-off date end
-$dateend = '2024-09-23';
+// $dateend = '2024-10-08';
 
 //ito yong inayos ngayon na sasahorin to
 //previous cut-off date start
@@ -18,19 +30,14 @@ $prevdate1 = '2024-01-09';
 //previous cut-off date end
 $prevdate2 = '2024-12-23';
 
-
-$emnum = $_SESSION['empno'];
-
 $sqlName = "SELECT DISTINCT userid,empno, name, branch, mothercafe, department, area_type FROM user_info WHERE empno = '$emnum'";
 $queryName = $HRconnect->query($sqlName);
 $rowN = $queryName->fetch_array();
-
 $motherCAFE = $rowN['userid'];
 
 if (empty($_SESSION['user'])) {
     header('location:login.php');
 }
-
 
 $sql = "SELECT * FROM user_info WHERE empno = '" . $_SESSION['empno'] . "'";
 $query = $HRconnect->query($sql);
@@ -68,13 +75,10 @@ if ($userlevel != 'staff') {
 
 ?>
 
-
     <!DOCTYPE html>
     <html lang="en">
 
     <head>
-
-
 
         <meta charset="uft-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
