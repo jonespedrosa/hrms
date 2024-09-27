@@ -1,6 +1,6 @@
 <?php
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
-//entry.php  
+//entry.php
 session_start();
 if (!isset($_SESSION['user_validate'])) {
     header("Location:index.php?&m=2");
@@ -73,10 +73,10 @@ if (isset($_POST['obp'])) {
                 or $Employee == 4000 or $Employee == 4814 or $Employee == 3780 or $Employee == 2485 or $Employee == 4890 or $Employee == 1844
                 or $Employee == 401 or $Employee == 5515
             ) {
-    
-                $sql4 = "INSERT INTO obp (break, empno, datefromto, timein,breakout, breakin, timeout,obploc,obpreason,timedate,status,attachment_1,attachment_2) 
+
+                $sql4 = "INSERT INTO obp (break, empno, datefromto, timein,breakout, breakin, timeout,obploc,obpreason,timedate,status,attachment_1,attachment_2)
                 VALUES('$break','$Employee', '$date', '$timein', '$breakout', '$breakin', '$timeout', '$location', '$Reason', '" . date("Y-m-d H:i") . "', 'Pending2', '$newFileName', '$newFileName2')";
-    
+
                 $HRconnect->query($sql4);
                 move_uploaded_file($_FILES['attachment1']["tmp_name"], $newFileName);
                 move_uploaded_file($_FILES['attachment2']["tmp_name"], $newFileName2);
@@ -89,8 +89,8 @@ if (isset($_POST['obp'])) {
                 and $Employee != 4000 and $Employee != 4814 and $Employee != 3780 and $Employee != 2485 and $Employee != 4890 and $Employee != 1844
                 or $Employee == 401
             ) {
-    
-                $sql4 = "INSERT INTO obp (break, empno, datefromto, timein,breakout, breakin, timeout,obploc,obpreason,timedate,status,attachment_1,attachment_2) 
+
+                $sql4 = "INSERT INTO obp (break, empno, datefromto, timein,breakout, breakin, timeout,obploc,obpreason,timedate,status,attachment_1,attachment_2)
                 VALUES('$break','$Employee', '$date', '$timein', '$breakout', '$breakin', '$timeout', '$location', '$Reason', '" . date("Y-m-d H:i") . "', 'Pending', '$newFileName', '$newFileName2')";
                 $HRconnect->query($sql4);
                 move_uploaded_file($_FILES['attachment1']["tmp_name"], $newFileName);
@@ -98,7 +98,7 @@ if (isset($_POST['obp'])) {
                 header("location:pdf/print_ot.php?ut=ut&empno=$Employee&cutfrom=$cutfrom&cutto=$cutto&m=2");
             }
         }
-        
+
     }
 
 }
@@ -111,7 +111,7 @@ if (isset($_POST['obp'])) {
     //         or $Employee == 3777 or $Employee == 2363 or $Employee == 2807 or $Employee == 5712 or $Employee == 4068 or $Employee == 6121 or $Employee == 6483
     //     ) {
 
-    //         $sql4 = "INSERT INTO obp (break, empno, datefromto, timein,breakout, breakin, timeout,obploc,obpreason,timedate,status,attachment_1,attachment_2) 
+    //         $sql4 = "INSERT INTO obp (break, empno, datefromto, timein,breakout, breakin, timeout,obploc,obpreason,timedate,status,attachment_1,attachment_2)
 	// 		VALUES('$break','$Employee', '$date', '$timein', '$breakout', '$breakin', '$timeout', '$location', '$Reason', '" . date("Y-m-d H:i") . "', 'Pending2', '$newFileName', '$newFileName2')";
 
     //         $HRconnect->query($sql4);
@@ -128,7 +128,7 @@ if (isset($_POST['obp'])) {
     //             and $Employee != 3777 and $Employee != 2363 and $Employee != 2807 and $Employee != 5712 and $Employee != 4068 and $Employee != 6121 and $Employee != 6483)
     //     ) {
 
-    //         $sql4 = "INSERT INTO obp (break, empno, datefromto, timein,breakout, breakin, timeout,obploc,obpreason,timedate,status,attachment_1,attachment_2) 
+    //         $sql4 = "INSERT INTO obp (break, empno, datefromto, timein,breakout, breakin, timeout,obploc,obpreason,timedate,status,attachment_1,attachment_2)
 	// 		VALUES('$break','$Employee', '$date', '$timein', '$breakout', '$breakin', '$timeout', '$location', '$Reason', '" . date("Y-m-d H:i") . "', 'Pending', '$newFileName', '$newFileName2')";
     //         $HRconnect->query($sql4);
     //         move_uploaded_file($_FILES['attachment1']["tmp_name"], $newFileName);
@@ -189,7 +189,7 @@ if (isset($_GET['add'])) {
         ) {
             // echo "testing";
 
-            $sql3 = "INSERT INTO overunder (empno, ottype, otdatefrom,othours, otreason, timedate, otstatus, isNWD) 
+            $sql3 = "INSERT INTO overunder (empno, ottype, otdatefrom,othours, otreason, timedate, otstatus, isNWD)
                 VALUES('$Employee', '0', '$datefrom', '$hours', '$Reason', '$timedate', 'pending2', $isNWD)";
 
             $HRconnect->query($sql3);
@@ -204,7 +204,7 @@ if (isset($_GET['add'])) {
                 and $Employee != 4888 and $Employee != 5975 and $Employee != 6216 and $Employee != 4139 and $Employee != 6379 and $Employee != 6082
                 and $Employee != 3777 and $Employee != 2363 and $Employee != 2807 and $Employee != 5712 and $Employee != 4068 and $Employee != 6121 and $Employee != 6483)
         ) {
-            $sql3 = "INSERT INTO overunder (empno, ottype, otdatefrom,othours, otreason, timedate, otstatus, isNWD) 
+            $sql3 = "INSERT INTO overunder (empno, ottype, otdatefrom,othours, otreason, timedate, otstatus, isNWD)
                 VALUES('$Employee', '0', '$datefrom', '$hours', '$Reason', '$timedate', 'pending', $isNWD)";
 
             $HRconnect->query($sql3);
@@ -262,7 +262,7 @@ if (isset($_GET['id'])) {
 
                 if ($row3['numbers'] == 0) {
 
-                    $query1 = "INSERT INTO vlform (empno,vltype,vlnumber,vldatefrom,vlreason,timedate) 
+                    $query1 = "INSERT INTO vlform (empno,vltype,vlnumber,vldatefrom,vlreason,timedate)
   VALUES ('$Employee', '$type', '$total', '$value', '$reason', '$timedate')";
 
                     $HRconnect->query($query1);
@@ -364,7 +364,7 @@ if (isset($_GET['id'])) {
             $cutfrom = $_GET["cutfrom"];
             $cutto = $_GET["cutto"];
 
-            $sql = "SELECT * FROM user_info 
+            $sql = "SELECT * FROM user_info
                 WHERE empno = '$empno'";
             $query = $HRconnect->query($sql);
             $row = $query->fetch_array();
@@ -378,7 +378,7 @@ if (isset($_GET['id'])) {
                         <script>
                             $(function() {
                                 $(".thanks").delay(4000).fadeOut();
-                        
+
                             });
                         </script>
                         <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
@@ -388,7 +388,7 @@ if (isset($_GET['id'])) {
                                     <small class="text-light">just now</small>
                                 </div>
                                 <div class="toast-body">
-                                    <b class="text-danger">Invalid Working Day Off</b>. Time inputs are incomplete. 
+                                    <b class="text-danger">Invalid Working Day Off</b>. Time inputs are incomplete.
                                 </div>
                             </div>
                         </div>';
@@ -407,7 +407,7 @@ if (isset($_GET['id'])) {
                             <script>
                                 $(function() {
                                     $(".thanks").delay(2500).fadeOut();
-                            
+
                                 });
                             </script>
                             <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 100px;">
@@ -546,9 +546,9 @@ if (isset($_GET['id'])) {
                                             if ($time_in != '' && $time_out != '' && $breakout != '' && $breakin != '') {
                                                 // $diffbreaks = abs(strtotime($breakin) - strtotime($breakout))/60;
                                                 // $hourbreaks = abs($diffbreaks/60);
-                                    
+
                                                 // $diff = abs(strtotime($time_in) - ((strtotime($time_out) > strtotime($sched_to))? strtotime($sched_to): strtotime($time_out)))/60;
-                                    
+
                                                 // // If emp has break and no break == 1 hour break always
                                                 // if(($hasBreak == 1 && $hourbreaks == 0)|| $hasBreak == 1){
                                                 //     $hourbreaks = 1;
@@ -717,7 +717,7 @@ if (isset($_GET['id'])) {
             @$cutfrom = $_GET["cutfrom"];
             @$cutto = $_GET["cutto"];
 
-            $sql = "SELECT * FROM user_info 
+            $sql = "SELECT * FROM user_info
                     WHERE empno = '$empno'";
             $query = $HRconnect->query($sql);
             $row = $query->fetch_array();
@@ -864,7 +864,7 @@ if (isset($_GET['id'])) {
             @$cutfrom = $_GET["cutfrom"];
             @$cutto = $_GET["cutto"];
 
-            $sql = "SELECT * FROM user_info 
+            $sql = "SELECT * FROM user_info
                         WHERE empno = '$empno'";
             $query = $HRconnect->query($sql);
             $row = $query->fetch_array();
@@ -1073,19 +1073,31 @@ if (isset($_GET['id'])) {
 
                                             </div>
                                             <hr>
-
+<!--
                                             <div class="form-group text-center">
                                                 <input type="text" pattern="^[-@.\/#&+\w\s]*$" style="height:60px;"
                                                     class="form-control text-center" id="Reason" name="Reason"
                                                     placeholder="Reason Or Purpose" required>
+                                            </div> -->
+
+
+
+                                            <div class="form-group text-center">
+                                                <input type="text" pattern="^[a-zA-Z0-9_ ]*$"
+                                                   title="Special characters ar e not allowed"
+                                                    class="form-control text-center" id="Reason" name="Reason"
+                                                    placeholder="Reason Or Purpose of OBP" style="height:60px;"
+                                                    required>
                                             </div>
+
+
                                             <div class="form-group row">
                                                 <div class="col-xl-6 col-lg-6">
                                                     <label class="mb-0"><small>Attachment 1 (<span class="text-danger"> JOB
                                                                 ORDER </span>)</small></label><br>
                                                     <small><input type="file" accept="image/*,video/*" id="obp_image1"
                                                             name="attachment1" required /></small>
-                                                    <!-- <img id="preview" src="#" alt="Preview" /> 
+                                                    <!-- <img id="preview" src="#" alt="Preview" />
                                             /*onchange="previewFile(this);"*/-->
                                                 </div>
                                                 <div class="col-xl-6 col-lg-6">
@@ -1151,7 +1163,7 @@ if (isset($_GET['id'])) {
 
             $empno = $_GET['empno'];
             header('Location:create-leave.php?leave=leave&empno=' . $empno);
-            $sql = "SELECT * FROM user_info 
+            $sql = "SELECT * FROM user_info
                     WHERE empno = '$empno'";
             $query = $HRconnect->query($sql);
             $row = $query->fetch_array();

@@ -32,10 +32,10 @@ $btnDisabled = false; // Default value
                     </div>
                     <!-- Input Row -->
                     <div class="time-inputs captured-inputs d-flex justify-content-center align-items-center">
-                        <input type="text" id="capturedTimeIn" class="form-control" placeholder="00:00" disabled>
-                        <input type="text" id="capturedBreakOut" class="form-control" placeholder="00:00" disabled>
-                        <input type="text" id="capturedBreakIn" class="form-control" placeholder="00:00" disabled>
-                        <input type="text" id="capturedTimeOut" class="form-control" placeholder="00:00" disabled>
+                        <input type="text" id="capturedTimeIn" class="form-control" disabled>
+                        <input type="text" id="capturedBreakOut" class="form-control" disabled>
+                        <input type="text" id="capturedBreakIn" class="form-control" disabled>
+                        <input type="text" id="capturedTimeOut" class="form-control" disabled>
                     </div>
                 </div>
                 <!-- Table-like structure for proposed inputs -->

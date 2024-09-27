@@ -1,6 +1,5 @@
 <?php
 
-
 // Database connections and session start
 $ORconnect = mysqli_connect("localhost", "root", "", "db");
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
@@ -63,11 +62,29 @@ $A_timeout = date('Y-m-d H:i', strtotime($ConcernDate . ' ' . $newOUT));  // Con
 
 // Check the action and perform the corresponding update
 if ($action === 'approve') {
-    if ($dtrconcerns === "Failure/Forgot to time in or time out" || $dtrconcerns === "Failure/Forgot to break in or break out"  || $dtrconcerns === "Failure/Forgot to click half day" || $dtrconcerns === "Wrong filing of OBP" || $dtrconcerns === "Not following break out and break in interval" || $dtrconcerns === "Time inputs did not sync" || $dtrconcerns === "Misaligned time inputs" || $dtrconcerns === "Persona error" || $dtrconcerns === "Hardware malfunction" || $dtrconcerns === "Emergency time out" || $dtrconcerns === "Fingerprint problem") {
+    if ($dtrconcerns === "Failure/Forgot to click half day" || $dtrconcerns === "Wrong filing of OBP" || $dtrconcerns === "Not following break out and break in interval" || $dtrconcerns === "Time inputs did not sync" || $dtrconcerns === "Misaligned time inputs" || $dtrconcerns === "Persona error" || $dtrconcerns === "Hardware malfunction" || $dtrconcerns === "Emergency time out" || $dtrconcerns === "Fingerprint problem") {
         // Update query for sched_time
         $updateSchedTimeSql = "UPDATE sched_time
             SET M_timein = '$M_timein', M_timeout = '$M_timeout', A_timein = '$A_timein', A_timeout = '$A_timeout'
             WHERE empno = '$empno' AND datefromto = '$ConcernDate'";
+        // Update query for dtr_concern
+        $updateDtrConcernSql = "UPDATE dtr_concerns
+            SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
+            WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
+    } else if ($dtrconcerns === "Failure/Forgot to time in or time out") {
+        // Update query for sched_time but only M_timein and A_timeout
+        $updateSchedTimeSql = "UPDATE sched_time
+        SET M_timein = '$M_timein', A_timeout = '$A_timeout'
+        WHERE empno = '$empno' AND datefromto = '$ConcernDate'";
+        // Update query for dtr_concern
+        $updateDtrConcernSql = "UPDATE dtr_concerns
+        SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
+        WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
+    } else if ($dtrconcerns === "Failure/Forgot to break in or break out") {
+        // Update query for sched_time but only M_timeout and A_timein
+        $updateSchedTimeSql = "UPDATE sched_time
+        SET M_timeout = '$M_timeout', A_timein = '$A_timein'
+        WHERE empno = '$empno' AND datefromto = '$ConcernDate'";
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
             SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
@@ -89,17 +106,13 @@ if ($action === 'approve') {
         SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'
         WHERE empno = '$empno' AND ConcernDate = '$ConcernDate' AND concern = '$dtrconcerns'";
     } else if ($dtrconcerns === "Wrong filing of leave") {
-
-
         // Update query to add the value of $vlhours to the existing vl value in user_info
         $updateSchedTimeSql = "UPDATE user_info
             SET vl = vl + '$vlhours' WHERE empno = '$empno'";
-
         // Update query for vlform
         $updateVlFormSql = "UPDATE vlform
         SET vlstatus = 'canceled'
         WHERE empno = '$empno' AND vldatefrom = '$ConcernDate'";
-
         // Update query for dtr_concern
         $updateDtrConcernSql = "UPDATE dtr_concerns
             SET status = 'Approved', date_approved = '$dateApproved', remarks = '$approverRemarks'

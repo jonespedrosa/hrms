@@ -3,6 +3,7 @@
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 //entry.php
 session_start();
+
 if (!isset($_SESSION['user_validate'])) {
     header("Location:index.php?&m=2");
 }
