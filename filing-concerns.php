@@ -1,12 +1,15 @@
 <?php
-// header('Content-Type: application/json');
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
-//entry.php
 session_start();
 
+// Ensure the user is validated
 if (!isset($_SESSION['user_validate'])) {
     header("Location:index.php?&m=2");
+    exit();
 }
+
+// Echo the session variable (optional for debugging)
+// echo "User Validate: " . $_SESSION['user_validate'] . "<br>";
 
 // Ensure $empno is defined from the URL
 if (isset($_GET['empno'])) {
@@ -14,6 +17,16 @@ if (isset($_GET['empno'])) {
 } else {
     die("Error: Employee number is not provided in the URL.");
 }
+
+// Compare $empno from the URL with the session value
+if ($empno !== $_SESSION['user_validate']) {
+    // If they don't match, redirect to the logout page
+    header("Location:index.php?&m=2");
+    exit();
+}
+
+// If empno matches the session value, you can proceed with the rest of the code
+// echo "Employee Number: " . $empno;
 
 // Extract the concern date and date range from URL
 $concernDate = isset($_GET['date']) ? $_GET['date'] : '';

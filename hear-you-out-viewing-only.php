@@ -1,3 +1,88 @@
+
+<?php
+// Establish database connection
+$HRconnect = mysqli_connect("localhost", "root", "", "hrms");
+
+// Check connection
+if (mysqli_connect_errno()) {
+    echo json_encode(array('error' => 'Failed to connect to database: ' . mysqli_connect_error()));
+    exit();
+}
+
+// Get empno and date_concern from URL
+$empno = mysqli_real_escape_string($HRconnect, $_GET['empno']);
+$date_concern = mysqli_real_escape_string($HRconnect, $_GET['ConcernDate']);
+$type_concern = mysqli_real_escape_string($HRconnect, $_GET['type_concern']);
+
+
+// Query to fetch data from the database
+$query = "SELECT responses, attachment FROM hear_you_out WHERE empno = '$empno' AND date_submitted = '$date_concern' AND type_concern = '$type_concern' AND status = 'Active'";
+$result = mysqli_query($HRconnect, $query);
+
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $responses = json_decode($row['responses'], true); // Decode JSON
+
+    // Extract data from the decoded JSON
+    $employeeDetails = $responses['employee_details'];
+    $name = $employeeDetails['name'];
+    $position = $employeeDetails['position'];
+    $typeOfEmployment = $employeeDetails['type_of_employment'];
+    $placeOfIncident = $employeeDetails['place_of_incident'];
+    $stateOfIncident = $employeeDetails['state_of_incident'];
+    $nameSuperior = $employeeDetails['name_superior'];
+    $dateOfServing = $employeeDetails['date_of_serving'];
+    $employeeExplanation = $employeeDetails['employee_explanation'];
+    $stateYourGoal = $employeeDetails['state_your_goal'];
+    $stateRealities = $employeeDetails['state_your_realities'];
+    $stateOptions = $employeeDetails['state_your_option'];
+    $wayForward = $employeeDetails['way_forward'];
+
+    // Format the date and time to YYYY-MM-DDTHH:MM
+    $dateOfServingFormatted = date('Y-m-d\TH:i', strtotime($dateOfServing));
+
+    // Retrieve the attachment file name
+    $attachment = $row['attachment'];
+    $attachmentUrl = !empty($attachment) ? "hyo_attachments/" . htmlspecialchars($attachment) : "";
+
+    // Query to count DTR concerns
+    $dtrConcernQuery = "SELECT COUNT(id) AS dtr_concern_count FROM dtr_concerns WHERE empno = '$empno' AND ConcernDate = '$date_concern' AND concern = '$stateOfIncident' AND status IN('Pending','Approved')";
+    $dtrConcernResult = mysqli_query($HRconnect, $dtrConcernQuery);
+
+    if ($dtrConcernResult) {
+        $dtrConcernRow = mysqli_fetch_assoc($dtrConcernResult);
+        $dtrConcernCount = $dtrConcernRow['dtr_concern_count'];
+    } else {
+        $dtrConcernCount = 0; // Default to 0 if no result is found
+    }
+
+    // // Prepare the response with both the hear_you_out data and DTR concern count
+    // $response = array(
+    //     'name' => $name,
+    //     'position' => $position,
+    //     'type_of_employment' => $typeOfEmployment,
+    //     'place_of_incident' => $placeOfIncident,
+    //     'state_of_incident' => $stateOfIncident,
+    //     'name_superior' => $nameSuperior,
+    //     'date_of_serving' => $dateOfServingFormatted,
+    //     'employee_explanation' => $employeeExplanation,
+    //     'state_your_goal' => $stateYourGoal,
+    //     'state_realities' => $stateRealities,
+    //     'state_options' => $stateOptions,
+    //     'way_forward' => $wayForward,
+    //     'attachment_url' => $attachmentUrl,
+    //     'dtr_concern_count' => $dtrConcernCount, // Include DTR concern count
+    //     'date_concern' => $date_concern // Include DTR concern count
+    // );
+
+    // // Send the response in JSON format
+    // echo json_encode($response);
+} else {
+    echo "No record found.";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -122,89 +207,6 @@
     </style>
 </head>
 
-<?php
-// Establish database connection
-$HRconnect = mysqli_connect("localhost", "root", "", "hrms");
-
-// Check connection
-if (mysqli_connect_errno()) {
-    echo json_encode(array('error' => 'Failed to connect to database: ' . mysqli_connect_error()));
-    exit();
-}
-
-// Get empno and date_concern from URL
-$empno = mysqli_real_escape_string($HRconnect, $_GET['empno']);
-$date_concern = mysqli_real_escape_string($HRconnect, $_GET['ConcernDate']);
-$type_concern = mysqli_real_escape_string($HRconnect, $_GET['type_concern']);
-
-
-// Query to fetch data from the database
-$query = "SELECT responses, attachment FROM hear_you_out WHERE empno = '$empno' AND date_submitted = '$date_concern' AND type_concern = '$type_concern' AND status = 'Active'";
-$result = mysqli_query($HRconnect, $query);
-
-
-if ($result && mysqli_num_rows($result) > 0) {
-    $row = mysqli_fetch_assoc($result);
-    $responses = json_decode($row['responses'], true); // Decode JSON
-
-    // Extract data from the decoded JSON
-    $employeeDetails = $responses['employee_details'];
-    $name = $employeeDetails['name'];
-    $position = $employeeDetails['position'];
-    $typeOfEmployment = $employeeDetails['type_of_employment'];
-    $placeOfIncident = $employeeDetails['place_of_incident'];
-    $stateOfIncident = $employeeDetails['state_of_incident'];
-    $nameSuperior = $employeeDetails['name_superior'];
-    $dateOfServing = $employeeDetails['date_of_serving'];
-    $employeeExplanation = $employeeDetails['employee_explanation'];
-    $stateYourGoal = $employeeDetails['state_your_goal'];
-    $stateRealities = $employeeDetails['state_your_realities'];
-    $stateOptions = $employeeDetails['state_your_option'];
-    $wayForward = $employeeDetails['way_forward'];
-
-    // Format the date and time to YYYY-MM-DDTHH:MM
-    $dateOfServingFormatted = date('Y-m-d\TH:i', strtotime($dateOfServing));
-
-    // Retrieve the attachment file name
-    $attachment = $row['attachment'];
-    $attachmentUrl = !empty($attachment) ? "hyo_attachments/" . htmlspecialchars($attachment) : "";
-
-    // Query to count DTR concerns
-    $dtrConcernQuery = "SELECT COUNT(id) AS dtr_concern_count FROM dtr_concerns WHERE empno = '$empno' AND ConcernDate = '$date_concern' AND concern = '$stateOfIncident' AND status IN('Pending','Approved')";
-    $dtrConcernResult = mysqli_query($HRconnect, $dtrConcernQuery);
-
-    if ($dtrConcernResult) {
-        $dtrConcernRow = mysqli_fetch_assoc($dtrConcernResult);
-        $dtrConcernCount = $dtrConcernRow['dtr_concern_count'];
-    } else {
-        $dtrConcernCount = 0; // Default to 0 if no result is found
-    }
-
-    // // Prepare the response with both the hear_you_out data and DTR concern count
-    // $response = array(
-    //     'name' => $name,
-    //     'position' => $position,
-    //     'type_of_employment' => $typeOfEmployment,
-    //     'place_of_incident' => $placeOfIncident,
-    //     'state_of_incident' => $stateOfIncident,
-    //     'name_superior' => $nameSuperior,
-    //     'date_of_serving' => $dateOfServingFormatted,
-    //     'employee_explanation' => $employeeExplanation,
-    //     'state_your_goal' => $stateYourGoal,
-    //     'state_realities' => $stateRealities,
-    //     'state_options' => $stateOptions,
-    //     'way_forward' => $wayForward,
-    //     'attachment_url' => $attachmentUrl,
-    //     'dtr_concern_count' => $dtrConcernCount, // Include DTR concern count
-    //     'date_concern' => $date_concern // Include DTR concern count
-    // );
-
-    // // Send the response in JSON format
-    // echo json_encode($response);
-} else {
-    echo "No record found.";
-}
-?>
 <form id="hearYouOutForm" enctype="multipart/form-data">
     <div class="container">
         <div class="card o-hidden border-0 shadow-lg my-4" style="max-width: 800px; width: 100%; margin: 0 auto;">
