@@ -4,12 +4,15 @@ $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 $empno = isset($_GET['empno']) ? $_GET['empno'] : null;
 $ConcernDate = isset($_GET['concernDate']) ? $_GET['concernDate'] : null;
 $attachment1 = isset($_GET['attachment1']) ? $_GET['attachment1'] : null;
+$attachment2 = isset($_GET['attachment2']) ? $_GET['attachment2'] : null;
 
-// Use the attachment1 value as is, no need to prepend 'hrms/pdf/'
-$attachmentUrl = $attachment1;  // This already contains the correct path
+// Use the attachment1, attachment2 value as is, no need to prepend 'hrms/pdf/'
+$attachment1Url = $attachment1;  // This already contains the correct path
+$attachment2Url = $attachment2;  // This already contains the correct path
 
 // Debugging: You can remove this echo later
 // echo "attachment1: " . htmlspecialchars($attachment1) . "<br>";
+// echo "attachment2: " . htmlspecialchars($attachment2) . "<br>";
 
 ?>
 <div class="responsive-container">
@@ -100,11 +103,20 @@ $attachmentUrl = $attachment1;  // This already contains the correct path
                     </table>
                 </div>
             </div>
-            <div class="form-group text-center mb-4">
-                <label for="" class="mb-1" style="font-weight: bold; margin-right: 10px;">Attached Document's:</label>
+            <!-- attachment 1  -->
+            <div class="form-group text-center">
+                <label for="" class="mt-0" style="font-weight: bold; margin-right: 10px; margin-bottom: 0px;">Attached Document's:</label>
                 <div class="d-flex justify-content-center">
-                    <a href="<?php echo htmlspecialchars($attachmentUrl); ?>" target="_blank" class="btn btn-primary mt-1 w-100" style="display: block; font-size: 1.1rem; font-weight: bold;  max-width: 400px;">
-                        Click here to view logs history attachment
+                    <a href="<?php echo htmlspecialchars($attachment1Url); ?>" target="_blank" class="btn btn-primary mt-1 w-100" style="display: block; font-size: 1.1rem; font-weight: bold;  max-width: 400px;">
+                        Click here to view attachment 1
+                    </a>
+                </div>
+            </div>
+            <!-- attachment 2  -->
+            <div class="form-group text-center" id="attachment2DivDisplay">
+                <div class="d-flex justify-content-center">
+                    <a href="<?php echo htmlspecialchars($attachment2Url); ?>" target="_blank" class="btn btn-primary mt-1 w-100" style="display: block; font-size: 1.1rem; font-weight: bold;  max-width: 400px;">
+                        Click here to view attachment 2
                     </a>
                 </div>
             </div>

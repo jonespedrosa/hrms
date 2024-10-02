@@ -68,6 +68,7 @@ if ($row_dtrConcerns) {
     $newOUT = $row_dtrConcerns['newOUT'];
     $reason = $row_dtrConcerns['reason'];
     $attachment1 = $row_dtrConcerns['attachment1'];
+    $attachment2 = $row_dtrConcerns['attachment2'];
 
     // Prepare and execute query to fetch data from sched_time, overunder, vlform, and user_info
     $sqlSchedTime = "
@@ -544,6 +545,8 @@ $HRconnect->close();
             var vlhours = "<?php echo $vlhours; ?>";
             var vl = "<?php echo $vl; ?>";
             var attachment1 = "<?php echo $attachment1; ?>";
+            var attachment2 = "<?php echo $attachment2; ?>";
+
 
             // Extract time from datetime (assuming format: YYYY-MM-DD HH:mm)
             var schedto_ = schedto.substring(11, 16);
@@ -583,6 +586,7 @@ $HRconnect->close();
                 vlhours,
                 vl,
                 attachment1,
+                attachment2,
                 schedto_,
                 M_timein_,
                 M_timeout_,
@@ -1467,7 +1471,7 @@ $HRconnect->close();
 
             } else if (dtrconcerns === "Time inputs did not sync" || dtrconcerns === "Misaligned time inputs" || dtrconcerns === "Persona error" || dtrconcerns === "Hardware malfunction" || dtrconcerns === "Emergency time out" || dtrconcerns === "Fingerprint problem") {
 
-                const url = `concerns-time-inputs-not-sync.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&attachment1=${encodeURIComponent(attachment1)}`;
+                const url = `concerns-time-inputs-not-sync.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&attachment1=${encodeURIComponent(attachment1)}&attachment2=${encodeURIComponent(attachment2)}`;
 
                 // Use AJAX to load the PHP file content into #dynamicDiv with the constructed URL
                 $('#dynamicDiv').load(url, function() {
@@ -1486,6 +1490,15 @@ $HRconnect->close();
                     $('#newBreakOut').val(newbOUT);
                     $('#newBreakIn').val(newbIN);
                     $('#newTimeOut').val(newOUT);
+
+                    // Use plain JavaScript to hide or show attachment2
+                    var attachment2Div = document.getElementById('attachment2DivDisplay');
+
+                    if (dtrconcerns === "Time inputs did not sync" || dtrconcerns === "Misaligned time inputs") {
+                        attachment2Div.setAttribute('style', 'display: none !important;'); // Force hide
+                    } else {
+                        attachment2Div.setAttribute('style', 'display: block !important;'); // Force show
+                    }
 
                     // Add click event listener for the "Approved" button
                     $(document).on('click', 'input[name="btnApproved"]', function(event) {
@@ -1636,6 +1649,8 @@ $HRconnect->close();
                         });
                     });
                 });
+
+
             } else if (dtrconcerns === "Broken Schedule did not sync") {
 
                 const url = `concerns-broken-schedules-did-not-sync.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(ConcernDate)}&attachment1=${encodeURIComponent(attachment1)}`;

@@ -3,16 +3,22 @@ $btnDisabled = false; // Default value
 $selectedConcern = isset($_GET['Concern']) ? $_GET['Concern'] : null;
 
 // Determine the label text based on the value of $selectedConcern
-$attachmentLabel = '';
+$attachment1Label = '';
+$attachment2Label = '';
 
 if ($selectedConcern === "Hardware malfunction") {
-    $attachmentLabel = "(Proof of hardware malfunction)";
+    $attachment1Label = "(Proof of hardware malfunction)";
+    $attachment2Label = "(Proof of Logbook)";
 } elseif ($selectedConcern === "Persona error") {
-    $attachmentLabel = "(Proof of persona applications error or device error)";
+    $attachment1Label = "(Proof of persona applications error or device error)";
+    $attachment2Label = "(Proof of Logbook)";
 } elseif ($selectedConcern === "Emergency time out") {
-    $attachmentLabel = "(Logbook or proof of emergency)";
+    $attachment1Label = "(Proof of emergency)";
+    $attachment2Label = "(Proof of Logbook)";
 } elseif ($selectedConcern === "Fingerprint problem") {
-    $attachmentLabel = "(Proof of faded fingerprint or unreadable by Persona)";
+    $attachment1Label = "(Proof of faded fingerprint or unreadable by Persona)";
+    $attachment2Label = "(Proof of Logbook)";
+
 }
 ?>
 <div class="card border-0 shadow-sm mt-3">
@@ -24,20 +30,30 @@ if ($selectedConcern === "Hardware malfunction") {
         <hr>
         <div>
             <div>
-                <!-- Attachments image select Section -->
+                <!-- Attachments image 1 select Section -->
                 <div class="attachments-container">
-                    <p style="font-weight:bold; margin-bottom: 0;">Attachments
-                        <i id="attachmentLabel" style="color: #2E59D9;"><?php echo htmlspecialchars($attachmentLabel); ?></i>
+                    <p style="font-weight:bold; margin-bottom: 0;">Attachments 1
+                        <i id="attachmentLabel" style="color: #2E59D9;"><?php echo htmlspecialchars($attachment1Label); ?></i>
                         <span style="color:red;">*</span>
                     </p>
-                    <div class="input-group mt-3 d-flex justify-content-center">
+                    <div class="input-group d-flex justify-content-center">
                         <!-- File input field -->
                         <input type="file" name="attachment1" id="attachment1" class="form-control" style="height: 45px;" accept=".jpg,.jpeg,.png" />
                     </div>
                 </div>
-                <hr>
+                <!-- Attachments image 2 select Section -->
+                <div class="attachments-container mt-3">
+                    <p style="font-weight:bold; margin-bottom: 0;">Attachments 2
+                        <i id="attachmentLabel" style="color: #2E59D9;"><?php echo htmlspecialchars($attachment2Label); ?></i>
+                        <span style="color:red;">*</span>
+                    </p>
+                    <div class="input-group d-flex justify-content-center">
+                        <!-- File input field -->
+                        <input type="file" name="attachment2" id="attachment2" class="form-control" style="height: 45px;" accept=".jpg,.jpeg,.png" />
+                    </div>
+                </div>
                 <!-- Table-like structure for time inputs -->
-                <div class="time-inputs-container">
+                <div class="time-inputs-container mt-3">
                     <p style="font-weight:bold; margin-bottom: 0;">Captured Time Inputs</p>
                     <!-- Header Row -->
                     <div class="time-inputs-header">
@@ -82,7 +98,6 @@ if ($selectedConcern === "Hardware malfunction") {
                         <input type="text" id="proposedTimeOut" class="form-control" placeholder="00:00">
                     </div>
                 </div>
-
                 <!-- Agreement Section -->
                 <div class="agreement-container mt-2">
                     <p style="font-weight: bold; margin-bottom: 10px;">Agreement <span style="color: red;">*</span></p>

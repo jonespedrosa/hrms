@@ -174,6 +174,7 @@ $HRconnect->close();
             width: 100px;
             /* Adjust width as needed */
         }
+
         .time-inputs.captured-inputs .form-control {
             text-align: center;
             /* Center text inside inputs */
@@ -2554,7 +2555,9 @@ $HRconnect->close();
                             const proposedBreakIn = document.getElementById('proposedBreakIn').value; // New input
                             const proposedTimeOut = document.getElementById('proposedTimeOut').value; // New input
                             const agreementCheckbox = document.getElementById('agreementCheckbox').checked;
-                            const attachmentConcerns = document.getElementById('attachment1');
+                            const attachment1Concerns = document.getElementById('attachment1');
+                            const attachment2Concerns = document.getElementById('attachment2');
+
 
                             // Check if the agreement checkbox is not checked
                             if (!agreementCheckbox) {
@@ -2585,7 +2588,7 @@ $HRconnect->close();
                             }
 
                             // Check if the file input is empty (no file selected)
-                            if (attachmentConcerns.files.length === 0) {
+                            if (attachment1Concerns.files.length === 0 || attachment2Concerns.files.length === 0) {
                                 Swal.fire({
                                     icon: 'warning',
                                     title: 'Attachment Required',
@@ -2619,10 +2622,12 @@ $HRconnect->close();
                             data.append('proposedTimeOut', proposedTimeOut);
                             data.append('status', "Pending");
 
-                            // Append the file to FormData
-                            const fileInput = document.getElementById('attachment1');
-                            if (fileInput.files.length > 0) {
-                                data.append('attachment1', fileInput.files[0]);
+                            // Append the files to FormData
+                            if (attachment1Concerns.files.length > 0) {
+                                data.append('attachment1', attachment1Concerns.files[0]);
+                            }
+                            if (attachment2Concerns.files.length > 0) {
+                                data.append('attachment2', attachment2Concerns.files[0]);
                             }
 
                             // Send the data using fetch

@@ -562,16 +562,16 @@ if ($result && mysqli_num_rows($result) > 0) {
                 });
             } else {
                 // Proceed with SweetAlert confirmation
+                const date_concern = "<?php echo $date_concern; ?>";
                 Swal.fire({
                     title: "Are you sure?",
-                    text: "Do you want to cancel this Hear You Out?",
+                    html: `Do you want to cancel this <strong>Hear You Out</strong> request for the concern dated <strong>${date_concern}</strong>?`, // Use html for formatting
                     icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "Yes, cancel it",
-                    cancelButtonText: "No, keep it",
+                    showCancelButton: false, // Remove the Cancel button
+                    showCloseButton: true, // Show the "X" button in the top corner
+                    confirmButtonText: "Confirm",
                     customClass: {
                         confirmButton: 'swal-button-green',
-                        cancelButton: 'swal-button-red'
                     },
                     buttonsStyling: false
                 }).then((result) => {
