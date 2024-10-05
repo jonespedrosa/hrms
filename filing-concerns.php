@@ -292,8 +292,6 @@ $HRconnect->close();
                         <p style="margin-top: 0;">Choose the category of your concern and specify the date it occurred.</p>
                         <hr>
 
-
-
                         <div class="form-group">
                             <!-- Employees Name -->
                             <div class="d-flex form-flex justify-content-between align-items-center mb-3">
@@ -336,17 +334,11 @@ $HRconnect->close();
                                 </select>
                             </div>
 
-
                             <!-- Proceed Button -->
                             <div class="text-right mt-3">
                                 <button type="button" class="btn btn-primary" id="btnProceed" style="font-weight: bold;">Proceed</button>
                             </div>
                         </div>
-
-
-
-
-
 
                     </div>
                 </div>
@@ -583,8 +575,6 @@ $HRconnect->close();
                 type_concern = 7;
             } else if (selectedConcern === "Not following break out and break in interval") {
                 type_concern = 8;
-            } else if (selectedConcern === "Remove time inputs") {
-                type_concern = 9;
             }
 
             if (selectedConcern === "Failure/Forgot to time in or time out" || selectedConcern === "Failure/Forgot to break in or break out" || selectedConcern === "Failure/Forgot to click half day" || selectedConcern === "Not following break out and break in interval") {
@@ -1592,8 +1582,8 @@ $HRconnect->close();
 
             } else if (selectedConcern === "Remove time inputs") {
 
-                // Handle loading the "Wrong filing of overtime" form
-                const url = `remove-timeinputs.php?empno=${encodeURIComponent(empno)}&concernDate=${encodeURIComponent(concernDate)}&name=${encodeURIComponent(name)}&position=${encodeURIComponent(position)}&Concern=${encodeURIComponent(selectedConcern)}&type_concern=${encodeURIComponent(type_concern)}&type_errors=${encodeURIComponent(type_errors)}`;
+                // Handle loading the "Remove time inputs" form
+                const url = `remove-timeinputs.php?Concern=${encodeURIComponent(selectedConcern)}`;
 
                 fetch(url)
                     .then(response => response.text())
