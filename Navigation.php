@@ -62,12 +62,21 @@ $branch = $row['branch'];
                         ?>
 
                         <?php
-                        $exemption = [6114, 6115];
+                        $exemption = [6114, 6115, 2008];
                         if (in_array($empno, $exemption) || $userlevel == 'master') {
                         ?>
                             <a class="collapse-item" href="cwwtagger.php">CWW Tagger</a>
 
                         <?php } ?>
+
+                        <?php
+                         $exemption = [2008];
+                        if (in_array($empno, $exemption) || $userlevel == 'master') {
+                        ?>
+                            <a class="collapse-item" href="create-schedule-pattern.php">Create Schedule Pattern</a>
+
+                        <?php } ?>
+
                     </div>
                 </div>
             </li>
@@ -502,7 +511,7 @@ $branch = $row['branch'];
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small">
-                                <?php echo $user; ?>
+                                <?php echo $name; ?>
                             </span>
                             <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
                         </a>
@@ -511,7 +520,7 @@ $branch = $row['branch'];
 
                             <a class="dropdown-item d-md-none" href="#">
                                 <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400 d-md-none"></i>
-                                <?php echo $user; ?>
+                                <?php echo $name; ?>
                             </a>
                             <div class="dropdown-divider d-md-none"></div>
 

@@ -298,16 +298,16 @@ $mothercafe = $row['mothercafe'];
                             className: "number_of_trainees"
                         },
                         {
-                            data: "status",
-                            title: "STATUS",
-                            className: "status",
+                            data: 'status',
+                            title: 'STATUS', // Column title
+                            className: 'text-center', // Center align text
                             render: function(data, type, row) {
-                                if (row.status === 'In-Progress') {
-                                    return `<span class="badge badge-warning">${row.status}</span>`;
-                                } else if (row.status === 'Completed') {
-                                    return `<span class="badge badge-success">${row.status}</span>`;
+                                if (data === 'Active') {
+                                    return `<span class="badge badge-success">${data}</span>`;
+                                } else if (data === 'Inactive') {
+                                    return `<span class="badge badge-danger">${data}</span>`;
                                 } else {
-                                    return `<span class="badge badge-warning">${row.status}</span>`; // Default to danger for unrecognized status
+                                    return `<span class="badge badge-secondary">${data}</span>`; // Default styling
                                 }
                             }
                         },
