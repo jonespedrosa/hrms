@@ -75,7 +75,7 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         .draggable-container {
             border: 1px solid #ccc;
             padding: 10px;
-            height: 500px;
+            height: 400px;
             width: 425px;
             /* Increase the container width if needed */
             overflow-y: auto;
@@ -89,7 +89,7 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             cursor: move;
             border-radius: 4px;
             transition: background-color 0.2s;
-            width: 370px;
+            width: 375px !important;
             /* Increase the width of the draggable boxes */
         }
 
@@ -100,8 +100,8 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         .dropzone {
             border: 2px dashed #aaa;
             padding: 10px;
-            height: 500px;
-            width: 400px;
+            height: 400px;
+            width: 425px;
             overflow-y: auto;
             background-color: #fafafa;
             /* margin-top: 55px; */
@@ -145,6 +145,14 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             cursor: pointer;
             transform: scale(1.5);
             margin-right: 15px !important;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            /* or use 'space-around' or 'space-evenly' based on your design needs */
+            align-items: center;
+            /* Aligns items vertically */
         }
 
         .swal-button-green {
@@ -293,10 +301,9 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" style="font-weight: bold;" id="newSchedulePatternModalLabel">Creating Schedule Pattern</h5>
+                        <h5 class="modal-title" style="font-weight: bold; color: #2E59D9;" id="newSchedulePatternModalLabel">Creating Schedule Pattern</h5>
                     </div>
                     <div class="modal-body">
-
                         <form id="schedulePatternForm">
                             <!-- Schedule Name -->
                             <div class="mb-3">
@@ -414,18 +421,26 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         <div class="modal fade" id="assignEmployee" tabindex="-1" aria-labelledby="assignEmployeeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-xl">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" style="font-weight: bold;" id="assignEmployesModalLabel">Assigning of Schedule Pattern to Employee</h5>
+                    <div class="modal-header d-flex justify-content-between pb-0">
+                        <div>
+                            <h5 class="modal-title" style="font-weight: bold; color: #2E59D9;" id="assignEmployesModalLabel">Assigning of Schedule Pattern to Employee</h5>
+                            <h6 id="schedNamePattern" class="m-0"></h6>
+                            <div class="d-flex align-items-center">
+                                <h6 id="schedType" class="m-0 me-2 mr-2"></h6>
+                                <div class="form-check m-0">
+                                    <input type="checkbox" class="form-check-input" id="noBreak" disabled>
+                                    <label class="form-check-label" for="noBreak"><strong>No Break</strong></label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-body">
                         <div class="container">
-
-
                             <div class="row">
                                 <!-- Unassigned Employees with Search and Checkboxes -->
                                 <div class="col-md-5">
                                     <h6 style="font-weight: bold;">Unassigned Employees</h6>
-                                    <input type="text" id="employeeSearch" class="form-control mb-2" placeholder="Search Employees..." onkeyup="filterEmployees()">
+                                    <input type="text" id="employeeSearch" class="form-control mb-2" placeholder="Search" onkeyup="filterEmployees()">
                                     <div id="UnassignedEmployees" class="draggable-container"></div>
                                     <button class="btn btn-primary mt-2" style="font-weight: bold;" onclick="assignedAll()">Assign All</button>
                                 </div>
@@ -438,16 +453,15 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                                 <!-- Assigned Employees -->
                                 <div class="col-md-5">
                                     <h6 style="font-weight: bold;">Assigned Employees</h6>
+                                    <input type="text" id="assignedEmployeeSearch" class="form-control mb-2" placeholder="Search" onkeyup="filterAssignedEmployees()">
                                     <div id="assignedEmployees" class="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-                                    <button class="btn btn-secondary mt-2" style="font-weight: bold;" onclick="unassignedAll()">Unassigned All</button>
+                                    <button class="btn btn-secondary mt-2" style="font-weight: bold;" onclick="unassignedAll()">Unassign All</button>
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button id="btnClose" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="btnCloseAssign" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button id="btnSaveAssign" type="button" class="btn btn-primary" style="font-weight: bold;">Save</button>
                     </div>
                 </div>
@@ -576,13 +590,13 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                         <a href="#" class="text-info view-btn" data-id="${data}" title="View">
                             <i class="fas fa-eye" style="margin-right: 10px;"></i>
                         </a>
-                        <a href="#" class="text-warning assign-btn" data-id="${data}" title="Assign">
+                        <a href="#" class="text-warning assign-btn" data-id="${data}" data-sched-name="${row.sched_name_pattern}" data-sched-type="${row.sched_type}" data-no-break="${row.no_break}" title="Assign">
                             <i class="fas fa-user-plus" style="margin-right: 10px;"></i>
                         </a>
                         <a href="#" class="text-danger delete-btn" data-id="${data}" title="Delete">
                             <i class="fas fa-trash-alt"></i>
                         </a>
-                    `;
+                        `;
                     }
                 }
             ]
@@ -592,13 +606,28 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
+
             // Handle Assign button click to show the secondary modal
             $(document).on('click', '.assign-btn', function(e) {
                 e.preventDefault();
 
-                // Get the pattern_id from the clicked button
+
+                // Get the pattern_id, sched_name_pattern, and sched_type from the clicked button
                 var patternId = $(this).data('id');
-                console.log("Pattern ID:", patternId); // Log the pattern ID when the button is clicked
+                var schedNamePattern = $(this).data('sched-name');
+                var schedType = $(this).data('sched-type');
+                var noBreak = $(this).data('no-break'); // Get no_break value
+
+                console.log("Pattern ID:", patternId); // Log the pattern ID
+                console.log("Schedule Name Pattern:", schedNamePattern); // Log the sched_name_pattern
+                console.log("Schedule Type:", schedType); // Log the sched_type
+                console.log(noBreak);
+
+                // Display the retrieved sched_name_pattern and sched_type in the modal
+                $('#schedNamePattern').html(`<strong>Schedule Pattern Name:</strong> ${schedNamePattern}`);
+                $('#schedType').html(`<strong>Schedule Type:</strong> ${schedType}`);
+                // Set the checkbox state for No Break
+                $('#noBreak').prop('checked', noBreak === 1); // Check the box if no_break is 1
 
                 // Show the Assign Employee modal
                 $('#assignEmployee').modal('show');
@@ -736,6 +765,17 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                 });
             }
 
+            function filterAssignedEmployees() {
+                const input = document.getElementById("assignedEmployeeSearch");
+                const filter = input.value.toLowerCase();
+                const employees = document.querySelectorAll("#assignedEmployees .assigned-employee");
+
+                employees.forEach(function(employee) {
+                    const employeeName = employee.textContent.toLowerCase();
+                    employee.style.display = employeeName.includes(filter) ? "" : "none";
+                });
+            }
+
             // Function to remove an employee and move them back to Unassigned
             window.removeEmployee = function(empno, button) {
                 const assignedContainer = document.getElementById("assignedEmployees");
@@ -767,9 +807,30 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             window.unassignedAll = unassignedAll;
             window.moveToAssigned = moveToAssigned;
             window.filterEmployees = filterEmployees;
+            window.filterAssignedEmployees = filterAssignedEmployees;
+
+            $(document).ready(function() {
+                // Handle modal close/reset functionality
+                $('#btnCloseAssign').on('click', function() {
+                    // Clear search input fields
+                    $('#employeeSearch').val('');
+                    $('#assignedEmployeeSearch').val('');
+
+                    // Move all assigned employees back to unassigned
+                    unassignedAll(); // This transfers all assigned employees back to Unassigned
+
+                    // Clear both Unassigned and Assigned employee lists
+                    $('#UnassignedEmployees').empty();
+                    $('#assignedEmployees').empty();
+
+                    // Clear schedule details (schedNamePattern, schedType, NoBreak checkbox)
+                    $('#schedNamePattern').html('');
+                    $('#schedType').html('');
+                    $('#noBreak').prop('checked', false);
+                });
+            });
+
         });
-
-
 
 
 
@@ -784,8 +845,8 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             var selectedPattern = fetchedSchedules.find(pattern => pattern.pattern_id == patternId);
 
             if (selectedPattern) {
-                // Set modal title
-                $('#newSchedulePatternModalLabel').text('Viewing Schedule Pattern');
+                // Set modal title with color
+                $('#newSchedulePatternModalLabel').text('Viewing Schedule Pattern').css('color', '#2E59D9');
 
                 // Populate schedule name and type
                 $('#scheduleName').val(selectedPattern.sched_name_pattern).prop('disabled', true);
