@@ -7,6 +7,8 @@ $query = $HRconnect->query($sql);
 $row = $query->fetch_array();
 $mothercafe = $row['mothercafe'];
 $branch = $row['branch'];
+$name = $row['name'];
+
 
 ?>
 
@@ -70,7 +72,7 @@ $branch = $row['branch'];
                         <?php } ?>
 
                         <?php
-                         $exemption = [2008];
+                         $exemption = [2008, 2229];
                         if (in_array($empno, $exemption) || $userlevel == 'master') {
                         ?>
                             <a class="collapse-item" href="create-schedule-pattern.php">Create Schedule Pattern</a>

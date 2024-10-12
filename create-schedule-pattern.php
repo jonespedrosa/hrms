@@ -8,6 +8,7 @@ unset($_SESSION['emp_sched']);
 if (empty($_SESSION['user'])) {
     header('location:login.php');
 }
+
 $sqlUserInfo = "SELECT userid, empno, userlevel, name, mothercafe FROM user_info WHERE empno = '" . $_SESSION['empno'] . "'";
 $queryUserInfo = $HRconnect->query($sqlUserInfo);
 $rowUserInfo = $queryUserInfo->fetch_array();
@@ -20,6 +21,30 @@ $sqlUser = "SELECT username, areatype FROM user WHERE username = '" . $_SESSION[
 $queryUser = $ORconnect->query($sqlUser);
 $rowUser = $queryUser->fetch_array();
 $areatype = $rowUser['areatype'];
+
+// Fetch additional user info by userid
+$sqlUserInfoById = "SELECT empno, name, status FROM user_info WHERE userid = '$userid' AND status IN ('active', '')";
+$queryUserInfoById = $HRconnect->query($sqlUserInfoById);
+
+// Collect user information from query results
+$employees = [];
+if ($queryUserInfoById) {
+    while ($rowUserWithName = $queryUserInfoById->fetch_array(MYSQLI_ASSOC)) {
+        $employees[] = $rowUserWithName;
+    }
+}
+
+// Encode the employee array as JSON for JavaScript use
+echo "<script>var employees = " . json_encode($employees) . ";</script>";
+
+// Output the user info data
+// echo "<pre>";
+// print_r($rowUserInfo); // This will show the details of user info
+// echo "</pre>";
+
+// echo "<pre>";
+// print_r($rowUser); // This will show the details of the user
+// echo "</pre>";
 
 ?>
 <!DOCTYPE html>
@@ -44,7 +69,84 @@ $areatype = $rowUser['areatype'];
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Add this in the <head> section of your HTML file -->
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
+        .draggable-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 500px;
+            width: 425px;
+            /* Increase the container width if needed */
+            overflow-y: auto;
+        }
+
+        .draggable {
+            padding: 10px;
+            /* Adjust padding if needed */
+            margin: 5px;
+            background-color: #f0f0f0;
+            cursor: move;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            width: 370px;
+            /* Increase the width of the draggable boxes */
+        }
+
+        .draggable:hover {
+            background-color: #e0e0e0;
+        }
+
+        .dropzone {
+            border: 2px dashed #aaa;
+            padding: 10px;
+            height: 500px;
+            width: 400px;
+            overflow-y: auto;
+            background-color: #fafafa;
+            /* margin-top: 55px; */
+        }
+
+        .btn-light {
+            background-color: #4E73DF;
+            color: #fff;
+            border-color: #4E73DF;
+        }
+
+        /* Hover effect for light blue button */
+        .btn-light:hover {
+            background-color: #2E59D9;
+            color: #fff;
+            border-color: #2E59D9;
+        }
+
+        /* Ensure the row content fits well within the modal */
+        .modal-body .container .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .assigned-employee {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0;
+            /* Spacing between assigned employees */
+        }
+
+        .remove-btn {
+            margin-left: 10px;
+        }
+
+        .employee-checkbox {
+            width: 12px;
+            height: 12px;
+            cursor: pointer;
+            transform: scale(1.5);
+            margin-right: 15px !important;
+        }
+
         .swal-button-green {
             background-color: #48BF81 !important;
             color: white !important;
@@ -186,7 +288,7 @@ $areatype = $rowUser['areatype'];
                 </div>
             </div>
         </div>
-        <!-- Modal -->
+        <!-- Modal for Creation and viewing Pattern Schedules -->
         <div class="modal fade" id="newSchedulePattern" tabindex="-1" aria-labelledby="newSchedulePatternModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -298,7 +400,6 @@ $areatype = $rowUser['areatype'];
                                 </div>
                             </div>
                         </form>
-
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button id="btnClose" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -307,6 +408,52 @@ $areatype = $rowUser['areatype'];
                 </div>
             </div>
         </div>
+
+
+        <!-- Modal for Assigned Employees -->
+        <div class="modal fade" id="assignEmployee" tabindex="-1" aria-labelledby="assignEmployeeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" style="font-weight: bold;" id="assignEmployesModalLabel">Assigning of Schedule Pattern to Employee</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container">
+
+
+                            <div class="row">
+                                <!-- Unassigned Employees with Search and Checkboxes -->
+                                <div class="col-md-5">
+                                    <h6 style="font-weight: bold;">Unassigned Employees</h6>
+                                    <input type="text" id="employeeSearch" class="form-control mb-2" placeholder="Search Employees..." onkeyup="filterEmployees()">
+                                    <div id="UnassignedEmployees" class="draggable-container"></div>
+                                    <button class="btn btn-primary mt-2" style="font-weight: bold;" onclick="assignedAll()">Assign All</button>
+                                </div>
+                                <!-- Move All Buttons -->
+                                <div class="col-auto d-flex flex-column justify-content-center align-items-center">
+                                    <button class="btn btn-light" onclick="moveToAssigned()">
+                                        <i class="fa-solid fa-chevron-right" style="font-size: 24px; margin-right: 5px;"></i>
+                                    </button>
+                                </div>
+                                <!-- Assigned Employees -->
+                                <div class="col-md-5">
+                                    <h6 style="font-weight: bold;">Assigned Employees</h6>
+                                    <div id="assignedEmployees" class="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                                    <button class="btn btn-secondary mt-2" style="font-weight: bold;" onclick="unassignedAll()">Unassigned All</button>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button id="btnClose" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="btnSaveAssign" type="button" class="btn btn-primary" style="font-weight: bold;">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     </div>
     <!-- End of Main Content -->
@@ -378,6 +525,7 @@ $areatype = $rowUser['areatype'];
 </body>
 
 <script>
+    // Displaying Data and Validation
     $(document).ready(function() {
 
         // Declare a global variable to store fetched schedules
@@ -440,6 +588,192 @@ $areatype = $rowUser['areatype'];
             ]
         });
 
+
+
+        // Handle Assigned to Unassigned Employees
+        $(document).ready(function() {
+            // Handle Assign button click to show the secondary modal
+            $(document).on('click', '.assign-btn', function(e) {
+                e.preventDefault();
+
+                // Get the pattern_id from the clicked button
+                var patternId = $(this).data('id');
+                console.log("Pattern ID:", patternId); // Log the pattern ID when the button is clicked
+
+                // Show the Assign Employee modal
+                $('#assignEmployee').modal('show');
+
+                // Populate the Unassigned Employees with actual data
+                var unassignedContainer = $('#UnassignedEmployees');
+                unassignedContainer.empty(); // Clear existing content
+
+                // Populate the employee list with checkboxes
+                employees.forEach(function(employee) {
+                    var employeeRow = `
+                    <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
+                        <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
+                        ${employee.name}
+                    </div>`;
+                    unassignedContainer.append(employeeRow);
+                });
+
+                // Log after populating the unassigned employees
+                // console.log("Unassigned Employees populated.");
+            });
+
+            // Drag-and-drop functionality
+            let draggedElement;
+
+            function allowDrop(event) {
+                event.preventDefault();
+            }
+
+            function drag(event) {
+                draggedElement = event.target;
+                event.dataTransfer.setData("text", event.target.textContent);
+            }
+
+            function drop(event) {
+                event.preventDefault();
+                var data = event.dataTransfer.getData("text");
+                var empno = draggedElement.getAttribute('data-empno');
+                addToAssigned(empno, data);
+                draggedElement.remove(); // Remove the dragged element from the original container
+            }
+
+            function addToAssigned(empno, employeeName) {
+                const assignedContainer = document.getElementById("assignedEmployees");
+                assignedContainer.innerHTML += `
+                <div data-empno="${empno}" class="assigned-employee">
+                    ${employeeName}
+                    <button class="btn btn-danger btn-sm remove-btn" onclick="removeEmployee('${empno}', this)">X</button>
+                </div>`;
+
+                // Log the empno and employeeName to the console in one line
+                console.log(`Employee Added to Assigned: Empno: ${empno}, Employee Name: ${employeeName}`);
+            }
+
+            function assignedAll() {
+                const sourceDiv = document.getElementById("UnassignedEmployees");
+                const targetDiv = document.getElementById("assignedEmployees");
+
+                // Get all employees from UnassignedEmployees
+                const employees = sourceDiv.querySelectorAll('.draggable');
+
+                employees.forEach(employee => {
+                    const empno = employee.getAttribute('data-empno');
+                    const employeeName = employee.textContent.trim();
+
+                    // Check if the employee is already in the assigned list to avoid duplicates
+                    if (!targetDiv.querySelector(`[data-empno="${empno}"]`)) {
+                        addToAssigned(empno, employeeName);
+
+                        // Log empno and employeeName to the console
+                        console.log(`Employee Added: Empno: ${empno}, Employee Name: ${employeeName}`);
+                    }
+
+                    // Remove the employee from unassigned
+                    employee.remove();
+                });
+
+                console.log("All employees have been transferred from Unassigned to Assigned.");
+            }
+
+            // Move selected employees with checkboxes
+            function moveToAssigned() {
+                const unassignedContainer = document.getElementById("UnassignedEmployees");
+                const assignedContainer = document.getElementById("assignedEmployees");
+                const selectedCheckboxes = unassignedContainer.querySelectorAll('.employee-checkbox:checked');
+
+                selectedCheckboxes.forEach(checkbox => {
+                    const empno = checkbox.value;
+                    const employeeName = checkbox.parentElement.textContent.trim();
+                    addToAssigned(empno, employeeName);
+                    // Log empno and employeeName to the console
+                    console.log(`Employee Moved to Assigned: Empno: ${empno}, Employee Name: ${employeeName}`);
+                    checkbox.parentElement.remove(); // Remove from unassigned
+                });
+            }
+
+            function unassignedAll() {
+                const sourceDiv = document.getElementById("assignedEmployees");
+                const targetDiv = document.getElementById("UnassignedEmployees");
+
+                // Get all assigned employee divs
+                const assignedEmployees = sourceDiv.querySelectorAll('.assigned-employee');
+
+                // Loop through each assigned employee
+                assignedEmployees.forEach(empDiv => {
+                    const employeeName = empDiv.childNodes[0].textContent.trim(); // Get the name directly
+                    const empno = empDiv.getAttribute('data-empno'); // Retrieve the empno
+
+                    // Move the employee back to UnassignedEmployees with a checkbox
+                    targetDiv.innerHTML += `
+            <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
+                <input type="checkbox" class="mr-2 employee-checkbox" value="${empno}" />
+                ${employeeName}
+            </div>`;
+
+                    empDiv.remove(); // Remove from assigned
+                    // Log empno and employeeName to the console
+                    console.log(`Employee Unselected: Empno: ${empno}, Employee Name: ${employeeName}`);
+                });
+
+                console.log("All employees have been unselected from Assigned to Unassigned.");
+            }
+
+            function filterEmployees() {
+                const input = document.getElementById("employeeSearch");
+                const filter = input.value.toLowerCase();
+                const employees = document.querySelectorAll("#UnassignedEmployees .draggable");
+
+                employees.forEach(function(employee) {
+                    const employeeName = employee.textContent.toLowerCase();
+
+                    // Log employeeName to the console
+                    // console.log(`Filtering Employee: ${employeeName}`);
+                    employee.style.display = employeeName.includes(filter) ? "" : "none";
+                });
+            }
+
+            // Function to remove an employee and move them back to Unassigned
+            window.removeEmployee = function(empno, button) {
+                const assignedContainer = document.getElementById("assignedEmployees");
+                const unassignedContainer = document.getElementById("UnassignedEmployees");
+
+                // Get the employee name to be removed
+                const employeeName = button.parentElement.childNodes[0].textContent;
+
+                // Log empno and employeeName to the console
+                console.log(`Removing Employee: Empno: ${empno}, Name: ${employeeName}`);
+
+                // Move back to UnassignedEmployees
+                unassignedContainer.innerHTML += `
+                <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
+                    <input type="checkbox" class="mr-2 employee-checkbox" value="${empno}" />
+                    ${employeeName}
+                </div>`;
+
+                // Remove from assigned
+                button.parentElement.remove();
+
+            };
+
+            // Ensure functions are accessible in global scope
+            window.allowDrop = allowDrop;
+            window.drag = drag;
+            window.drop = drop;
+            window.assignedAll = assignedAll;
+            window.unassignedAll = unassignedAll;
+            window.moveToAssigned = moveToAssigned;
+            window.filterEmployees = filterEmployees;
+        });
+
+
+
+
+
+        // Handle view function button
         $(document).on('click', '.view-btn', function(e) {
             e.preventDefault();
 
@@ -573,6 +907,8 @@ $areatype = $rowUser['areatype'];
     });
 
 
+
+    // Inserting Data and Validation
     document.addEventListener("DOMContentLoaded", function() {
 
         // Function to reset form fields when "Close" button is clicked
@@ -593,7 +929,6 @@ $areatype = $rowUser['areatype'];
         document.getElementById('btnClose').addEventListener('click', function() {
             resetSelections(); // Reset selections when Close button is clicked
         });
-
 
         document.getElementById('scheduleName').addEventListener('input', function(e) {
             // Regex pattern: allow letters, numbers, dashes (-), underscores (_), and spaces
@@ -844,170 +1179,319 @@ $areatype = $rowUser['areatype'];
 
 
 
-    // Initialize the DataTable
-    // $('#displaySchedulePattern').dataTable({
-    //     stateSave: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // // Handle Assigned to Unassigned Employees
+    // $(document).ready(function() {
+    //     // Handle Assign button click to show the secondary modal
+    //     $(document).on('click', '.assign-btn', function(e) {
+    //         e.preventDefault();
+
+    //         // Get the pattern_id from the clicked button
+    //         var patternId = $(this).data('id');
+    //         console.log("Pattern ID:", patternId); // Log the pattern ID when the button is clicked
+
+    //         // Show the Assign Employee modal
+    //         $('#assignEmployee').modal('show');
+
+    //         // Populate the Unassigned Employees with actual data
+    //         var unassignedContainer = $('#UnassignedEmployees');
+    //         unassignedContainer.empty(); // Clear existing content
+
+    //         // Populate the employee list with checkboxes
+    //         employees.forEach(function(employee) {
+    //             var employeeRow = `
+    //         <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
+    //             <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
+    //             ${employee.name}
+    //         </div>`;
+    //             unassignedContainer.append(employeeRow);
+    //         });
+
+    //         // Log after populating the unassigned employees
+    //         console.log("Unassigned Employees populated.");
+    //     });
+
+    //     // Drag-and-drop functionality
+    //     let draggedElement;
+
+    //     function allowDrop(event) {
+    //         event.preventDefault();
+    //     }
+
+    //     function drag(event) {
+    //         draggedElement = event.target;
+    //         event.dataTransfer.setData("text", event.target.textContent);
+    //     }
+
+    //     function drop(event) {
+    //         event.preventDefault();
+    //         var data = event.dataTransfer.getData("text");
+    //         var empno = draggedElement.getAttribute('data-empno');
+    //         event.target.innerHTML += `<div data-empno="${empno}">${data}</div>`;
+    //         draggedElement.remove(); // Remove the dragged element from the original container
+    //     }
+
+    //     function selectAll() {
+    //         const sourceDiv = document.getElementById("UnassignedEmployees");
+    //         const targetDiv = document.getElementById("assignedEmployees");
+
+    //         // Get all employees from UnassignedEmployees
+    //         const employees = sourceDiv.querySelectorAll('.draggable');
+
+    //         employees.forEach(employee => {
+    //             const empno = employee.getAttribute('data-empno');
+    //             const employeeName = employee.textContent.trim();
+
+    //             // Check if the employee is already in the assigned list to avoid duplicates
+    //             if (!targetDiv.querySelector(`[data-empno="${empno}"]`)) {
+    //                 targetDiv.innerHTML += `<div data-empno="${empno}">${employeeName}</div>`;
+    //             }
+
+    //             // Remove the employee from unassigned
+    //             employee.remove();
+    //         });
+
+    //         console.log("All employees have been transferred from Unassigned to Assigned.");
+    //     }
+
+    //     // Move selected employees with checkboxes
+    //     function moveToAssigned() {
+    //         const unassignedContainer = document.getElementById("UnassignedEmployees");
+    //         const assignedContainer = document.getElementById("assignedEmployees");
+    //         const selectedCheckboxes = unassignedContainer.querySelectorAll('.employee-checkbox:checked');
+
+    //         selectedCheckboxes.forEach(checkbox => {
+    //             const empno = checkbox.value;
+    //             const employeeName = checkbox.parentElement.textContent.trim();
+    //             assignedContainer.innerHTML += `<div data-empno="${empno}">${employeeName}</div>`;
+    //             checkbox.parentElement.remove(); // Remove from unassigned
+    //         });
+    //     }
+
+    //     function moveToUnassigned() {
+    //         const assignedContainer = document.getElementById("assignedEmployees");
+    //         const unassignedContainer = document.getElementById("UnassignedEmployees");
+    //         const assignedDivs = assignedContainer.querySelectorAll('div');
+
+    //         assignedDivs.forEach(div => {
+    //             const empno = div.getAttribute('data-empno');
+    //             const employeeName = div.textContent.trim();
+    //             unassignedContainer.innerHTML += `
+    //         <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
+    //             <input type="checkbox" class="employee-checkbox" value="${empno}" />
+    //             ${employeeName}
+    //         </div>`;
+    //             div.remove(); // Remove from assigned
+    //         });
+    //     }
+
+    //     function unselectAll() {
+    //         const sourceDiv = document.getElementById("assignedEmployees");
+    //         const targetDiv = document.getElementById("UnassignedEmployees");
+
+    //         while (sourceDiv.firstChild) {
+    //             const employeeName = sourceDiv.firstChild.textContent;
+    //             const empno = sourceDiv.firstChild.getAttribute('data-empno'); // Retrieve the empno
+
+    //             // Move the employee back to UnassignedEmployees with a checkbox
+    //             targetDiv.innerHTML += `
+    //             <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
+    //                 <input type="checkbox" class="mr-2 employee-checkbox" value="${empno}" />
+    //                 ${employeeName}
+    //             </div>`;
+    //             sourceDiv.firstChild.remove();
+
+    //             // Log the data of the unselected employee
+    //             console.log("Unselected Employee Name:", employeeName);
+    //             console.log("Unselected Employee Empno:", empno);
+    //         }
+    //     }
+
+    //     function filterEmployees() {
+    //         const input = document.getElementById("employeeSearch");
+    //         const filter = input.value.toLowerCase();
+    //         const employees = document.querySelectorAll("#UnassignedEmployees .draggable");
+
+    //         employees.forEach(function(employee) {
+    //             const employeeName = employee.textContent.toLowerCase();
+    //             employee.style.display = employeeName.includes(filter) ? "" : "none";
+    //         });
+    //     }
+
+    //     // Ensure functions are accessible in global scope
+    //     window.allowDrop = allowDrop;
+    //     window.drag = drag;
+    //     window.drop = drop;
+    //     window.selectAll = selectAll;
+    //     window.unselectAll = unselectAll;
+    //     window.moveToAssigned = moveToAssigned;
+    //     window.moveToUnassigned = moveToUnassigned;
+    //     window.filterEmployees = filterEmployees;
+
     // });
 
-    // document.addEventListener("DOMContentLoaded", function() {
 
-    // document.getElementById('scheduleName').addEventListener('input', function(e) {
-    // // Regex pattern: allow letters, numbers, dashes (-), underscores (_), and spaces
-    // const validCharacters = /^[a-zA-Z0-9-_ ]*$/;
 
-    // // If the entered value doesn't match the allowed characters, remove the invalid characters
-    // if (!validCharacters.test(e.target.value)) {
-    // e.target.value = e.target.value.replace(/[^a-zA-Z0-9-_ ]/g, '');
-    // }
-    // });
 
-    // // Function to generate time options in 30-minute intervals (military time format)
-    // function generateTimeOptions() {
-    // const timeOptions = [];
-    // let hour, minute;
 
-    // // Create the standard time options in military format
-    // for (let i = 0; i < 48; i++) {
-    // hour=Math.floor(i / 2);
-    // minute=(i % 2===0) ? "00" : "30" ;
-    // let formattedTime=("0" + hour).slice(-2) + ":" + minute; // Format as HH:mm
-    // timeOptions.push(`<option value="${formattedTime}">${formattedTime}</option>`);
-    // }
 
-    // // Add RD (Rest Day) and NWD (No Working Day) as options
-    // timeOptions.push('<option value="RD">RD</option>');
-    // timeOptions.push('<option value="NWD">NWD</option>');
 
-    // return timeOptions.join('');
-    // }
 
-    // // Populate dropdowns for each day's "From" and "To" fields
-    // function populateTimeDropdowns() {
-    // const timeSelects = document.querySelectorAll('.time-select');
-    // const timeOptions = generateTimeOptions();
 
-    // timeSelects.forEach(select => {
-    // select.innerHTML = '<option value="" selected>Select time</option>' + timeOptions;
-    // });
-    // }
 
-    // // Function to reset form fields when "Close" button is clicked
-    // function resetSelections() {
-    // // Reset all time-select dropdowns to the default option (empty value)
-    // document.querySelectorAll('.time-select').forEach(select => {
-    // select.value = "";
-    // });
 
-    // // Reset the schedule type to default
-    // document.getElementById('scheduleType').value = "Select schedule type";
 
-    // // Uncheck the no break checkbox
-    // document.getElementById('noBreakCheckbox').checked = false;
-    // }
 
-    // // Add event listener to the Close button
-    // document.getElementById('btnClose').addEventListener('click', function() {
-    // resetSelections(); // Reset selections when Close button is clicked
-    // });
 
-    // // Check if schedule type is selected before allowing time selection
-    // function checkScheduleType() {
-    // const scheduleType = document.getElementById('scheduleType').value;
-    // if (scheduleType === "Select schedule type") {
-    // Swal.fire({
-    // icon: 'warning',
-    // title: 'Please select a schedule type',
-    // text: 'You must select a schedule type before choosing a time and check the checkbox if employee is no break.',
-    // confirmButtonText: 'OK'
-    // });
-    // return false;
-    // }
-    // return true;
-    // }
 
-    // // Function to add or subtract hours from a given time (HH:mm format)
-    // function addHoursToTime(time, hoursToAdd) {
-    // const [hours, minutes] = time.split(':').map(Number);
-    // let newHours = hours + hoursToAdd;
 
-    // // Adjust for 24-hour wrap around
-    // if (newHours >= 24) {
-    // newHours = newHours % 24;
-    // }
 
-    // // Ensure new time is formatted as HH:mm
-    // const formattedHours = ("0" + newHours).slice(-2);
-    // const formattedMinutes = ("0" + minutes).slice(-2);
 
-    // return `${formattedHours}:${formattedMinutes}`;
-    // }
 
-    // // Automatically adjust the "To" time based on the selected "From" time, schedule type, and no-break status
-    // function adjustToTime(dayFromSelect, dayToSelect) {
-    // const fromTime = dayFromSelect.value;
-    // const scheduleType = document.getElementById('scheduleType').value;
-    // const noBreak = document.getElementById('noBreakCheckbox').checked;
 
-    // let hoursToAdd = 0;
 
-    // if (fromTime === "RD") {
-    // // If the "From" time is RD (Rest Day), set the "To" time to RD as well
-    // dayToSelect.value = "RD";
-    // return;
-    // }
 
-    // if (fromTime === "NWD") {
-    // // If the "From" time is NWD, set the "To" time to NWD as well
-    // dayToSelect.value = "NWD";
-    // return;
-    // }
 
-    // if (scheduleType === "CWW") {
-    // hoursToAdd = noBreak ? 10 : 11;
-    // }
 
-    // if (scheduleType === "Regular") {
-    // hoursToAdd = noBreak ? 8 : 9;
-    // }
+    // // Handle Assign button click to show secondary modal
+    // $(document).ready(function() {
+    //     // Handle Assign button click to show the secondary modal
+    //     $(document).on('click', '.assign-btn', function(e) {
+    //         e.preventDefault();
 
-    // if (fromTime !== "") {
-    // // Add or subtract the hours to/from the "From" time to calculate the "To" time
-    // const toTime = addHoursToTime(fromTime, hoursToAdd);
-    // dayToSelect.value = toTime;
-    // }
-    // }
+    //         // Get the pattern_id from the clicked button
+    //         var patternId = $(this).data('id');
+    //         console.log("Pattern ID:", patternId); // Log the pattern ID when the button is clicked
 
-    // // Add event listeners to all "From" selects to automatically adjust the corresponding "To" time
-    // document.querySelectorAll('.time-select[id$="From"]').forEach(fromSelect => {
-    // const day = fromSelect.id.replace('From', ''); // Extract the day from the ID
-    // const toSelect = document.getElementById(`${day}To`);
+    //         // Show the Assign Employee modal
+    //         $('#assignEmployee').modal('show');
 
-    // fromSelect.addEventListener('change', function() {
-    // if (checkScheduleType()) {
-    // adjustToTime(fromSelect, toSelect);
-    // } else {
-    // fromSelect.value = ""; // Reset the "From" value if schedule type isn't selected
-    // }
-    // });
-    // });
+    //         // Log to verify if the modal is opened
+    //         console.log("Assign Employee modal shown.");
 
-    // // Event listener for noBreakCheckbox changes
-    // document.getElementById('noBreakCheckbox').addEventListener('change', function() {
-    // const scheduleType = document.getElementById('scheduleType').value;
+    //         // Populate the Unassigned Employees with actual data
+    //         var unassignedContainer = $('#UnassignedEmployees');
+    //         unassignedContainer.empty(); // Clear existing content
 
-    // // Recalculate the "To" time when the checkbox is checked/unchecked
-    // document.querySelectorAll('.time-select[id$="From"]').forEach(fromSelect => {
-    // const day = fromSelect.id.replace('From', ''); // Extract the day from the ID
-    // const toSelect = document.getElementById(`${day}To`);
+    //         // Log the current employees data before adding to modal
+    //         console.log("Unassigned Employees List:", employees);
 
-    // if (fromSelect.value !== "" && (scheduleType === "Regular" || scheduleType === "CWW")) {
-    // adjustToTime(fromSelect, toSelect);
-    // }
-    // });
-    // });
+    //         employees.forEach(function(employee) {
+    //             // Create a draggable div for each employee without displaying the empno, but store it in a data attribute
+    //             var employeeDiv = `<div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
+    //         ${employee.name}
+    //     </div>`;
+    //             unassignedContainer.append(employeeDiv);
+    //         });
 
-    // // Call the function to populate the time dropdowns when the modal is shown
-    // populateTimeDropdowns();
+    //         // Log after populating the unassigned employees
+    //         console.log("Unassigned Employees populated.");
+    //     });
+
+    //     // JavaScript for drag-and-drop functionality
+    //     let draggedElement;
+
+    //     function allowDrop(event) {
+    //         event.preventDefault();
+    //     }
+
+    //     function drag(event) {
+    //         draggedElement = event.target; // Store the dragged element
+    //         event.dataTransfer.setData("text", event.target.textContent); // Store only the name in the data transfer
+    //     }
+
+    //     function drop(event) {
+    //         event.preventDefault();
+    //         var data = event.dataTransfer.getData("text");
+    //         var empno = draggedElement.getAttribute('data-empno'); // Get the empno from the dragged element
+
+    //         // Append the employee name (without empno) to the drop zone
+    //         event.target.innerHTML += `<div data-empno="${empno}">${data}</div>`;
+    //         draggedElement.remove(); // Remove the dragged element from the original container
+
+    //         // Log the name and empno of the dropped employee
+    //         console.log("Dropped Employee Name:", data);
+    //         console.log("Dropped Employee Empno:", empno);
+    //     }
+
+    //     function filterEmployees() {
+    //         // Get the search input value
+    //         var input = document.getElementById("employeeSearch");
+    //         var filter = input.value.toLowerCase();
+
+    //         // Get the Unassigned Employees container
+    //         var unassignedContainer = document.getElementById("UnassignedEmployees");
+    //         var employees = unassignedContainer.getElementsByClassName("draggable");
+
+    //         // Loop through the employees and hide those that don't match the search
+    //         for (var i = 0; i < employees.length; i++) {
+    //             var employeeName = employees[i].textContent.toLowerCase();
+    //             if (employeeName.includes(filter)) {
+    //                 employees[i].style.display = ""; // Show the employee
+    //             } else {
+    //                 employees[i].style.display = "none"; // Hide the employee
+    //             }
+    //         }
+    //     }
+
+    //     function selectAll() {
+    //         const sourceDiv = document.getElementById("UnassignedEmployees");
+    //         const targetDiv = document.getElementById("assignedEmployees");
+
+    //         while (sourceDiv.firstChild) {
+    //             const employeeName = sourceDiv.firstChild.textContent;
+    //             const empno = sourceDiv.firstChild.getAttribute('data-empno'); // Retrieve the empno
+
+    //             targetDiv.innerHTML += `<div data-empno="${empno}">${employeeName}</div>`;
+    //             sourceDiv.firstChild.remove();
+
+    //             // Log the data of the selected employee
+    //             console.log("Selected Employee Name (Select All):", employeeName);
+    //             console.log("Selected Employee Empno (Select All):", empno);
+    //         }
+    //     }
+
+    //     function unselectAll() {
+    //         const sourceDiv = document.getElementById("assignedEmployees");
+    //         const targetDiv = document.getElementById("UnassignedEmployees");
+
+    //         while (sourceDiv.firstChild) {
+    //             const employeeName = sourceDiv.firstChild.textContent;
+    //             const empno = sourceDiv.firstChild.getAttribute('data-empno'); // Retrieve the empno
+
+    //             targetDiv.innerHTML += `<div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
+    //         ${employeeName}
+    //     </div>`;
+    //             sourceDiv.firstChild.remove();
+
+    //             // Log the data of the unselected employee
+    //             console.log("Unselected Employee Name:", employeeName);
+    //             console.log("Unselected Employee Empno:", empno);
+    //         }
+    //     }
+
+    //     // Ensure drag-and-drop functions are available in the global scope
+    //     window.allowDrop = allowDrop;
+    //     window.drag = drag;
+    //     window.drop = drop;
+    //     window.selectAll = selectAll;
+    //     window.unselectAll = unselectAll;
+    //     window.filterEmployees = filterEmployees; // Make filterEmployees accessible
     // });
 </script>
 
