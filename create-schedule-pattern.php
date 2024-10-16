@@ -23,7 +23,7 @@ $rowUser = $queryUser->fetch_array();
 $areatype = $rowUser['areatype'];
 
 // Fetch additional user info by userid
-$sqlUserInfoById = "SELECT empno, name, status FROM user_info WHERE userid = '$userid' AND status IN ('active', '')";
+$sqlUserInfoById = "SELECT empno, name, status, is_compressed FROM user_info WHERE userid = '$userid' AND status IN ('active', '')";
 $queryUserInfoById = $HRconnect->query($sqlUserInfoById);
 
 // Collect user information from query results
@@ -36,6 +36,11 @@ if ($queryUserInfoById) {
 
 // Encode the employee array as JSON for JavaScript use
 echo "<script>var employees = " . json_encode($employees) . ";</script>";
+
+// Output the employees data
+// echo "<pre>";
+// print_r($employees); // This will show the details of employee data
+// echo "</pre>";
 
 // Output the user info data
 // echo "<pre>";
@@ -434,6 +439,7 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                             </div>
                         </div>
                     </div>
+
                     <div class="modal-body">
                         <div class="container">
                             <div class="row">
@@ -457,9 +463,11 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                                     <div id="assignedEmployees" class="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
                                     <button class="btn btn-secondary mt-2" style="font-weight: bold;" onclick="unassignedAll()">Unassign All</button>
                                 </div>
+                                <input type="hidden" id="hiddenPatternId" value="">
                             </div>
                         </div>
                     </div>
+
                     <div class="modal-footer justify-content-between">
                         <button id="btnCloseAssign" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button id="btnSaveAssign" type="button" class="btn btn-primary" style="font-weight: bold;">Save</button>
@@ -611,22 +619,17 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             $(document).on('click', '.assign-btn', function(e) {
                 e.preventDefault();
 
-
                 // Get the pattern_id, sched_name_pattern, and sched_type from the clicked button
                 var patternId = $(this).data('id');
                 var schedNamePattern = $(this).data('sched-name');
                 var schedType = $(this).data('sched-type');
                 var noBreak = $(this).data('no-break'); // Get no_break value
-
-                console.log("Pattern ID:", patternId); // Log the pattern ID
-                console.log("Schedule Name Pattern:", schedNamePattern); // Log the sched_name_pattern
-                console.log("Schedule Type:", schedType); // Log the sched_type
-                console.log(noBreak);
+                $('#hiddenPatternId').val(patternId); // Store it in a hidden input
+                console.log(patternId);
 
                 // Display the retrieved sched_name_pattern and sched_type in the modal
                 $('#schedNamePattern').html(`<strong>Schedule Pattern Name:</strong> ${schedNamePattern}`);
                 $('#schedType').html(`<strong>Schedule Type:</strong> ${schedType}`);
-                // Set the checkbox state for No Break
                 $('#noBreak').prop('checked', noBreak === 1); // Check the box if no_break is 1
 
                 // Show the Assign Employee modal
@@ -638,16 +641,22 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
                 // Populate the employee list with checkboxes
                 employees.forEach(function(employee) {
-                    var employeeRow = `
+                    // Check the conditions for displaying the employee
+                    if ((employee.is_compressed == 0 && schedType === "Regular") ||
+                        (employee.is_compressed == 1 && schedType === "CWW")) {
+
+                        var employeeRow = `
                     <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
                         <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
                         ${employee.name}
                     </div>`;
-                    unassignedContainer.append(employeeRow);
-                });
 
-                // Log after populating the unassigned employees
-                // console.log("Unassigned Employees populated.");
+                        unassignedContainer.append(employeeRow);
+
+                        // Log the employee data being added
+                        console.log("Added Employee:", employee);
+                    }
+                });
             });
 
             // Drag-and-drop functionality
@@ -827,6 +836,74 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                     $('#schedNamePattern').html('');
                     $('#schedType').html('');
                     $('#noBreak').prop('checked', false);
+                });
+            });
+
+
+            $(document).ready(function() {
+
+                $('#btnSaveAssign').on('click', function() {
+                    const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
+                    const empnos = [];
+
+                    // Collect employee numbers into an array
+                    assignedEmployees.forEach(emp => {
+                        empnos.push(emp.getAttribute('data-empno'));
+                    });
+
+                    // Check if there are no assigned employees
+                    if (empnos.length === 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No employees assigned',
+                            text: 'Please select at least one employee before saving.',
+                        });
+                        return; // Stop further execution if no employees are selected
+                    }
+
+                    // Convert the array to JSON format
+                    const assignedEmpnoJSON = JSON.stringify(empnos);
+
+                    const patternId = $('#hiddenPatternId').val(); // Retrieve the value
+                    console.log("Pattern ID:", patternId);
+
+                    // AJAX request to update the database
+                    $.ajax({
+                        url: 'update-pattern-schedules.php', // Your backend PHP file
+                        type: 'POST',
+                        data: {
+                            pattern_id: patternId,
+                            assigned_empno_schedule: assignedEmpnoJSON,
+                        },
+                        beforeSend: function() {
+                            console.log("Data to be sent:", {
+                                pattern_id: patternId,
+                                assigned_empno_schedule: assignedEmpnoJSON,
+                            });
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Schedule has been updated successfully!',
+                                timer: 1500, // Auto-close
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    confirmButton: 'swal-button-green'
+                                }
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while updating the schedule.',
+                            });
+                        }
+                    });
                 });
             });
 

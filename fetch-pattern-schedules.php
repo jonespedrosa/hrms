@@ -35,6 +35,9 @@ echo json_encode($schedules);
 
 
 
+
+
+
 // $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 
 // // Fetch pattern schedule data where status is 'Active'
