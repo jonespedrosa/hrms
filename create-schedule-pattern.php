@@ -45,24 +45,40 @@ $queryPattern = $HRconnect->query($sqlPattern);
 // Check if the query returned results
 if ($queryPattern && $queryPattern->num_rows > 0) {
     $rowPattern = $queryPattern->fetch_array(MYSQLI_ASSOC);
-    $assignedEmpnoSchedule = $rowPattern['assigned_empno_schedule'];
+    $alreadyAssignedEmpnoSchedule = $rowPattern['assigned_empno_schedule'];
 
     // Decode JSON to PHP array
-    $assignedEmployees = json_decode($assignedEmpnoSchedule, true);
+    $alreadyAssignedEmployees = json_decode($alreadyAssignedEmpnoSchedule, true);
 
-    // Check if decoding was successful and display the data
-    if ($assignedEmployees) {
-        echo "<div><strong>Assigned Employee Schedule:</strong><ul>";
-        foreach ($assignedEmployees as $assignedEmployee) {
-            echo "<li>Emp No: {$assignedEmployee['empno']} - Name: {$assignedEmployee['name']}</li>";
+    // After decoding JSON to PHP array
+    if ($alreadyAssignedEmployees) {
+        // Prepare an associative array to hold employee numbers and names
+        $assignedEmployees = [];
+
+        // Removed the echo output for displaying already assigned employees
+        // echo "<div><strong>alreadyAssigned Employee Schedule:</strong><ul>";
+        foreach ($alreadyAssignedEmployees as $alreadyAssignedEmployee) {
+            $empno = $alreadyAssignedEmployee['empno'];
+            $name = $alreadyAssignedEmployee['name'];
+            // Store employee number and name in the associative array
+            $assignedEmployees[$empno] = $name;
+
+            // Optional: If you want to keep the echo for debugging purposes, you can uncomment the line below
+            // echo "<li>Emp No: {$empno} - Name: {$name}</li>";
         }
-        echo "</ul></div>";
+        // echo "</ul></div>";
+
+        // Pass the associative array to JavaScript
+        echo "<script>var assignedEmployees = " . json_encode($assignedEmployees) . ";</script>";
     } else {
-        echo "<div>Invalid JSON data for assigned employee schedule.</div>";
+        // Removed display of invalid JSON message if necessary
+        // echo "<div>Invalid JSON data for alreadyAssigned employee schedule.</div>";
     }
 } else {
-    echo "<div>No schedule found for pattern_id = $patternId</div>";
+    // Removed display of no schedule found message if necessary
+    // echo "<div>No schedule found for pattern_id = $patternId</div>";
 }
+
 
 // Output the employees data
 // echo "<pre>";
@@ -660,6 +676,9 @@ if ($queryPattern && $queryPattern->num_rows > 0) {
                 $('#hiddenPatternId').val(patternId); // Store it in a hidden input
                 console.log(patternId);
 
+                // Log already assigned employee numbers and names
+                console.log("Already Assigned Employees:", assignedEmployees);
+
                 // Display the retrieved sched_name_pattern and sched_type in the modal
                 $('#schedNamePattern').html(`<strong>Schedule Pattern Name:</strong> ${schedNamePattern}`);
                 $('#schedType').html(`<strong>Schedule Type:</strong> ${schedType}`);
@@ -691,6 +710,8 @@ if ($queryPattern && $queryPattern->num_rows > 0) {
                     }
                 });
             });
+
+
 
             // Drag-and-drop functionality
             let draggedElement;
