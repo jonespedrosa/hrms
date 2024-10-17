@@ -617,7 +617,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
 
 
-
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
 
@@ -630,8 +629,11 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                 var schedNamePattern = $(this).data('sched-name');
                 var schedType = $(this).data('sched-type');
                 var noBreak = $(this).data('no-break'); // Get no_break value
-                $('#hiddenPatternId').val(patternId); // Store it in a hidden input
-                console.log("actual Pattern ID: " + patternId);
+
+                // Store the patternId in a hidden input field
+                $('#hiddenPatternId').val(patternId);
+
+                console.log("Actual Pattern ID:", patternId);
 
                 // Make an AJAX request to fetch the assigned employees for the selected pattern
                 $.ajax({
@@ -670,12 +672,17 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                                 console.log("Added Employee:", employee);
                             }
                         });
+
+                        if (response.length === 0) {
+                            console.log("All employees have been unselected from Assigned to Unassigned.");
+                        }
                     },
                     error: function(xhr, status, error) {
                         console.error("Error fetching assigned employees:", error);
                     }
                 });
             });
+
 
 
 
