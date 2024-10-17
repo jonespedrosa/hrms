@@ -37,49 +37,6 @@ if ($queryUserInfoById) {
 // Encode the employee array as JSON for JavaScript use
 echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
-// New Query for Pattern Table with Hardcoded pattern_id = 32
-$patternId = 32; // Hardcoded pattern_id
-$sqlPattern = "SELECT assigned_empno_schedule FROM pattern_schedule WHERE pattern_id = $patternId";
-$queryPattern = $HRconnect->query($sqlPattern);
-
-// Check if the query returned results
-if ($queryPattern && $queryPattern->num_rows > 0) {
-    $rowPattern = $queryPattern->fetch_array(MYSQLI_ASSOC);
-    $alreadyAssignedEmpnoSchedule = $rowPattern['assigned_empno_schedule'];
-
-    // Decode JSON to PHP array
-    $alreadyAssignedEmployees = json_decode($alreadyAssignedEmpnoSchedule, true);
-
-    // After decoding JSON to PHP array
-    if ($alreadyAssignedEmployees) {
-        // Prepare an associative array to hold employee numbers and names
-        $assignedEmployees = [];
-
-        // Removed the echo output for displaying already assigned employees
-        // echo "<div><strong>alreadyAssigned Employee Schedule:</strong><ul>";
-        foreach ($alreadyAssignedEmployees as $alreadyAssignedEmployee) {
-            $empno = $alreadyAssignedEmployee['empno'];
-            $name = $alreadyAssignedEmployee['name'];
-            // Store employee number and name in the associative array
-            $assignedEmployees[$empno] = $name;
-
-            // Optional: If you want to keep the echo for debugging purposes, you can uncomment the line below
-            // echo "<li>Emp No: {$empno} - Name: {$name}</li>";
-        }
-        // echo "</ul></div>";
-
-        // Pass the associative array to JavaScript
-        echo "<script>var assignedEmployees = " . json_encode($assignedEmployees) . ";</script>";
-    } else {
-        // Removed display of invalid JSON message if necessary
-        // echo "<div>Invalid JSON data for alreadyAssigned employee schedule.</div>";
-    }
-} else {
-    // Removed display of no schedule found message if necessary
-    // echo "<div>No schedule found for pattern_id = $patternId</div>";
-}
-
-
 // Output the employees data
 // echo "<pre>";
 // print_r($employees); // This will show the details of employee data
@@ -674,39 +631,48 @@ if ($queryPattern && $queryPattern->num_rows > 0) {
                 var schedType = $(this).data('sched-type');
                 var noBreak = $(this).data('no-break'); // Get no_break value
                 $('#hiddenPatternId').val(patternId); // Store it in a hidden input
-                console.log(patternId);
+                console.log("actual Pattern ID: " + patternId);
 
-                // Log already assigned employee numbers and names
-                console.log("Already Assigned Employees:", assignedEmployees);
+                // Make an AJAX request to fetch the assigned employees for the selected pattern
+                $.ajax({
+                    url: 'fetch-already-assigned-empno.php', // PHP script path
+                    method: 'POST',
+                    data: {
+                        pattern_id: patternId
+                    }, // Send the pattern ID
+                    dataType: 'json',
+                    success: function(response) {
+                        console.log("Already Assigned Employees:", response);
 
-                // Display the retrieved sched_name_pattern and sched_type in the modal
-                $('#schedNamePattern').html(`<strong>Schedule Pattern Name:</strong> ${schedNamePattern}`);
-                $('#schedType').html(`<strong>Schedule Type:</strong> ${schedType}`);
-                $('#noBreak').prop('checked', noBreak === 1); // Check the box if no_break is 1
+                        // Pass the data to the modal and show it
+                        $('#schedNamePattern').html(`<strong>Schedule Pattern Name:</strong> ${schedNamePattern}`);
+                        $('#schedType').html(`<strong>Schedule Type:</strong> ${schedType}`);
+                        $('#noBreak').prop('checked', noBreak === 1);
 
-                // Show the Assign Employee modal
-                $('#assignEmployee').modal('show');
+                        $('#assignEmployee').modal('show');
 
-                // Populate the Unassigned Employees with actual data
-                var unassignedContainer = $('#UnassignedEmployees');
-                unassignedContainer.empty(); // Clear existing content
+                        // Populate unassigned employees
+                        var unassignedContainer = $('#UnassignedEmployees');
+                        unassignedContainer.empty(); // Clear existing content
 
-                // Populate the employee list with checkboxes
-                employees.forEach(function(employee) {
-                    // Check the conditions for displaying the employee
-                    if ((employee.is_compressed == 0 && schedType === "Regular") ||
-                        (employee.is_compressed == 1 && schedType === "CWW")) {
+                        employees.forEach(function(employee) {
+                            // Check the conditions for displaying the employee
+                            if ((employee.is_compressed == 0 && schedType === "Regular") ||
+                                (employee.is_compressed == 1 && schedType === "CWW")) {
 
-                        var employeeRow = `
-                    <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
-                        <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
-                        ${employee.name}
-                    </div>`;
+                                var employeeRow = `
+                        <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
+                            <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
+                            ${employee.name}
+                        </div>`;
+                                unassignedContainer.append(employeeRow);
 
-                        unassignedContainer.append(employeeRow);
-
-                        // Log the employee data being added
-                        console.log("Added Employee:", employee);
+                                console.log("Added Employee:", employee);
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching assigned employees:", error);
                     }
                 });
             });
