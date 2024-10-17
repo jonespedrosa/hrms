@@ -559,7 +559,7 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                 url: 'fetch-pattern-schedules.php', // Path to your PHP script
                 dataSrc: function(json) {
                     // Log the fetched data to the console
-                    console.log('Fetched Data:', json);
+                    // console.log('Fetched Data:', json);
 
                     // Store the fetched data in the global variable
                     fetchedSchedules = json;
@@ -656,35 +656,35 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                         var assignedContainer = $('#assignedEmployees');
                         assignedContainer.empty(); // Clear previous content
 
-                        if (response.length > 0) {
-                            response.forEach(function(employee) {
-                                assignedContainer.append(`
-                        <div data-empno="${employee.empno}" class="assigned-employee">
-                            ${employee.name}
-                            <button class="btn btn-danger btn-sm remove-btn"
-                                onclick="removeEmployee('${employee.empno}', this)">X</button>
-                        </div>
-                    `);
-                                console.log(`Employee Added to Assigned: Empno: ${employee.empno}, Name: ${employee.name}`);
-                            });
-                        } else {
-                            console.log("No employees are assigned to this pattern.");
-                        }
+                        const assignedEmpnos = new Set(response.map(emp => emp.empno)); // Store assigned empnos for comparison
+
+                        response.forEach(function(employee) {
+                            assignedContainer.append(`
+                            <div data-empno="${employee.empno}" class="assigned-employee">
+                                ${employee.name}
+                                <button class="btn btn-danger btn-sm remove-btn"
+                                    onclick="removeEmployee('${employee.empno}', this)">X</button>
+                            </div>
+                        `);
+                            console.log(`Employee Added to Assigned: Empno: ${employee.empno}, Name: ${employee.name}`);
+                        });
 
                         // Populate Unassigned Employees container
                         var unassignedContainer = $('#UnassignedEmployees');
                         unassignedContainer.empty(); // Clear existing content
 
                         employees.forEach(function(employee) {
-                            if ((employee.is_compressed == 0 && schedType === "Regular") ||
-                                (employee.is_compressed == 1 && schedType === "CWW")) {
+                            // Only add employees not already assigned
+                            if (!assignedEmpnos.has(employee.empno) &&
+                                ((employee.is_compressed == 0 && schedType === "Regular") ||
+                                    (employee.is_compressed == 1 && schedType === "CWW"))) {
 
                                 unassignedContainer.append(`
-                        <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
-                            <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
-                            ${employee.name}
-                        </div>
-                    `);
+                <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
+                    <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
+                    ${employee.name}
+                </div>
+            `);
                                 console.log("Added Employee to Unassigned:", employee);
                             }
                         });
@@ -694,8 +694,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                     }
                 });
             });
-
-
 
             // Drag-and-drop functionality
             let draggedElement;
@@ -877,20 +875,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                 });
             });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             $(document).ready(function() {
 
                 $('#btnSaveAssign').on('click', function() {
@@ -934,6 +918,12 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                                     icon: 'success',
                                     title: 'Saved!',
                                     text: 'Employees have been successfully assigned.',
+                                    timer: 2000, // Timer in milliseconds (2000ms = 2 seconds)
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    customClass: {
+                                        confirmButton: 'swal-button-green'
+                                    }
                                 }).then(() => location.reload());
                             } else {
                                 Swal.fire({
@@ -957,6 +947,14 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             });
 
         });
+
+
+
+
+
+
+
+
 
 
 
@@ -1092,6 +1090,12 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         });
 
     });
+
+
+
+
+
+
 
 
 
