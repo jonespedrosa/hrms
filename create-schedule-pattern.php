@@ -844,67 +844,65 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
                 $('#btnSaveAssign').on('click', function() {
                     const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
-                    const empnos = [];
+                    const assignedData = [];
 
-                    // Collect employee numbers into an array
                     assignedEmployees.forEach(emp => {
-                        empnos.push(emp.getAttribute('data-empno'));
+                        const empno = emp.getAttribute('data-empno');
+
+                        // Extract the name and clean it
+                        let name = emp.textContent.trim().replace(/\s*X\s*$/, '');
+
+                        assignedData.push({
+                            empno,
+                            name
+                        });
                     });
 
-                    // Check if there are no assigned employees
-                    if (empnos.length === 0) {
+                    if (assignedData.length === 0) {
                         Swal.fire({
                             icon: 'warning',
                             title: 'No employees assigned',
                             text: 'Please select at least one employee before saving.',
                         });
-                        return; // Stop further execution if no employees are selected
+                        return;
                     }
 
-                    // Convert the array to JSON format
-                    const assignedEmpnoJSON = JSON.stringify(empnos);
+                    const patternId = $('#hiddenPatternId').val();
 
-                    const patternId = $('#hiddenPatternId').val(); // Retrieve the value
-                    console.log("Pattern ID:", patternId);
-
-                    // AJAX request to update the database
                     $.ajax({
-                        url: 'update-pattern-schedules.php', // Your backend PHP file
+                        url: 'update-pattern-schedules.php',
                         type: 'POST',
                         data: {
                             pattern_id: patternId,
-                            assigned_empno_schedule: assignedEmpnoJSON,
-                        },
-                        beforeSend: function() {
-                            console.log("Data to be sent:", {
-                                pattern_id: patternId,
-                                assigned_empno_schedule: assignedEmpnoJSON,
-                            });
+                            assigned_employees: JSON.stringify(assignedData),
                         },
                         success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: 'Schedule has been updated successfully!',
-                                timer: 1500, // Auto-close
-                                timerProgressBar: true,
-                                showConfirmButton: false,
-                                customClass: {
-                                    confirmButton: 'swal-button-green'
-                                }
-                            }).then(() => {
-                                location.reload();
-                            });
+                            const res = JSON.parse(response);
+                            if (res.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Saved!',
+                                    text: 'Employees have been successfully assigned.',
+                                }).then(() => location.reload());
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: res.message,
+                                });
+                            }
                         },
                         error: function(xhr, status, error) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: 'An error occurred while updating the schedule.',
+                                text: 'An error occurred while saving.',
                             });
+                            console.error('AJAX error:', error);
                         }
                     });
                 });
+
             });
 
         });
@@ -1294,7 +1292,7 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                     });
                 } else {
                     Swal.fire({
-                    icon: 'error',
+                        icon: 'error',
                         title: 'Error',
                         text: 'There was a problem saving the schedule.'
                     });
@@ -1309,7 +1307,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         });
 
     });
-
 </script>
 
 </html>
