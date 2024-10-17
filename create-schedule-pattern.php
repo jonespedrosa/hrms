@@ -37,6 +37,33 @@ if ($queryUserInfoById) {
 // Encode the employee array as JSON for JavaScript use
 echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
+// New Query for Pattern Table with Hardcoded pattern_id = 32
+$patternId = 32; // Hardcoded pattern_id
+$sqlPattern = "SELECT assigned_empno_schedule FROM pattern_schedule WHERE pattern_id = $patternId";
+$queryPattern = $HRconnect->query($sqlPattern);
+
+// Check if the query returned results
+if ($queryPattern && $queryPattern->num_rows > 0) {
+    $rowPattern = $queryPattern->fetch_array(MYSQLI_ASSOC);
+    $assignedEmpnoSchedule = $rowPattern['assigned_empno_schedule'];
+
+    // Decode JSON to PHP array
+    $assignedEmployees = json_decode($assignedEmpnoSchedule, true);
+
+    // Check if decoding was successful and display the data
+    if ($assignedEmployees) {
+        echo "<div><strong>Assigned Employee Schedule:</strong><ul>";
+        foreach ($assignedEmployees as $assignedEmployee) {
+            echo "<li>Emp No: {$assignedEmployee['empno']} - Name: {$assignedEmployee['name']}</li>";
+        }
+        echo "</ul></div>";
+    } else {
+        echo "<div>Invalid JSON data for assigned employee schedule.</div>";
+    }
+} else {
+    echo "<div>No schedule found for pattern_id = $patternId</div>";
+}
+
 // Output the employees data
 // echo "<pre>";
 // print_r($employees); // This will show the details of employee data
@@ -612,6 +639,12 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
 
 
+
+
+
+
+
+
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
 
@@ -838,6 +871,19 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                     $('#noBreak').prop('checked', false);
                 });
             });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             $(document).ready(function() {
