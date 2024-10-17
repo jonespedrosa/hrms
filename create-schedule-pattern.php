@@ -621,68 +621,79 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         $(document).ready(function() {
 
             // Handle Assign button click to show the secondary modal
+            // Handle Assign button click to show the secondary modal
             $(document).on('click', '.assign-btn', function(e) {
                 e.preventDefault();
 
-                // Get the pattern_id, sched_name_pattern, and sched_type from the clicked button
                 var patternId = $(this).data('id');
                 var schedNamePattern = $(this).data('sched-name');
                 var schedType = $(this).data('sched-type');
-                var noBreak = $(this).data('no-break'); // Get no_break value
+                var noBreak = $(this).data('no-break');
 
-                // Store the patternId in a hidden input field
                 $('#hiddenPatternId').val(patternId);
 
                 console.log("Actual Pattern ID:", patternId);
 
-                // Make an AJAX request to fetch the assigned employees for the selected pattern
                 $.ajax({
                     url: 'fetch-already-assigned-empno.php', // PHP script path
                     method: 'POST',
                     data: {
                         pattern_id: patternId
-                    }, // Send the pattern ID
+                    },
                     dataType: 'json',
                     success: function(response) {
                         console.log("Already Assigned Employees:", response);
 
-                        // Pass the data to the modal and show it
+                        // Set modal content
                         $('#schedNamePattern').html(`<strong>Schedule Pattern Name:</strong> ${schedNamePattern}`);
                         $('#schedType').html(`<strong>Schedule Type:</strong> ${schedType}`);
                         $('#noBreak').prop('checked', noBreak === 1);
 
+                        // Show the modal
                         $('#assignEmployee').modal('show');
 
-                        // Populate unassigned employees
+                        // Populate Assigned Employees container
+                        var assignedContainer = $('#assignedEmployees');
+                        assignedContainer.empty(); // Clear previous content
+
+                        if (response.length > 0) {
+                            response.forEach(function(employee) {
+                                assignedContainer.append(`
+                        <div data-empno="${employee.empno}" class="assigned-employee">
+                            ${employee.name}
+                            <button class="btn btn-danger btn-sm remove-btn"
+                                onclick="removeEmployee('${employee.empno}', this)">X</button>
+                        </div>
+                    `);
+                                console.log(`Employee Added to Assigned: Empno: ${employee.empno}, Name: ${employee.name}`);
+                            });
+                        } else {
+                            console.log("No employees are assigned to this pattern.");
+                        }
+
+                        // Populate Unassigned Employees container
                         var unassignedContainer = $('#UnassignedEmployees');
                         unassignedContainer.empty(); // Clear existing content
 
                         employees.forEach(function(employee) {
-                            // Check the conditions for displaying the employee
                             if ((employee.is_compressed == 0 && schedType === "Regular") ||
                                 (employee.is_compressed == 1 && schedType === "CWW")) {
 
-                                var employeeRow = `
+                                unassignedContainer.append(`
                         <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
                             <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
                             ${employee.name}
-                        </div>`;
-                                unassignedContainer.append(employeeRow);
-
-                                console.log("Added Employee:", employee);
+                        </div>
+                    `);
+                                console.log("Added Employee to Unassigned:", employee);
                             }
                         });
-
-                        if (response.length === 0) {
-                            console.log("All employees have been unselected from Assigned to Unassigned.");
-                        }
                     },
                     error: function(xhr, status, error) {
                         console.error("Error fetching assigned employees:", error);
                     }
                 });
             });
-
 
 
 
