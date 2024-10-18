@@ -1,4 +1,11 @@
 <?php
+session_start(); // Start the session
+
+// Ensure that empno is available in the session
+if (!isset($_SESSION['empno'])) {
+    die("User not logged in.");
+}
+
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 
 if (!$HRconnect) {
@@ -11,12 +18,14 @@ $scheduleName = mysqli_real_escape_string($HRconnect, $_POST['scheduleName']);
 $scheduleType = mysqli_real_escape_string($HRconnect, $_POST['scheduleType']);
 $noBreak = (int)$_POST['noBreak'];
 $timeSchedule = mysqli_real_escape_string($HRconnect, $_POST['timeSchedule']);
-$patternId = mysqli_real_escape_string($HRconnect, $_POST['patternId']); // Assuming patternId is sent
+
+// Get empno from session for created_by
+$created_by = mysqli_real_escape_string($HRconnect, $_SESSION['empno']);
 
 // Insert logic for a new pattern
 $insertQuery = "
-    INSERT INTO pattern_schedule (userid, sched_name_pattern, sched_type, no_break, time_schedule)
-    VALUES ('$userid', '$scheduleName', '$scheduleType', '$noBreak', '$timeSchedule')
+    INSERT INTO pattern_schedule (userid, sched_name_pattern, sched_type, no_break, time_schedule, created_by)
+    VALUES ('$userid', '$scheduleName', '$scheduleType', '$noBreak', '$timeSchedule', '$created_by')
 ";
 
 if (mysqli_query($HRconnect, $insertQuery)) {
