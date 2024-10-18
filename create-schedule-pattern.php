@@ -616,7 +616,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
 
 
-
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
 
@@ -724,8 +723,8 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                         ${employeeName}
                         <button class="btn btn-danger btn-sm remove-btn" onclick="removeEmployee('${empno}', this)">X</button>
                     </div>`;
-                            console.log(`Employee Added to Assigned: Empno: ${empno}, Employee Name: ${employeeName}`);
-                        }
+                    console.log(`Employee Added to Assigned: Empno: ${empno}, Employee Name: ${employeeName}`);
+                }
             }
 
             function assignedAll() {
@@ -843,6 +842,26 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                 // Remove from assigned
                 button.parentElement.remove();
 
+                // AJAX call to update the database
+                $.ajax({
+                    url: 'update-removed-empno-pattern.php', // PHP script path for updating
+                    type: 'POST',
+                    data: {
+                        pattern_id: 0,
+                        empno: empno // Pass empno to identify which employee to update
+                    },
+                    success: function(response) {
+                        const res = JSON.parse(response);
+                        if (res.status === 'success') {
+                            console.log(`Updated pattern_id to 0 for Empno: ${empno}`);
+                        } else {
+                            console.error(`Error updating pattern_id: ${res.message}`);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX error:', error);
+                    }
+                });
             };
 
             // Ensure functions are accessible in global scope
