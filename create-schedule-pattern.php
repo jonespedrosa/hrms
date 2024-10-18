@@ -825,47 +825,60 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             window.removeEmployee = function(empno, button) {
                 const assignedContainer = document.getElementById("assignedEmployees");
                 const unassignedContainer = document.getElementById("UnassignedEmployees");
-
-                // Get the employee name to be removed
                 const employeeName = button.parentElement.childNodes[0].textContent;
-
-                // Retrieve the patternId from the hidden input field
                 const patternId = $('#hiddenPatternId').val();
 
-                // Log empno, employeeName, and patternId to the console for debugging
+                // Log empno, employeeName, and patternId to the console
                 console.log(`Removing Employee - Empno: ${empno}, Name: ${employeeName}, Pattern ID: ${patternId}`);
 
-                // Move the employee back to UnassignedEmployees
-                unassignedContainer.innerHTML += `
+                // Show SweetAlert2 confirmation dialog
+                Swal.fire({
+                    title: `Are you sure you want to remove this employee <strong>${empno}</strong>?`,
+                    text: "This will remove the employee from the schedule immediately, even without clicking the Save button.",
+                    icon: 'warning',
+                    showCloseButton: true, // Show the "X" button
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, remove it!',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Move the employee back to UnassignedEmployees
+                        unassignedContainer.innerHTML += `
                 <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
                     <input type="checkbox" class="mr-2 employee-checkbox" value="${empno}" />
                     ${employeeName}
                 </div>`;
 
-                // Remove from assigned
-                button.parentElement.remove();
+                        // Remove from assigned
+                        button.parentElement.remove();
 
-                // AJAX call to update the database
-                $.ajax({
-                    url: 'update-removed-empno-pattern.php', // PHP script path for updating
-                    type: 'POST',
-                    data: {
-                        pattern_id: patternId, // Pass the actual pattern_id
-                        empno: empno // Pass empno to identify which employee to update
-                    },
-                    success: function(response) {
-                        const res = JSON.parse(response);
-                        if (res.status === 'success') {
-                            console.log(`Successfully removed Empno: ${empno} from Pattern ID: ${patternId}`);
-                        } else {
-                            console.error(`Error updating pattern_id: ${res.message}`);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX error:', error);
+                        // AJAX call to update the database
+                        $.ajax({
+                            url: 'update-removed-empno-pattern.php',
+                            type: 'POST',
+                            data: {
+                                pattern_id: patternId,
+                                empno: empno
+                            },
+                            success: function(response) {
+                                const res = JSON.parse(response);
+                                if (res.status === 'success') {
+                                    console.log(`Successfully removed Empno: ${empno} from Pattern ID: ${patternId}`);
+                                } else {
+                                    Swal.fire('Error!', res.message, 'error');
+                                    console.error(`Error updating pattern_id: ${res.message}`);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire('Error!', 'An error occurred while processing your request.', 'error');
+                                console.error('AJAX error:', error);
+                            }
+                        });
+                    } else {
+                        console.log(`Cancelled removal of Empno: ${empno}`);
                     }
                 });
             };
+
 
             // Ensure functions are accessible in global scope
             window.allowDrop = allowDrop;
