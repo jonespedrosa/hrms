@@ -718,14 +718,14 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
             function addToAssigned(empno, employeeName) {
                 const assignedContainer = document.getElementById("assignedEmployees");
-                assignedContainer.innerHTML += `
-                <div data-empno="${empno}" class="assigned-employee">
-                    ${employeeName}
-                    <button class="btn btn-danger btn-sm remove-btn" onclick="removeEmployee('${empno}', this)">X</button>
-                </div>`;
-
-                // Log the empno and employeeName to the console in one line
-                console.log(`Employee Added to Assigned: Empno: ${empno}, Employee Name: ${employeeName}`);
+                if (!assignedContainer.querySelector(`[data-empno="${empno}"]`)) {
+                    assignedContainer.innerHTML += `
+                    <div data-empno="${empno}" class="assigned-employee">
+                        ${employeeName}
+                        <button class="btn btn-danger btn-sm remove-btn" onclick="removeEmployee('${empno}', this)">X</button>
+                    </div>`;
+                            console.log(`Employee Added to Assigned: Empno: ${empno}, Employee Name: ${employeeName}`);
+                        }
             }
 
             function assignedAll() {
