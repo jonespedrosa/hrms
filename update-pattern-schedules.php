@@ -7,12 +7,13 @@ if (isset($_POST['pattern_id']) && isset($_POST['assigned_employees'])) {
     }
 
     $pattern_id = $_POST['pattern_id'];
-    $assignedEmployees = json_decode($_POST['assigned_employees'], true); // Decode JSON string to array
+    $assignedEmployees = json_decode($_POST['assigned_employees'], true);
 
-    // Prepare the SQL query to update the pattern_schedule table
+    // Set assigned_empno_schedule to NULL if no employees are assigned
+    $assignedEmployeesJson = empty($assignedEmployees) ? NULL : json_encode($assignedEmployees);
+
     $sql = "UPDATE pattern_schedule SET assigned_empno_schedule = ? WHERE pattern_id = ?";
     $stmt = $HRconnect->prepare($sql);
-    $assignedEmployeesJson = json_encode($assignedEmployees); // Convert back to JSON string
     $stmt->bind_param('si', $assignedEmployeesJson, $pattern_id);
 
     if (!$stmt->execute()) {
@@ -22,32 +23,31 @@ if (isset($_POST['pattern_id']) && isset($_POST['assigned_employees'])) {
         exit();
     }
 
-    $stmt->close(); // Close the first statement
+    $stmt->close();
 
-    // Now update the pattern_id in the user_info table for each employee
-    $userInfoSql = "UPDATE user_info SET pattern_id = ? WHERE empno = ?";
-    $userStmt = $HRconnect->prepare($userInfoSql);
+    // If employees were assigned, update the user_info table
+    if (!empty($assignedEmployees)) {
+        $userInfoSql = "UPDATE user_info SET pattern_id = ? WHERE empno = ?";
+        $userStmt = $HRconnect->prepare($userInfoSql);
 
-    // Loop through each assigned employee and update their pattern_id
-    foreach ($assignedEmployees as $employee) {
-        $empno = $employee['empno'];
-        $userStmt->bind_param('si', $pattern_id, $empno);
-        if (!$userStmt->execute()) {
-            echo json_encode(['status' => 'error', 'message' => $userStmt->error]);
-            $userStmt->close();
-            $HRconnect->close();
-            exit();
+        foreach ($assignedEmployees as $employee) {
+            $empno = $employee['empno'];
+            $userStmt->bind_param('si', $pattern_id, $empno);
+            if (!$userStmt->execute()) {
+                echo json_encode(['status' => 'error', 'message' => $userStmt->error]);
+                $userStmt->close();
+                $HRconnect->close();
+                exit();
+            }
         }
+        $userStmt->close();
     }
 
-    $userStmt->close();
     $HRconnect->close();
-
     echo json_encode(['status' => 'success', 'message' => 'Employees assigned and pattern_id updated successfully']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid input data']);
 }
-
 
 
 

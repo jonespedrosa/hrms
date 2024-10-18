@@ -23,7 +23,7 @@ $rowUser = $queryUser->fetch_array();
 $areatype = $rowUser['areatype'];
 
 // Fetch additional user info by userid
-$sqlUserInfoById = "SELECT empno, name, status, is_compressed FROM user_info WHERE userid = '$userid' AND status IN ('active', '')";
+$sqlUserInfoById = "SELECT empno, name, status, is_compressed, pattern_id FROM user_info WHERE userid = '$userid' AND status IN ('active', '')";
 $queryUserInfoById = $HRconnect->query($sqlUserInfoById);
 
 // Collect user information from query results
@@ -621,7 +621,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         $(document).ready(function() {
 
             // Handle Assign button click to show the secondary modal
-            // Handle Assign button click to show the secondary modal
             $(document).on('click', '.assign-btn', function(e) {
                 e.preventDefault();
 
@@ -660,12 +659,12 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
                         response.forEach(function(employee) {
                             assignedContainer.append(`
-                            <div data-empno="${employee.empno}" class="assigned-employee">
-                                ${employee.name}
-                                <button class="btn btn-danger btn-sm remove-btn"
-                                    onclick="removeEmployee('${employee.empno}', this)">X</button>
-                            </div>
-                        `);
+                    <div data-empno="${employee.empno}" class="assigned-employee">
+                        ${employee.name}
+                        <button class="btn btn-danger btn-sm remove-btn"
+                            onclick="removeEmployee('${employee.empno}', this)">X</button>
+                    </div>
+                `);
                             console.log(`Employee Added to Assigned: Empno: ${employee.empno}, Name: ${employee.name}`);
                         });
 
@@ -674,17 +673,19 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                         unassignedContainer.empty(); // Clear existing content
 
                         employees.forEach(function(employee) {
-                            // Only add employees not already assigned
-                            if (!assignedEmpnos.has(employee.empno) &&
+                            // Only add employees not already assigned and with pattern_id = 0
+                            if (
+                                !assignedEmpnos.has(employee.empno) &&
+                                employee.pattern_id === "0" && // Ensure pattern_id is 0
                                 ((employee.is_compressed == 0 && schedType === "Regular") ||
-                                    (employee.is_compressed == 1 && schedType === "CWW"))) {
-
+                                    (employee.is_compressed == 1 && schedType === "CWW"))
+                            ) {
                                 unassignedContainer.append(`
-                <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
-                    <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
-                    ${employee.name}
-                </div>
-            `);
+                        <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${employee.empno}">
+                            <input type="checkbox" class="mr-2 employee-checkbox" value="${employee.empno}" />
+                            ${employee.name}
+                        </div>
+                    `);
                                 console.log("Added Employee to Unassigned:", employee);
                             }
                         });
@@ -883,8 +884,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
                     assignedEmployees.forEach(emp => {
                         const empno = emp.getAttribute('data-empno');
-
-                        // Extract the name and clean it
                         let name = emp.textContent.trim().replace(/\s*X\s*$/, '');
 
                         assignedData.push({
@@ -893,15 +892,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                         });
                     });
 
-                    if (assignedData.length === 0) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'No employees assigned',
-                            text: 'Please select at least one employee before saving.',
-                        });
-                        return;
-                    }
-
                     const patternId = $('#hiddenPatternId').val();
 
                     $.ajax({
@@ -909,7 +899,7 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                         type: 'POST',
                         data: {
                             pattern_id: patternId,
-                            assigned_employees: JSON.stringify(assignedData),
+                            assigned_employees: JSON.stringify(assignedData), // Can be an empty array
                         },
                         success: function(response) {
                             const res = JSON.parse(response);
@@ -918,7 +908,7 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                                     icon: 'success',
                                     title: 'Saved!',
                                     text: 'Employees have been successfully assigned.',
-                                    timer: 2000, // Timer in milliseconds (2000ms = 2 seconds)
+                                    timer: 2000,
                                     timerProgressBar: true,
                                     showConfirmButton: false,
                                     customClass: {
