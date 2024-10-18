@@ -160,6 +160,39 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             /* Aligns items vertically */
         }
 
+        .info-container {
+            background-color: #f0f0f0;
+            padding: 5px 15px;
+            border-radius: 8px;
+            /* margin-top: 5px; */
+            margin-bottom: 5px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-item {
+            position: relative;
+            padding-left: 20px;
+            /* Space for bullet */
+            margin: 0;
+            /* No margin top and bottom */
+            line-height: 1.5;
+            /* Optional: Adjust line height */
+        }
+
+        .info-item::before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            /* Adjust bullet position */
+            top: 50%;
+            /* Vertically align */
+            transform: translateY(-50%);
+            /* Center bullet */
+            color: #333;
+            font-size: 15px;
+        }
+
         .swal-button-green {
             background-color: #48BF81 !important;
             color: white !important;
@@ -426,19 +459,22 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         <div class="modal fade" id="assignEmployee" tabindex="-1" aria-labelledby="assignEmployeeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-xl">
                 <div class="modal-content">
+
+
                     <div class="modal-header d-flex justify-content-between pb-0">
                         <div>
-                            <h5 class="modal-title" style="font-weight: bold; color: #2E59D9;" id="assignEmployesModalLabel">Assigning of Schedule Pattern to Employee</h5>
-                            <h6 id="schedNamePattern" class="m-0"></h6>
-                            <div class="d-flex align-items-center">
-                                <h6 id="schedType" class="m-0 me-2 mr-2"></h6>
-                                <div class="form-check m-0">
-                                    <input type="checkbox" class="form-check-input" id="noBreak" disabled>
-                                    <label class="form-check-label" for="noBreak"><strong>No Break</strong></label>
-                                </div>
+                            <h5 class="modal-title" style="font-weight: bold; color: #2E59D9;" id="assignEmployesModalLabel">
+                                Assigning of Schedule Pattern to Employee
+                            </h5>
+                            <div class="info-container">
+                                <h6 class="info-item" id="schedNamePattern"></h6>
+                                <h6 class="info-item" id="schedType"></h6>
+                                <div class="info-item" id="noBreak"></div>
                             </div>
                         </div>
                     </div>
+
+
 
                     <div class="modal-body">
                         <div class="container">
@@ -620,21 +656,20 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
 
-            // Handle Assign button click to show the secondary modal
             $(document).on('click', '.assign-btn', function(e) {
                 e.preventDefault();
 
                 var patternId = $(this).data('id');
                 var schedNamePattern = $(this).data('sched-name');
                 var schedType = $(this).data('sched-type');
-                var noBreak = $(this).data('no-break');
+                var noBreak = $(this).data('no-break'); // 1 or 0
 
                 $('#hiddenPatternId').val(patternId);
 
                 console.log("Actual Pattern ID:", patternId);
 
                 $.ajax({
-                    url: 'fetch-already-assigned-empno.php', // PHP script path
+                    url: 'fetch-already-assigned-empno.php',
                     method: 'POST',
                     data: {
                         pattern_id: patternId
@@ -642,21 +677,18 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                     dataType: 'json',
                     success: function(response) {
                         console.log("Already Assigned Employees:", response);
-
                         // Set modal content
                         $('#schedNamePattern').html(`<strong>Schedule Pattern Name:</strong> ${schedNamePattern}`);
                         $('#schedType').html(`<strong>Schedule Type:</strong> ${schedType}`);
-                        $('#noBreak').prop('checked', noBreak === 1);
-
+                        // Update No Break label dynamically
+                        $('#noBreak').html(`<strong>No Break Type:</strong> ${noBreak === 1 ? 'Yes' : 'No'}`);
                         // Show the modal
                         $('#assignEmployee').modal('show');
-
                         // Populate Assigned Employees container
                         var assignedContainer = $('#assignedEmployees');
-                        assignedContainer.empty(); // Clear previous content
+                        assignedContainer.empty();
 
-                        const assignedEmpnos = new Set(response.map(emp => emp.empno)); // Store assigned empnos for comparison
-
+                        const assignedEmpnos = new Set(response.map(emp => emp.empno));
                         response.forEach(function(employee) {
                             assignedContainer.append(`
                     <div data-empno="${employee.empno}" class="assigned-employee">
@@ -670,13 +702,10 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
                         // Populate Unassigned Employees container
                         var unassignedContainer = $('#UnassignedEmployees');
-                        unassignedContainer.empty(); // Clear existing content
+                        unassignedContainer.empty();
 
                         employees.forEach(function(employee) {
-                            // Only add employees not already assigned and with pattern_id = 0
-                            if (
-                                !assignedEmpnos.has(employee.empno) &&
-                                employee.pattern_id === "0" && // Ensure pattern_id is 0
+                            if (!assignedEmpnos.has(employee.empno) && employee.pattern_id === "0" &&
                                 ((employee.is_compressed == 0 && schedType === "Regular") ||
                                     (employee.is_compressed == 1 && schedType === "CWW"))
                             ) {
@@ -695,6 +724,7 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                     }
                 });
             });
+
 
             // Drag-and-drop functionality
             let draggedElement;
