@@ -616,6 +616,7 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
 
 
+
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
 
@@ -821,7 +822,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                 });
             }
 
-            // Function to remove an employee and move them back to Unassigned
             window.removeEmployee = function(empno, button) {
                 const assignedContainer = document.getElementById("assignedEmployees");
                 const unassignedContainer = document.getElementById("UnassignedEmployees");
@@ -829,10 +829,13 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                 // Get the employee name to be removed
                 const employeeName = button.parentElement.childNodes[0].textContent;
 
-                // Log empno and employeeName to the console
-                console.log(`Removing Employee: Empno: ${empno}, Name: ${employeeName}`);
+                // Retrieve the patternId from the hidden input field
+                const patternId = $('#hiddenPatternId').val();
 
-                // Move back to UnassignedEmployees
+                // Log empno, employeeName, and patternId to the console for debugging
+                console.log(`Removing Employee - Empno: ${empno}, Name: ${employeeName}, Pattern ID: ${patternId}`);
+
+                // Move the employee back to UnassignedEmployees
                 unassignedContainer.innerHTML += `
                 <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
                     <input type="checkbox" class="mr-2 employee-checkbox" value="${empno}" />
@@ -847,13 +850,13 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                     url: 'update-removed-empno-pattern.php', // PHP script path for updating
                     type: 'POST',
                     data: {
-                        pattern_id: 0,
+                        pattern_id: patternId, // Pass the actual pattern_id
                         empno: empno // Pass empno to identify which employee to update
                     },
                     success: function(response) {
                         const res = JSON.parse(response);
                         if (res.status === 'success') {
-                            console.log(`Updated pattern_id to 0 for Empno: ${empno}`);
+                            console.log(`Successfully removed Empno: ${empno} from Pattern ID: ${patternId}`);
                         } else {
                             console.error(`Error updating pattern_id: ${res.message}`);
                         }
@@ -956,6 +959,8 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             });
 
         });
+
+
 
 
 
