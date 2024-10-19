@@ -75,6 +75,42 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
     <!-- Add this in the <head> section of your HTML file -->
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <!-- Page level custom scripts -->
+    <script src="js/demo/datatables-demo.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- Add DataTables JS -->
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+    <!-- DataTables Buttons JS -->
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <!-- JSZip -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- PDFMake -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <!-- Buttons HTML5 -->
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <!-- Buttons Print -->
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <!-- SheetJS -->
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+
 
     <style>
         .draggable-container {
@@ -454,12 +490,10 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             </div>
         </div>
 
-
         <!-- Modal for Assigned Employees -->
         <div class="modal fade" id="assignEmployee" tabindex="-1" aria-labelledby="assignEmployeeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-xl">
                 <div class="modal-content">
-
 
                     <div class="modal-header d-flex justify-content-between pb-0">
                         <div>
@@ -472,9 +506,15 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                                 <div class="info-item" id="noBreak"></div>
                             </div>
                         </div>
+
+                        <!-- Date Picker Container -->
+                        <div class="d-flex align-items-center">
+                            <label for="startSelectedDate" class="me-2 mr-2 mt-2" style="font-weight: bold;">Select Date:</label>
+                            <!-- Date Input Field in the Modal -->
+                            <input type="text" id="startSelectedDate" class="form-control" placeholder="YYYY/MM/DD"  readonly style="width: 150px;" />
+
+                        </div>
                     </div>
-
-
 
                     <div class="modal-body">
                         <div class="container">
@@ -548,38 +588,6 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             </div>
         </div>
     </div>
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
-    <!-- Page level plugins -->
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-    <!-- Page level custom scripts -->
-    <script src="js/demo/datatables-demo.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <!-- Add DataTables JS -->
-    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
-    <!-- DataTables Buttons JS -->
-    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-    <!-- JSZip -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- PDFMake -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <!-- Buttons HTML5 -->
-    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-    <!-- Buttons Print -->
-    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-    <!-- SheetJS -->
-    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
 
 <script>
@@ -655,6 +663,20 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
+
+     // Initialize the datepicker for #startSelectedDate
+     $('#startSelectedDate').datepicker({
+        format: 'yyyy-mm-dd', // Customize your date format
+        autoclose: true, // Automatically close on date select
+        todayHighlight: true, // Highlight today's date
+    });
+
+    // Ensure the datepicker shows only when the input is clicked
+    $('#startSelectedDate').on('focus', function() {
+        $(this).datepicker('show');
+    });
+
+
 
             $(document).on('click', '.assign-btn', function(e) {
                 e.preventDefault();
@@ -868,7 +890,16 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                     icon: 'warning',
                     showCloseButton: true, // Show the "X" button
                     confirmButtonColor: '#d33',
-                    confirmButtonText: 'Yes, remove it!',
+                    confirmButtonText: 'Confirm',
+                    didOpen: () => {
+                        // Prevent datepicker interference by hiding or blurring
+                        $('#startSelectedDate').datepicker('hide');
+                        document.activeElement.blur();
+                    },
+                    willClose: () => {
+                        $('#startSelectedDate').datepicker('hide');
+                        document.activeElement.blur();
+                    },
                 }).then((result) => {
                     if (result.isConfirmed) {
                         // Move the employee back to UnassignedEmployees
