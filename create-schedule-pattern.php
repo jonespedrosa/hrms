@@ -5,28 +5,40 @@ $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 session_start();
 unset($_SESSION['viewPrintSched']);
 unset($_SESSION['emp_sched']);
+
 if (empty($_SESSION['user'])) {
     header('location:login.php');
+    exit;
 }
 
-$sqlUserInfo = "SELECT userid, empno, userlevel, name, mothercafe FROM user_info WHERE empno = '" . $_SESSION['empno'] . "'";
+// Fetch user information
+$sqlUserInfo = "SELECT userid, empno, userlevel, name, mothercafe
+                FROM user_info
+                WHERE empno = '" . $_SESSION['empno'] . "'";
 $queryUserInfo = $HRconnect->query($sqlUserInfo);
 $rowUserInfo = $queryUserInfo->fetch_array();
+
 $userlevel = $rowUserInfo['userlevel'];
 $empno = $rowUserInfo['empno'];
 $name = $rowUserInfo['name'];
 $userid = $rowUserInfo['userid'];
 
-$sqlUser = "SELECT username, areatype FROM user WHERE username = '" . $_SESSION['user']['username'] . "'";
+// Fetch user area type from another table
+$sqlUser = "SELECT username, areatype
+            FROM user
+            WHERE username = '" . $_SESSION['user']['username'] . "'";
 $queryUser = $ORconnect->query($sqlUser);
 $rowUser = $queryUser->fetch_array();
 $areatype = $rowUser['areatype'];
 
 // Fetch additional user info by userid
-$sqlUserInfoById = "SELECT empno, name, status, is_compressed, pattern_id FROM user_info WHERE userid = '$userid' AND status IN ('active', '')";
+$sqlUserInfoById = "SELECT empno, name, status, is_compressed, pattern_id
+                    FROM user_info
+                    WHERE userid = '$userid'
+                    AND status IN ('active', '')";
 $queryUserInfoById = $HRconnect->query($sqlUserInfoById);
 
-// Collect user information from query results
+// Collect user information into an array
 $employees = [];
 if ($queryUserInfoById) {
     while ($rowUserWithName = $queryUserInfoById->fetch_array(MYSQLI_ASSOC)) {
@@ -34,24 +46,27 @@ if ($queryUserInfoById) {
     }
 }
 
-// Encode the employee array as JSON for JavaScript use
+// Output the employees array as JSON for JavaScript
 echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
-// Output the employees data
-// echo "<pre>";
-// print_r($employees); // This will show the details of employee data
-// echo "</pre>";
+// Fetch the date range (datefrom and dateto) for the current user
+$getCutOffDateRange = "SELECT si.datefrom, si.dateto
+                       FROM user_info ui
+                       LEFT JOIN sched_info si ON si.empno = ui.empno
+                       WHERE si.status = 'Pending' AND ui.empno = $empno";
+$queryCutOffRange = $HRconnect->query($getCutOffDateRange);
 
-// Output the user info data
-// echo "<pre>";
-// print_r($rowUserInfo); // This will show the details of user info
-// echo "</pre>";
+// Ensure the query was successful and fetch the result
+$cutoffrange_dateStart = null;
+$cutoffrange_dateEnd = null;
 
-// echo "<pre>";
-// print_r($rowUser); // This will show the details of the user
-// echo "</pre>";
+if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
+    $cutoffrange_dateStart = $rowCutOffRange['datefrom'];
+    $cutoffrange_dateEnd = $rowCutOffRange['dateto'];
+}
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -106,9 +121,9 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
 
 
@@ -227,6 +242,35 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
             /* Center bullet */
             color: #333;
             font-size: 15px;
+        }
+
+        /* Highlighted range: green background and dark text */
+        .datepicker table tr td.in-range,
+        .datepicker table tr td.in-range:hover {
+            background-color: #d4edda !important;
+            /* Light green */
+            color: #155724 !important;
+            /* Dark green */
+            cursor: pointer;
+            /* Normal pointer for valid dates */
+        }
+
+        /* Today's date within the range: yellow background */
+        .datepicker table tr td.today.in-range {
+            background-color: #ffc107 !important;
+            /* Yellow */
+            color: black !important;
+        }
+
+        /* Disabled dates: light gray background and disabled cursor */
+        .datepicker table tr td.disabled,
+        .datepicker table tr td.disabled:hover {
+            background-color: #f0f0f0 !important;
+            /* Light gray */
+            color: #d6d6d6 !important;
+            /* Faint text */
+            cursor: not-allowed !important;
+            /* Disable pointer */
         }
 
         .swal-button-green {
@@ -511,9 +555,10 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
                         <div class="d-flex align-items-center">
                             <label for="startSelectedDate" class="me-2 mr-2 mt-2" style="font-weight: bold;">Select Date:</label>
                             <!-- Date Input Field in the Modal -->
-                            <input type="text" id="startSelectedDate" class="form-control" placeholder="YYYY/MM/DD"  readonly style="width: 150px;" />
-
+                            <input type="text" id="startSelectedDate" class="form-control" placeholder="YYYY/MM/DD" readonly style="width: 130px;" />
                         </div>
+
+
                     </div>
 
                     <div class="modal-body">
@@ -664,17 +709,43 @@ echo "<script>var employees = " . json_encode($employees) . ";</script>";
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
 
-     // Initialize the datepicker for #startSelectedDate
-     $('#startSelectedDate').datepicker({
-        format: 'yyyy-mm-dd', // Customize your date format
-        autoclose: true, // Automatically close on date select
-        todayHighlight: true, // Highlight today's date
-    });
+            var cutoffStart = "<?php echo $cutoffrange_dateStart; ?>";
+            var cutoffEnd = "<?php echo $cutoffrange_dateEnd; ?>";
 
-    // Ensure the datepicker shows only when the input is clicked
-    $('#startSelectedDate').on('focus', function() {
-        $(this).datepicker('show');
-    });
+            // Initialize the datepicker with the specified date range
+            $('#startSelectedDate').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true,
+                startDate: cutoffStart,
+                endDate: cutoffEnd,
+            }).on('changeMonth', function() {
+                highlightRange(cutoffStart, cutoffEnd); // Reapply highlights on month change
+            });
+
+            // Ensure the datepicker shows only when input is clicked
+            $('#startSelectedDate').on('focus', function() {
+                $(this).datepicker('show');
+            });
+
+            // Function to highlight the date range
+            function highlightRange(start, end) {
+                const startDate = new Date(start);
+                const endDate = new Date(end);
+
+                // Iterate over all date cells in the calendar
+                $('.datepicker-days td').each(function() {
+                    const dateValue = $(this).data('date');
+                    const cellDate = new Date(dateValue);
+
+                    if (cellDate >= startDate && cellDate <= endDate) {
+                        $(this).addClass('in-range'); // Add custom class to highlight the range
+                    }
+                });
+            }
+
+            // Call the highlight function initially
+            highlightRange(cutoffStart, cutoffEnd);
 
 
 
