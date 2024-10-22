@@ -961,7 +961,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     icon: 'warning',
                     showCloseButton: true, // Show the "X" button
                     confirmButtonColor: '#d33',
-                    confirmButtonText: 'Confirm',
+                    confirmButtonText: 'Submit',
                     didOpen: () => {
                         // Prevent datepicker interference by hiding or blurring
                         $('#startSelectedDate').datepicker('hide');
@@ -1080,7 +1080,12 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                                     showConfirmButton: false,
                                     customClass: {
                                         confirmButton: 'swal-button-green'
-                                    }
+                                    },
+                                    didOpen: () => {
+                                        // Prevent datepicker interference by hiding or blurring
+                                        $('#startSelectedDate').datepicker('hide');
+                                        document.activeElement.blur();
+                                    },
                                 }).then(() => location.reload());
                             } else {
                                 Swal.fire({
