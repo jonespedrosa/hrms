@@ -429,10 +429,10 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                                 <input type="text" class="form-control schedule-name-select" id="scheduleName" placeholder="Enter schedule pattern name">
                             </div>
                             <!-- Schedule Type -->
-                            <div class="d-flex align-items-center mb-2">
+                            <div class="d-flex align-items-center">
                                 <div class="me-3 mr-4">
                                     <label for="scheduleType" class="form-label" style="font-weight: bold;">Schedule Type:</label>
-                                    <select class="form-select schedule-type-select" id="scheduleType"> <!-- New class applied -->
+                                    <select class="form-select schedule-type-select" id="scheduleType">
                                         <option selected>Select schedule type</option>
                                         <option value="Regular">Regular</option>
                                         <option value="CWW">CWW</option>
@@ -446,7 +446,12 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                             </div>
                             <!-- Schedule Details -->
                             <div class="mb-3">
-                                <label class="form-label mb-0" style="font-weight: bold;">Schedule Details:</label>
+                                <div class="d-flex flex-column">
+                                    <label id="noteLabel" class="form-label mb-1" style="font-weight: bold; color: red; display: none;">
+                                        Notes: <span id="noteText" style="font-weight: normal;"></span>
+                                    </label>
+                                    <label class="form-label mb-0" style="font-weight: bold;">Schedule Details:</label>
+                                </div>
                                 <hr class="mt-2 mb-2">
                                 <div class="row mb-2">
                                     <div style="font-weight: bold;" class="col">Day</div>
@@ -538,7 +543,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
         <div class="modal fade" id="assignEmployee" tabindex="-1" aria-labelledby="assignEmployeeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-xl">
                 <div class="modal-content">
-
                     <div class="modal-header d-flex justify-content-between pb-0">
                         <div>
                             <h5 class="modal-title" style="font-weight: bold; color: #2E59D9;" id="assignEmployesModalLabel">
@@ -550,17 +554,13 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                                 <div class="info-item" id="noBreak"></div>
                             </div>
                         </div>
-
                         <!-- Date Picker Container -->
                         <div class="d-flex align-items-center">
                             <label for="startSelectedDate" class="me-2 mr-2 mt-2" style="font-weight: bold;">Select Date:</label>
                             <!-- Date Input Field in the Modal -->
                             <input type="text" id="startSelectedDate" class="form-control" placeholder="YYYY/MM/DD" readonly style="width: 130px;" />
                         </div>
-
-
                     </div>
-
                     <div class="modal-body">
                         <div class="container">
                             <div class="row">
@@ -588,7 +588,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                             </div>
                         </div>
                     </div>
-
                     <div class="modal-footer justify-content-between">
                         <button id="btnCloseAssign" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button id="btnSaveAssign" type="button" class="btn btn-primary" style="font-weight: bold;">Save</button>
@@ -1011,7 +1010,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 });
             };
 
-
             // Ensure functions are accessible in global scope
             window.allowDrop = allowDrop;
             window.drag = drag;
@@ -1329,15 +1327,25 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
             });
         }
 
-        // Add event listener to the scheduleType dropdown to hide/show NWD based on selected type
         document.getElementById('scheduleType').addEventListener('change', function(e) {
             const scheduleType = e.target.value;
+            const noteLabel = document.getElementById('noteLabel');
+            const noteText = document.getElementById('noteText');
 
-            // If schedule type is "Regular", hide the NWD option
-            if (scheduleType === "Regular") {
-                populateTimeDropdowns(false); // Hide NWD
+            if (scheduleType) {
+                // Show the label and set the appropriate text
+                noteLabel.style.display = 'block';
+
+                if (scheduleType === "Regular") {
+                    noteText.textContent = "You should declare the Rest Day (RD).";
+                    populateTimeDropdowns(false); // Hide NWD
+                } else if (scheduleType === "CWW") {
+                    noteText.textContent = "You should declare the No Work Day (NWD) and Rest Day (RD).";
+                    populateTimeDropdowns(true); // Show NWD
+                }
             } else {
-                populateTimeDropdowns(true); // Show NWD
+                // Hide the label if no type is selected
+                noteLabel.style.display = 'none';
             }
         });
 
@@ -1478,12 +1486,32 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 }
             };
 
+
+            // Schedule Details is Missing for time fields
+            function areAllDaysFilled(schedule) {
+                for (const day in schedule) {
+                    if (!schedule[day].from || !schedule[day].to) {
+                        return false; // If any day is missing a time value
+                    }
+                }
+                return true;
+            }
+
             // Validate input fields
             if (!scheduleName || scheduleType === "Select schedule type") {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Validation Error',
+                    title: 'Schedule Details is Missing',
                     text: 'Please enter a schedule name and select a schedule type.'
+                });
+                return;
+            }
+
+            if (!areAllDaysFilled(timeSchedule)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Schedule Details is Missing',
+                    text: 'Please fill in all time fields for Monday to Sunday.'
                 });
                 return;
             }
