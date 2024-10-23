@@ -17,11 +17,16 @@ $sqlUserInfo = "SELECT userid, empno, userlevel, name, mothercafe
                 WHERE empno = '" . $_SESSION['empno'] . "'";
 $queryUserInfo = $HRconnect->query($sqlUserInfo);
 $rowUserInfo = $queryUserInfo->fetch_array();
-
 $userlevel = $rowUserInfo['userlevel'];
 $empno = $rowUserInfo['empno'];
 $name = $rowUserInfo['name'];
 $userid = $rowUserInfo['userid'];
+
+// Pass the userid to JavaScript securely
+echo "<script>
+    var userid = " . json_encode($userid) . ";
+    console.log('User ID from PHP:', userid);
+</script>";
 
 // Fetch user area type from another table
 $sqlUser = "SELECT username, areatype
@@ -554,15 +559,23 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                                 <div class="info-item" id="noBreak"></div>
                             </div>
                         </div>
-                        <!-- Date Picker Container -->
-                        <div class="d-flex align-items-center">
-                            <label for="startSelectedDate" class="me-2 mr-2 mt-2" style="font-weight: bold;">Select Date:</label>
-                            <!-- Date Input Field in the Modal -->
-                            <input type="text" id="startSelectedDate" class="form-control" placeholder="YYYY/MM/DD" readonly style="width: 130px;" />
-                        </div>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body pt-1">
                         <div class="container">
+                            <!-- Date Picker Container (Right-Aligned) -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div></div>
+                                <div class="d-flex flex-column align-items-end">
+                                    <label for="startSelectedDate" class="mb-0" style="font-weight: bold;">
+                                        Select Date:
+                                        <span style="font-weight: normal;"><em>(Optional)</em></span>
+                                    </label>
+                                    <!-- <em class="text-muted mb-1">(Optional)</em> -->
+                                    <div class="d-flex align-items-center">
+                                        <input type="text" id="startSelectedDate" class="form-control" placeholder="YYYY/MM/DD" readonly style="width: 165px;" />
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <!-- Unassigned Employees with Search and Checkboxes -->
                                 <div class="col-md-5">
@@ -588,6 +601,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                             </div>
                         </div>
                     </div>
+
                     <div class="modal-footer justify-content-between">
                         <button id="btnCloseAssign" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button id="btnSaveAssign" type="button" class="btn btn-primary" style="font-weight: bold;">Save</button>
@@ -638,6 +652,12 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
     // Displaying Data and Validation
     $(document).ready(function() {
 
+        // Check if 'userid' is available
+        if (typeof userid === 'undefined') {
+            console.error('User ID is not defined!');
+            return; // Stop further execution if userid is undefined
+        }
+
         // Declare a global variable to store fetched schedules
         var fetchedSchedules = [];
 
@@ -646,13 +666,17 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
             ajax: {
                 url: 'fetch-pattern-schedules.php', // Path to your PHP script
                 dataSrc: function(json) {
-                    // Log the fetched data to the console
-                    // console.log('Fetched Data:', json);
-
                     // Store the fetched data in the global variable
                     fetchedSchedules = json;
+                    // console.log('Fetched Data:', fetchedSchedules);
 
-                    return json; // Return the data for DataTables
+                    // Filter schedules by matching userid
+                    var matchingSchedules = fetchedSchedules.filter(
+                        schedule => schedule.userid === String(userid)
+                    );
+
+                    console.log('Matching Schedules:', matchingSchedules);
+                    return matchingSchedules; // Return filtered data for DataTables
                 }
             },
             columns: [{

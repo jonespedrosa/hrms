@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_pattern_id']))
 }
 
 // Fetch pattern schedule data where status is 'Active'
-$sqlPatternSchedule = "SELECT pattern_id, sched_name_pattern, sched_type, no_break, time_schedule, status
+$sqlPatternSchedule = "SELECT pattern_id, userid, sched_name_pattern, sched_type, no_break, time_schedule, status
                     FROM pattern_schedule
                     WHERE status = 'Active'";
 
@@ -28,30 +28,3 @@ while ($row = $result->fetch_assoc()) {
 // Return the data as JSON
 header('Content-Type: application/json');
 echo json_encode($schedules);
-
-
-
-
-
-
-
-
-
-
-// $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
-
-// // Fetch pattern schedule data where status is 'Active'
-// $sqlPatternSchedule = "SELECT pattern_id, sched_name_pattern, sched_type, no_break, time_schedule, status
-//                     FROM pattern_schedule
-//                     WHERE status = 'Active'";
-
-// $result = $HRconnect->query($sqlPatternSchedule);
-
-// $schedules = array();
-// while ($row = $result->fetch_assoc()) {
-//     $schedules[] = $row; // Make sure pattern_id is included in each row
-// }
-
-// // Return the data as JSON
-// header('Content-Type: application/json');
-// echo json_encode($schedules);
