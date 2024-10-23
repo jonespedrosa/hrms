@@ -1,30 +1,55 @@
 <?php
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
 
-// Check if a delete request was made
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_pattern_id'])) {
-    $pattern_id = $_POST['delete_pattern_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if deletion is allowed
+    if (isset($_POST['check_pattern_id'])) {
+        $pattern_id = $_POST['check_pattern_id'];
 
-    // Update the status to 'Inactive'
-    $updateQuery = "UPDATE pattern_schedule SET status = 'Inactive' WHERE pattern_id = ?";
-    $stmt = $HRconnect->prepare($updateQuery);
-    $stmt->bind_param("i", $pattern_id); // Assuming pattern_id is an integer
-    $stmt->execute();
-    $stmt->close();
+        $checkQuery = "SELECT assigned_empno_schedule FROM pattern_schedule WHERE pattern_id = ?";
+        $stmt = $HRconnect->prepare($checkQuery);
+        $stmt->bind_param("i", $pattern_id);
+        $stmt->execute();
+        $stmt->bind_result($assigned_empno_schedule);
+        $stmt->fetch();
+        $stmt->close();
+
+        // Decode JSON to check if it's an empty array
+        $assignedData = json_decode($assigned_empno_schedule, true);
+
+        // Check if it's null, an empty string, or an empty array
+        if (is_null($assigned_empno_schedule) ||
+            $assigned_empno_schedule === '' ||
+            (is_array($assignedData) && count($assignedData) === 0)) {
+            echo json_encode(['canDelete' => true]); // Can delete
+        } else {
+            echo json_encode(['canDelete' => false]); // Cannot delete
+        }
+        exit();
+    }
+
+    // Handle the actual deletion if allowed
+    if (isset($_POST['delete_pattern_id'])) {
+        $pattern_id = $_POST['delete_pattern_id'];
+
+        $updateQuery = "UPDATE pattern_schedule SET status = 'Inactive' WHERE pattern_id = ?";
+        $stmt = $HRconnect->prepare($updateQuery);
+        $stmt->bind_param("i", $pattern_id);
+        $stmt->execute();
+        $stmt->close();
+    }
 }
 
-// Fetch pattern schedule data where status is 'Active'
+// Fetch active pattern schedules
 $sqlPatternSchedule = "SELECT pattern_id, userid, sched_name_pattern, sched_type, no_break, time_schedule, status
                     FROM pattern_schedule
                     WHERE status = 'Active'";
-
 $result = $HRconnect->query($sqlPatternSchedule);
 
-$schedules = array();
+$schedules = [];
 while ($row = $result->fetch_assoc()) {
-    $schedules[] = $row; // Make sure pattern_id is included in each row
+    $schedules[] = $row;
 }
 
-// Return the data as JSON
 header('Content-Type: application/json');
 echo json_encode($schedules);

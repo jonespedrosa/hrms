@@ -54,11 +54,11 @@ if ($queryUserInfoById) {
 // Output the employees array as JSON for JavaScript
 echo "<script>var employees = " . json_encode($employees) . ";</script>";
 
-// Fetch the date range (datefrom and dateto) for the current user
+// Fetch the date range (datefrom and dateto) for the current user     12
 $getCutOffDateRange = "SELECT si.datefrom, si.dateto
-                       FROM user_info ui
-                       LEFT JOIN sched_info si ON si.empno = ui.empno
-                       WHERE si.status = 'Pending' AND ui.empno = $empno";
+                    FROM user_info ui
+                    LEFT JOIN sched_info si ON si.empno = ui.empno
+                    WHERE si.status = 'Pending' AND ui.empno = $empno";
 $queryCutOffRange = $HRconnect->query($getCutOffDateRange);
 
 // Ensure the query was successful and fetch the result
@@ -1065,6 +1065,8 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 });
             });
 
+
+
             $(document).ready(function() {
 
                 $('#btnSaveAssign').on('click', function() {
@@ -1127,8 +1129,16 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                         }
                     });
                 });
-
             });
+
+
+
+
+
+
+
+
+
 
         });
 
@@ -1227,53 +1237,68 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 title: 'Are you sure?',
                 text: 'You are about to delete this schedule pattern!',
                 icon: 'warning',
-                showCloseButton: true, // Shows the X button
-                confirmButtonText: 'Submit', // Change confirm button text
-                confirmButtonColor: '#d33' // Optional: change color for visibility
+                showCloseButton: true,
+                confirmButtonText: 'Submit',
+                confirmButtonColor: '#d33'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Send POST request to update the status to 'Inactive'
+                    // Send POST request to check if deletion is allowed
                     $.ajax({
                         type: 'POST',
-                        url: 'fetch-pattern-schedules.php', // Same script for fetching and updating
+                        url: 'fetch-pattern-schedules.php',
                         data: {
-                            delete_pattern_id: patternId
-                        },
+                            check_pattern_id: patternId
+                        }, // Check if deletion is allowed
                         success: function(response) {
-                            // Optionally refresh the DataTable
-                            $('#displaySchedulePattern').DataTable().ajax.reload();
+                            var res = JSON.parse(response); // Parse the response
 
-                            // Show success message with timer
-                            Swal.fire({
-                                title: 'Deactivated!',
-                                text: 'The schedule pattern has been deactivated.',
-                                icon: 'success',
-                                timer: 2000, // Timer in milliseconds (2000ms = 2 seconds)
-                                timerProgressBar: true,
-                                showConfirmButton: false,
-                                customClass: {
-                                    confirmButton: 'swal-button-green'
-                                }
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error occurred while deleting:', error);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'There was an error deactivating the schedule pattern.',
-                                icon: 'error',
-                                timer: 2000, // Timer in milliseconds
-                                timerProgressBar: true,
-                                showConfirmButton: false,
-                                customClass: {
-                                    confirmButton: 'swal-button-green'
-                                }
-                            });
+                            if (res.canDelete) {
+                                // Proceed with the deletion if allowed
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'fetch-pattern-schedules.php',
+                                    data: {
+                                        delete_pattern_id: patternId
+                                    },
+                                    success: function() {
+                                        $('#displaySchedulePattern').DataTable().ajax.reload();
+                                        Swal.fire({
+                                            title: 'Deleted!',
+                                            text: 'The schedule pattern has been deleted.',
+                                            icon: 'success',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                        });
+                                    },
+                                    error: function() {
+                                        Swal.fire({
+                                            title: 'Error!',
+                                            text: 'There was an error deleted the schedule pattern.',
+                                            icon: 'error',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                        });
+                                    }
+                                });
+                            } else {
+                                // Show warning if deletion is not allowed
+                                Swal.fire({
+                                    title: 'Cannot Delete!',
+                                    text: 'This pattern is already assigned to employees and cannot be deleted.',
+                                    icon: 'warning',
+                                    timer: 2000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                });
+                            }
                         }
                     });
                 }
             });
         });
+
 
     });
 
