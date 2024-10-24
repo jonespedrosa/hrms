@@ -2,6 +2,9 @@
 session_start(); // Start session to access session variables
 date_default_timezone_set('Asia/Manila'); // Set timezone
 
+// Set script execution time limit to 120 seconds (2 minutes)
+// set_time_limit(120);
+
 if (isset($_POST['pattern_id']) && isset($_POST['assigned_employees'])) {
     // Database connection
     $HRconnect = new mysqli("localhost", "root", "", "hrms");

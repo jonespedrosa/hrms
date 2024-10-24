@@ -278,6 +278,10 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
             /* Disable pointer */
         }
 
+        #clearDate:focus {
+            outline: none;
+        }
+
         .swal-button-green {
             background-color: #48BF81 !important;
             color: white !important;
@@ -570,9 +574,14 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                                         Select Date:
                                         <span style="font-weight: normal;"><em>(Optional)</em></span>
                                     </label>
-                                    <!-- <em class="text-muted mb-1">(Optional)</em> -->
                                     <div class="d-flex align-items-center">
-                                        <input type="text" id="startSelectedDate" class="form-control" placeholder="YYYY/MM/DD" readonly style="width: 165px;" />
+                                        <input type="text" id="startSelectedDate" class="form-control" placeholder="YYYY/MM/DD" readonly style="width: 140px;" />
+                                        <button type="button" id="clearDate"
+                                            style="border: none; background: none; cursor: pointer; color: #D2435B;
+                        font-size: 1.8rem; padding: 0; margin-left: 5px;"
+                                            title="Clear Date">
+                                            &times;
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -771,6 +780,12 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
             // Call the highlight function initially
             highlightRange(cutoffStart, cutoffEnd);
+
+            // Clear date button functionality
+            $('#clearDate').on('click', function() {
+                $('#startSelectedDate').val(''); // Clear the date input
+                $('#startSelectedDate').datepicker('update', null); // Reset the datepicker
+            });
 
             $(document).on('click', '.assign-btn', function(e) {
                 e.preventDefault();
