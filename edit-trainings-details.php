@@ -9,7 +9,7 @@ unset($_SESSION['emp_sched']);
 if (empty($_SESSION['user'])) {
     header('location:login.php');
 }
-$sql = "SELECT * FROM user_info WHERE empno = '" . $_SESSION['empno'] . "'";
+$sql = "SELECT userlevel, empno, mothercafe, name FROM user_info WHERE empno = '" . $_SESSION['empno'] . "'";
 $query = $HRconnect->query($sql);
 $row = $query->fetch_array();
 $userlevel = $row['userlevel'];
@@ -623,7 +623,7 @@ $mothercafe = $row['mothercafe'];
                     }).then(() => {
                         // var returnViewBatchSchedule = 'view-batch-schedules.php?id=' + getUrlParameter('id');
                         // window.location.href = returnViewBatchSchedule;
-                        
+
                         // Construct the URL with the id and schedule_id parameters
                         var returnViewBatchSchedule = 'view-batch-schedules.php?id=' + id + '&schedule_id=' + schedule_id;
 

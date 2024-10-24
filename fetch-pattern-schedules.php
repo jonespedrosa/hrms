@@ -1,5 +1,9 @@
 <?php
+session_start();  // Start session to access session variables
 $HRconnect = mysqli_connect("localhost", "root", "", "hrms");
+
+// Set timezone to Asia/Manila
+date_default_timezone_set('Asia/Manila');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if deletion is allowed
@@ -14,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->fetch();
         $stmt->close();
 
-        // Decode JSON to check if it's an empty array
         $assignedData = json_decode($assigned_empno_schedule, true);
 
         // Check if it's null, an empty string, or an empty array
@@ -31,10 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle the actual deletion if allowed
     if (isset($_POST['delete_pattern_id'])) {
         $pattern_id = $_POST['delete_pattern_id'];
+        $empno = $_SESSION['empno'];  // Retrieve empno from session
+        $currentTime = date('Y-m-d H:i:s');  // Get current timestamp in Asia/Manila timezone
 
-        $updateQuery = "UPDATE pattern_schedule SET status = 'Inactive' WHERE pattern_id = ?";
+        $updateQuery = "
+            UPDATE pattern_schedule
+            SET status = 'Inactive', updated_by = ?, updated_at = ?
+            WHERE pattern_id = ?";
         $stmt = $HRconnect->prepare($updateQuery);
-        $stmt->bind_param("i", $pattern_id);
+        $stmt->bind_param("isi", $empno, $currentTime, $pattern_id);
         $stmt->execute();
         $stmt->close();
     }

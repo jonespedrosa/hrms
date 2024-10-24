@@ -452,8 +452,8 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                             <!-- Schedule Details -->
                             <div class="mb-3">
                                 <div class="d-flex flex-column">
-                                    <label id="noteLabel" class="form-label mb-1" style="font-weight: bold; color: red; display: none;">
-                                        Notes: <span id="noteText" style="font-weight: normal;"></span>
+                                    <label id="noteLabel" class="form-label mb-1" style="font-weight: bold; color: blue; display: none;">
+                                        Notes: <span id="noteText" style="font-weight: bold; color: blue;"></span>
                                     </label>
                                     <label class="form-label mb-0" style="font-weight: bold;">Schedule Details:</label>
                                 </div>
@@ -742,12 +742,12 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 todayHighlight: true,
                 startDate: cutoffStart,
                 endDate: cutoffEnd,
-            }).on('changeMonth', function() {
-                highlightRange(cutoffStart, cutoffEnd); // Reapply highlights on month change
+            }).on('changeDate', function(e) {
+                $(this).val(e.format('yyyy-mm-dd')); // Set the selected date in the input
             });
 
-            // Ensure the datepicker shows only when input is clicked
-            $('#startSelectedDate').on('focus', function() {
+            // Show datepicker on input click
+            $('#startSelectedDate').on('click', function() {
                 $(this).datepicker('show');
             });
 
@@ -756,21 +756,21 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 const startDate = new Date(start);
                 const endDate = new Date(end);
 
-                // Iterate over all date cells in the calendar
                 $('.datepicker-days td').each(function() {
-                    const dateValue = $(this).data('date');
-                    const cellDate = new Date(dateValue);
-
-                    if (cellDate >= startDate && cellDate <= endDate) {
-                        $(this).addClass('in-range'); // Add custom class to highlight the range
+                    const dateString = $(this).attr('data-date');
+                    if (dateString) {
+                        const cellDate = new Date(dateString);
+                        if (cellDate >= startDate && cellDate <= endDate) {
+                            $(this).addClass('in-range');
+                        } else {
+                            $(this).removeClass('in-range');
+                        }
                     }
                 });
             }
 
             // Call the highlight function initially
             highlightRange(cutoffStart, cutoffEnd);
-
-
 
             $(document).on('click', '.assign-btn', function(e) {
                 e.preventDefault();
@@ -840,7 +840,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     }
                 });
             });
-
 
             // Drag-and-drop functionality
             let draggedElement;
@@ -1067,12 +1066,17 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
 
 
-            $(document).ready(function() {
 
+
+
+
+
+            $(document).ready(function() {
                 $('#btnSaveAssign').on('click', function() {
                     const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
                     const assignedData = [];
 
+                    // Collect assigned employee data
                     assignedEmployees.forEach(emp => {
                         const empno = emp.getAttribute('data-empno');
                         let name = emp.textContent.trim().replace(/\s*X\s*$/, '');
@@ -1083,14 +1087,26 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                         });
                     });
 
+                    // Get values for AJAX
                     const patternId = $('#hiddenPatternId').val();
+                    const startSelectedDate = $('#startSelectedDate').val(); // Get selected date
+                    const cutoffEndDate = cutoffEnd; // Use the PHP value embedded earlier
 
+                    // Console log to review data before sending
+                    console.log('Assigned Employees:', assignedData);
+                    console.log('Pattern ID:', patternId);
+                    console.log('Start Selected Date:', startSelectedDate);
+                    console.log('Cutoff End Date:', cutoffEndDate);
+
+                    // AJAX request to save the pattern schedule
                     $.ajax({
                         url: 'update-pattern-schedules.php',
                         type: 'POST',
                         data: {
                             pattern_id: patternId,
-                            assigned_employees: JSON.stringify(assignedData), // Can be an empty array
+                            assigned_employees: JSON.stringify(assignedData),
+                            start_date: startSelectedDate, // Pass selected start date
+                            end_date: cutoffEndDate, // Pass PHP's end date
                         },
                         success: function(response) {
                             const res = JSON.parse(response);
@@ -1106,7 +1122,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                                         confirmButton: 'swal-button-green'
                                     },
                                     didOpen: () => {
-                                        // Prevent datepicker interference by hiding or blurring
                                         $('#startSelectedDate').datepicker('hide');
                                         document.activeElement.blur();
                                     },
@@ -1130,10 +1145,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     });
                 });
             });
-
-
-
-
 
 
 
