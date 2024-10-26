@@ -1040,21 +1040,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 // Create an array to store empnos for the AJAX call
                 const empnosToUpdate = [];
 
-                // Loop through each assigned employee to prepare the update
-                assignedEmployees.forEach(empDiv => {
-                    const employeeName = empDiv.childNodes[0].textContent.trim(); // Get the name directly
-                    const empno = empDiv.getAttribute('data-empno'); // Retrieve the empno
-
-                    // Move the employee back to UnassignedEmployees with a checkbox
-                    targetDiv.innerHTML += `
-            <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
-                <input type="checkbox" class="mr-2 employee-checkbox" value="${empno}" />
-                ${employeeName}
-            </div>`;
-
-                    empnosToUpdate.push(empno); // Store empno for AJAX call
-                });
-
                 // Show SweetAlert2 confirmation dialog
                 Swal.fire({
                     title: 'Are you sure?',
@@ -1072,11 +1057,23 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                         $('#startSelectedDate').datepicker('hide');
                         document.activeElement.blur();
                     },
-
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // If confirmed, proceed with removing from assigned
-                        assignedEmployees.forEach(empDiv => empDiv.remove()); // Remove from assigned
+                        // Loop through each assigned employee to prepare the update
+                        assignedEmployees.forEach(empDiv => {
+                            const employeeName = empDiv.childNodes[0].textContent.trim(); // Get the name directly
+                            const empno = empDiv.getAttribute('data-empno'); // Retrieve the empno
+
+                            // Move the employee back to UnassignedEmployees with a checkbox
+                            targetDiv.innerHTML += `
+                    <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
+                        <input type="checkbox" class="mr-2 employee-checkbox" value="${empno}" />
+                        ${employeeName}
+                    </div>`;
+
+                            empnosToUpdate.push(empno); // Store empno for AJAX call
+                            empDiv.remove(); // Remove from assigned
+                        });
 
                         console.log("All employees have been unselected from Assigned to Unassigned.");
 
@@ -1105,6 +1102,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     }
                 });
             }
+
 
             function filterEmployees() {
                 const input = document.getElementById("employeeSearch");
