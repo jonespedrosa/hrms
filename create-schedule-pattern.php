@@ -550,7 +550,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
                 <div class="modal-content">
 
-                    <h5 class="modal-title p-2" style="font-weight: bold; color: #2E59D9;" id="assignEmployesModalLabel">
+                    <h5 class="modal-title pr-3 pl-3 pb-2 pt-2" style="font-weight: bold; color: #2E59D9;" id="assignEmployesModalLabel">
                         Assigning of Schedule Pattern to Employee
                     </h5>
                     <hr style="margin: 0;">
@@ -588,8 +588,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                             </div>
                         </div>
                     </div>
-
-
 
                     <div class="modal-body pt-1">
                         <div class="container">
@@ -762,11 +760,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
             ]
         });
 
-
-
-
-
-
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
 
@@ -893,8 +886,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                         $('#schedType').html(`<strong>Schedule Type:</strong> ${schedType}`);
                         $('#noBreak').html(`<strong>No Break Type:</strong> ${noBreak === 1 ? 'Yes' : 'No'}`);
                         // Show the modal
-
-
 
                         $('#assignEmployee').modal('show');
                         // Populate Assigned Employees container
@@ -1164,9 +1155,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
 
 
-
-
-
             $(document).ready(function() {
                 $('#btnSaveAssign').on('click', function() {
                     const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
@@ -1205,16 +1193,27 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                             confirmButton: 'swal-button-green'
                         },
                         didOpen: () => {
-                            // Prevent datepicker interference by hiding or blurring
-                            $('#startSelectedDate').datepicker('hide');
-                            document.activeElement.blur();
+                            $('#startSelectedDate').datepicker('hide'); // Hide datepicker
+                            document.activeElement.blur(); // Blur focus to avoid issues
                         },
                         willClose: () => {
-                            $('#startSelectedDate').datepicker('hide');
-                            document.activeElement.blur();
+                            $('#startSelectedDate').datepicker('hide'); // Hide datepicker again
+                            document.activeElement.blur(); // Blur any focused element
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            // Show loading modal while processing the AJAX request
+                            Swal.fire({
+                                title: 'Processing...',
+                                html: 'Updating your data. Please do not refresh or close the window to avoid interrupting the process.',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                footer: '<b>This may take a few moments.</b>', // Added footer
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
                             // If confirmed, proceed with the AJAX request
                             $.ajax({
                                 url: 'update-pattern-schedules.php',
@@ -1241,7 +1240,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                                             didOpen: () => {
                                                 $('#startSelectedDate').datepicker('hide');
                                                 document.activeElement.blur();
-                                            },
+                                            }
                                         }).then(() => location.reload());
                                     } else {
                                         Swal.fire({
@@ -1267,18 +1266,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
             // $(document).ready(function() {
             //     $('#btnSaveAssign').on('click', function() {
             //         const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
@@ -1301,7 +1288,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
             //         // Determine the appropriate confirmation message
             //         let message = startSelectedDate ?
-            //             'You selected a date. Do you want to proceed?' :
+            //             `You selected a date. Do you want to update the schedule starting ${startSelectedDate}?` :
             //             'Do you want to continue to save?';
 
             //         // Show the confirmation alert
@@ -1393,107 +1380,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
 
 
-
-
-
-
-
-
-
-
-            // $(document).ready(function() {
-            //     $('#btnSaveAssign').on('click', function() {
-            //         const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
-            //         const assignedData = [];
-
-            //         // Collect assigned employee data
-            //         assignedEmployees.forEach(emp => {
-            //             const empno = emp.getAttribute('data-empno');
-            //             let name = emp.textContent.trim().replace(/\s*X\s*$/, '');
-
-            //             assignedData.push({
-            //                 empno,
-            //                 name
-            //             });
-            //         });
-
-            //         // Get values for AJAX
-            //         const patternId = $('#hiddenPatternId').val();
-            //         const startSelectedDate = $('#startSelectedDate').val(); // Get selected date
-            //         const cutoffEndDate = cutoffEnd; // Use the PHP value embedded earlier
-
-            //         // Console log to review data before sending
-            //         console.log('Assigned Employees:', assignedData);
-            //         console.log('Pattern ID:', patternId);
-            //         console.log('Start Selected Date:', startSelectedDate);
-            //         console.log('Cutoff End Date:', cutoffEndDate);
-
-            //         // AJAX request to save the pattern schedule
-            //         $.ajax({
-            //             url: 'update-pattern-schedules.php',
-            //             type: 'POST',
-            //             data: {
-            //                 pattern_id: patternId,
-            //                 assigned_employees: JSON.stringify(assignedData),
-            //                 start_date: startSelectedDate, // Pass selected start date
-            //                 end_date: cutoffEndDate, // Pass PHP's end date
-            //             },
-            //             success: function(response) {
-            //                 const res = JSON.parse(response);
-            //                 if (res.status === 'success') {
-            //                     Swal.fire({
-            //                         icon: 'success',
-            //                         title: 'Saved!',
-            //                         text: 'Employees have been successfully assigned.',
-            //                         timer: 2000,
-            //                         timerProgressBar: true,
-            //                         showConfirmButton: false,
-            //                         customClass: {
-            //                             confirmButton: 'swal-button-green'
-            //                         },
-            //                         didOpen: () => {
-            //                             $('#startSelectedDate').datepicker('hide');
-            //                             document.activeElement.blur();
-            //                         },
-            //                     }).then(() => location.reload());
-            //                 } else {
-            //                     Swal.fire({
-            //                         icon: 'error',
-            //                         title: 'Error',
-            //                         text: res.message,
-            //                     });
-            //                 }
-            //             },
-            //             error: function(xhr, status, error) {
-            //                 Swal.fire({
-            //                     icon: 'error',
-            //                     title: 'Error',
-            //                     text: 'An error occurred while saving.',
-            //                 });
-            //                 console.error('AJAX error:', error);
-            //             }
-            //         });
-            //     });
-            // });
-
-
-
-
-
-
         });
-
-
-
-
-
-
-
-
-
-
-
-
 
         // Handle view function button
         $(document).on('click', '.view-btn', function(e) {
@@ -1640,16 +1527,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
             });
         });
 
-
     });
-
-
-
-
-
-
-
-
 
     // Inserting Data and Validation
     document.addEventListener("DOMContentLoaded", function() {
@@ -1875,7 +1753,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     to: document.getElementById('sundayTo').value
                 }
             };
-
 
             // Schedule Details is Missing for time fields
             function areAllDaysFilled(schedule) {
