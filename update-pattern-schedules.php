@@ -71,9 +71,17 @@ if (isset($_POST['pattern_id']) && isset($_POST['assigned_employees'])) {
             $timeSchedule = json_decode($patternResult['time_schedule'], true);
             $patternStmt->close();
 
-            // Update sched_time entries within the selected date range
-            $schedTimeQuery = "SELECT userid, empno, datefromto, schedfrom, schedto, remarks FROM sched_time
-        WHERE empno = ? AND datefromto BETWEEN ? AND ?";
+            // Prepare the SQL query to select sched_time
+            $schedTimeQuery = "
+            SELECT st.userid, st.empno, st.datefromto, st.schedfrom, st.schedto, st.remarks
+            FROM sched_time st
+            LEFT JOIN change_schedule cs
+                ON st.empno = cs.empno AND st.datefromto = cs.datefrom AND cs.cs_status = 'approved'
+            WHERE st.empno = ?
+                AND st.datefromto BETWEEN ? AND ?
+                AND cs.datefrom IS NULL
+            ORDER BY st.schedfrom ASC";
+
             $schedStmt = $HRconnect->prepare($schedTimeQuery);
             $schedStmt->bind_param('iss', $empno, $startDate, $endDate);
             $schedStmt->execute();
@@ -89,7 +97,7 @@ if (isset($_POST['pattern_id']) && isset($_POST['assigned_employees'])) {
                     // Initialize remarks
                     $remarks = $row['remarks'];
 
-                    // Check if remarks should be set to RD or NWD
+                    //  Check if remarks should be set to RD or NWD
                     if ($fromTime === "RD" || $toTime === "RD") {
                         $remarks = "RD";
                         $newSchedFrom = $row['schedfrom'];
@@ -111,11 +119,12 @@ if (isset($_POST['pattern_id']) && isset($_POST['assigned_employees'])) {
 
                     // Update sched_time with new times and remarks
                     $updateSchedQuery = "UPDATE sched_time
-                SET schedfrom = ?, schedto = ?, remarks = ?
-                WHERE empno = ? AND datefromto = ?";
+                    SET schedfrom = ?, schedto = ?, remarks = ?
+                    WHERE empno = ? AND datefromto = ?";
 
                     $updateStmt = $HRconnect->prepare($updateSchedQuery);
                     $updateStmt->bind_param('sssis', $newSchedFrom, $newSchedTo, $remarks, $empno, $row['datefromto']);
+
 
                     if (!$updateStmt->execute()) {
                         echo json_encode(['status' => 'error', 'message' => $updateStmt->error]);
@@ -131,7 +140,7 @@ if (isset($_POST['pattern_id']) && isset($_POST['assigned_employees'])) {
         }
     }
 
-    $HRconnect->close();
+    // $HRconnect->close();
     echo json_encode(['status' => 'success', 'message' => 'Employees assigned, schedules updated, and remarks set successfully']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid input data']);

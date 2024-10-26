@@ -1102,64 +1102,186 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                         });
                     });
 
-                    // Get values for AJAX
                     const patternId = $('#hiddenPatternId').val();
                     const startSelectedDate = $('#startSelectedDate').val(); // Get selected date
                     const cutoffEndDate = cutoffEnd; // Use the PHP value embedded earlier
 
-                    // Console log to review data before sending
-                    console.log('Assigned Employees:', assignedData);
-                    console.log('Pattern ID:', patternId);
-                    console.log('Start Selected Date:', startSelectedDate);
-                    console.log('Cutoff End Date:', cutoffEndDate);
+                    // Determine the appropriate confirmation message
+                    let message = startSelectedDate ?
+                        'You selected a date. Do you want to proceed?' :
+                        'Do you want to continue to save?';
 
-                    // AJAX request to save the pattern schedule
-                    $.ajax({
-                        url: 'update-pattern-schedules.php',
-                        type: 'POST',
-                        data: {
-                            pattern_id: patternId,
-                            assigned_employees: JSON.stringify(assignedData),
-                            start_date: startSelectedDate, // Pass selected start date
-                            end_date: cutoffEndDate, // Pass PHP's end date
+                    // Show the confirmation alert
+                    Swal.fire({
+                        title: 'Confirmation',
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: false, // Disable the "No" button
+                        showCloseButton: true, // Enable the "X" button in the top corner
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'Yes',
+                        customClass: {
+                            confirmButton: 'swal-button-green'
                         },
-                        success: function(response) {
-                            const res = JSON.parse(response);
-                            if (res.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Saved!',
-                                    text: 'Employees have been successfully assigned.',
-                                    timer: 2000,
-                                    timerProgressBar: true,
-                                    showConfirmButton: false,
-                                    customClass: {
-                                        confirmButton: 'swal-button-green'
-                                    },
-                                    didOpen: () => {
-                                        $('#startSelectedDate').datepicker('hide');
-                                        document.activeElement.blur();
-                                    },
-                                }).then(() => location.reload());
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: res.message,
-                                });
-                            }
+                        didOpen: () => {
+                            // Prevent datepicker interference by hiding or blurring
+                            $('#startSelectedDate').datepicker('hide');
+                            document.activeElement.blur();
                         },
-                        error: function(xhr, status, error) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'An error occurred while saving.',
+                        willClose: () => {
+                            $('#startSelectedDate').datepicker('hide');
+                            document.activeElement.blur();
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // If confirmed, proceed with the AJAX request
+                            $.ajax({
+                                url: 'update-pattern-schedules.php',
+                                type: 'POST',
+                                data: {
+                                    pattern_id: patternId,
+                                    assigned_employees: JSON.stringify(assignedData),
+                                    start_date: startSelectedDate,
+                                    end_date: cutoffEndDate
+                                },
+                                success: function(response) {
+                                    const res = JSON.parse(response);
+                                    if (res.status === 'success') {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Saved!',
+                                            text: 'Employees have been successfully assigned.',
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                confirmButton: 'swal-button-green'
+                                            },
+                                            didOpen: () => {
+                                                $('#startSelectedDate').datepicker('hide');
+                                                document.activeElement.blur();
+                                            },
+                                        }).then(() => location.reload());
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: res.message,
+                                        });
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'An error occurred while saving.',
+                                    });
+                                    console.error('AJAX error:', error);
+                                }
                             });
-                            console.error('AJAX error:', error);
                         }
                     });
                 });
             });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // $(document).ready(function() {
+            //     $('#btnSaveAssign').on('click', function() {
+            //         const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
+            //         const assignedData = [];
+
+            //         // Collect assigned employee data
+            //         assignedEmployees.forEach(emp => {
+            //             const empno = emp.getAttribute('data-empno');
+            //             let name = emp.textContent.trim().replace(/\s*X\s*$/, '');
+
+            //             assignedData.push({
+            //                 empno,
+            //                 name
+            //             });
+            //         });
+
+            //         // Get values for AJAX
+            //         const patternId = $('#hiddenPatternId').val();
+            //         const startSelectedDate = $('#startSelectedDate').val(); // Get selected date
+            //         const cutoffEndDate = cutoffEnd; // Use the PHP value embedded earlier
+
+            //         // Console log to review data before sending
+            //         console.log('Assigned Employees:', assignedData);
+            //         console.log('Pattern ID:', patternId);
+            //         console.log('Start Selected Date:', startSelectedDate);
+            //         console.log('Cutoff End Date:', cutoffEndDate);
+
+            //         // AJAX request to save the pattern schedule
+            //         $.ajax({
+            //             url: 'update-pattern-schedules.php',
+            //             type: 'POST',
+            //             data: {
+            //                 pattern_id: patternId,
+            //                 assigned_employees: JSON.stringify(assignedData),
+            //                 start_date: startSelectedDate, // Pass selected start date
+            //                 end_date: cutoffEndDate, // Pass PHP's end date
+            //             },
+            //             success: function(response) {
+            //                 const res = JSON.parse(response);
+            //                 if (res.status === 'success') {
+            //                     Swal.fire({
+            //                         icon: 'success',
+            //                         title: 'Saved!',
+            //                         text: 'Employees have been successfully assigned.',
+            //                         timer: 2000,
+            //                         timerProgressBar: true,
+            //                         showConfirmButton: false,
+            //                         customClass: {
+            //                             confirmButton: 'swal-button-green'
+            //                         },
+            //                         didOpen: () => {
+            //                             $('#startSelectedDate').datepicker('hide');
+            //                             document.activeElement.blur();
+            //                         },
+            //                     }).then(() => location.reload());
+            //                 } else {
+            //                     Swal.fire({
+            //                         icon: 'error',
+            //                         title: 'Error',
+            //                         text: res.message,
+            //                     });
+            //                 }
+            //             },
+            //             error: function(xhr, status, error) {
+            //                 Swal.fire({
+            //                     icon: 'error',
+            //                     title: 'Error',
+            //                     text: 'An error occurred while saving.',
+            //                 });
+            //                 console.error('AJAX error:', error);
+            //             }
+            //         });
+            //     });
+            // });
 
 
 
