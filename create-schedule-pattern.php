@@ -1032,11 +1032,15 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
             function unassignedAll() {
                 const sourceDiv = document.getElementById("assignedEmployees");
                 const targetDiv = document.getElementById("UnassignedEmployees");
+                const patternId = $('#hiddenPatternId').val(); // Get the pattern ID for the AJAX call
 
                 // Get all assigned employee divs
                 const assignedEmployees = sourceDiv.querySelectorAll('.assigned-employee');
 
-                // Loop through each assigned employee
+                // Create an array to store empnos for the AJAX call
+                const empnosToUpdate = [];
+
+                // Loop through each assigned employee to prepare the update
                 assignedEmployees.forEach(empDiv => {
                     const employeeName = empDiv.childNodes[0].textContent.trim(); // Get the name directly
                     const empno = empDiv.getAttribute('data-empno'); // Retrieve the empno
@@ -1048,12 +1052,58 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 ${employeeName}
             </div>`;
 
-                    empDiv.remove(); // Remove from assigned
-                    // Log empno and employeeName to the console
-                    console.log(`Employee Unselected: Empno: ${empno}, Employee Name: ${employeeName}`);
+                    empnosToUpdate.push(empno); // Store empno for AJAX call
                 });
 
-                console.log("All employees have been unselected from Assigned to Unassigned.");
+                // Show SweetAlert2 confirmation dialog
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This will remove the employee from the schedule immediately, even without clicking the Save button.",
+                    icon: 'warning',
+                    showCloseButton: true, // Show the "X" button
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Submit',
+                    didOpen: () => {
+                        // Prevent datepicker interference by hiding or blurring
+                        $('#startSelectedDate').datepicker('hide');
+                        document.activeElement.blur();
+                    },
+                    willClose: () => {
+                        $('#startSelectedDate').datepicker('hide');
+                        document.activeElement.blur();
+                    },
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If confirmed, proceed with removing from assigned
+                        assignedEmployees.forEach(empDiv => empDiv.remove()); // Remove from assigned
+
+                        console.log("All employees have been unselected from Assigned to Unassigned.");
+
+                        // AJAX call to update the pattern_id for all employees being unassigned
+                        $.ajax({
+                            url: 'update-unassigned-all-employees.php', // Your server-side script to handle the update
+                            type: 'POST',
+                            data: {
+                                pattern_id: patternId, // Send pattern_id to PHP
+                                unassigned_employees: JSON.stringify(empnosToUpdate) // Send the array of empnos
+                            },
+                            success: function(response) {
+                                const res = JSON.parse(response);
+                                if (res.status === 'success') {
+                                    console.log(`Successfully updated pattern_id for all unassigned employees.`);
+                                } else {
+                                    Swal.fire('Error!', res.message, 'error');
+                                    console.error(`Error updating pattern_id: ${res.message}`);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire('Error!', 'An error occurred while processing your request.', 'error');
+                                console.error('AJAX error:', error);
+                            }
+                        });
+                    }
+                });
             }
 
             function filterEmployees() {
@@ -1165,7 +1215,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     $('#assignedEmployeeSearch').val('');
 
                     // Move all assigned employees back to unassigned
-                    unassignedAll(); // This transfers all assigned employees back to Unassigned
+                    // unassignedAll(); // This transfers all assigned employees back to Unassigned
 
                     // Clear both Unassigned and Assigned employee lists
                     $('#UnassignedEmployees').empty();
@@ -1177,11 +1227,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     $('#noBreak').prop('checked', false);
                 });
             });
-
-
-
-
-
 
             $(document).ready(function() {
                 $('#btnSaveAssign').on('click', function() {
@@ -1296,19 +1341,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     });
                 });
             });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         });
 
