@@ -216,38 +216,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
             /* Aligns items vertically */
         }
 
-        .info-container {
-            background-color: #f0f0f0;
-            padding: 5px 15px;
-            border-radius: 8px;
-            /* margin-top: 5px; */
-            margin-bottom: 5px;
-            display: flex;
-            flex-direction: column;
-        }
 
-        .info-item {
-            position: relative;
-            padding-left: 20px;
-            /* Space for bullet */
-            margin: 0;
-            /* No margin top and bottom */
-            line-height: 1.5;
-            /* Optional: Adjust line height */
-        }
-
-        .info-item::before {
-            content: "•";
-            position: absolute;
-            left: 5px;
-            /* Adjust bullet position */
-            top: 50%;
-            /* Vertically align */
-            transform: translateY(-50%);
-            /* Center bullet */
-            color: #333;
-            font-size: 15px;
-        }
 
         /* Highlighted range: green background and dark text */
         .datepicker table tr td.in-range,
@@ -281,6 +250,33 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
         #clearDate:focus {
             outline: none;
         }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            /* Add spacing above the table */
+        }
+
+        .table th,
+        .table td {
+            padding: 5px;
+            text-align: center;
+            border: 1px solid #ddd;
+            /* Border for table cells */
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            /* Light background for header */
+            font-weight: bold;
+        }
+
+        .info-item {
+            margin: 0;
+            /* No margin top and bottom */
+            /* Optional: Adjust line height */
+        }
+
 
         .swal-button-green {
             background-color: #48BF81 !important;
@@ -551,19 +547,50 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
         <!-- Modal for Assigned Employees -->
         <div class="modal fade" id="assignEmployee" tabindex="-1" aria-labelledby="assignEmployeeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-xl">
+
                 <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-between pb-0">
+
+                    <h5 class="modal-title p-2" style="font-weight: bold; color: #2E59D9;" id="assignEmployesModalLabel">
+                        Assigning of Schedule Pattern to Employee
+                    </h5>
+                    <hr style="margin: 0;">
+
+                    <div class="modal-header d-flex justify-content-between pb-0 pt-2">
                         <div>
-                            <h5 class="modal-title" style="font-weight: bold; color: #2E59D9;" id="assignEmployesModalLabel">
-                                Assigning of Schedule Pattern to Employee
-                            </h5>
-                            <div class="info-container">
-                                <h6 class="info-item" id="schedNamePattern"></h6>
-                                <h6 class="info-item" id="schedType"></h6>
-                                <div class="info-item" id="noBreak"></div>
+                            <div class="flex-container"> <!-- New flex container -->
+                                <div class="info-container">
+                                    <h6 class="info-item" id="schedNamePattern"></h6>
+                                    <h6 class="info-item" id="schedType"></h6>
+                                    <div class="info-item" id="noBreak"></div>
+                                </div>
+                                <!-- Time Schedule Container -->
+                                <div class="time-schedule-container">
+                                    <h6 class="mb-0" style="font-weight: bold;">Time Schedule Pattern:</h6> <!-- Label added here -->
+                                    <table class="table time-schedule">
+                                        <thead>
+                                            <tr>
+                                                <th>Monday</th>
+                                                <th>Tuesday</th>
+                                                <th>Wednesday</th>
+                                                <th>Thursday</th>
+                                                <th>Friday</th>
+                                                <th>Saturday</th>
+                                                <th>Sunday</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr id="time-schedule-row">
+                                                <!-- Times will be inserted here -->
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+
+
                     <div class="modal-body pt-1">
                         <div class="container">
                             <!-- Date Picker Container (Right-Aligned) -->
@@ -719,8 +746,12 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                         <a href="#" class="text-info view-btn" data-id="${data}" title="View">
                             <i class="fas fa-eye" style="margin-right: 10px;"></i>
                         </a>
-                        <a href="#" class="text-warning assign-btn" data-id="${data}" data-sched-name="${row.sched_name_pattern}" data-sched-type="${row.sched_type}" data-no-break="${row.no_break}" title="Assign">
-                            <i class="fas fa-user-plus" style="margin-right: 10px;"></i>
+                        <a href="#" class="text-warning assign-btn" data-id="${data}"
+                            data-sched-name="${row.sched_name_pattern}"
+                            data-sched-type="${row.sched_type}"
+                            data-no-break="${row.no_break}"
+                            data-time-schedule='${row.time_schedule}' title="Assign">
+                                <i class="fas fa-user-plus" style="margin-right: 10px;"></i>
                         </a>
                         <a href="#" class="text-danger delete-btn" data-id="${data}" title="Delete">
                             <i class="fas fa-trash-alt"></i>
@@ -794,6 +825,13 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 var schedNamePattern = $(this).data('sched-name');
                 var schedType = $(this).data('sched-type');
                 var noBreak = $(this).data('no-break'); // 1 or 0
+                var timeSchedule = $(this).data('time-schedule'); // Get time_schedule
+
+                console.log('Pattern ID:', patternId);
+                console.log('Schedule Name Pattern:', schedNamePattern);
+                console.log('Schedule Type:', schedType);
+                console.log('No Break:', noBreak);
+                console.log('Raw Time Schedule:', timeSchedule); // Log the raw string
 
                 $('#hiddenPatternId').val(patternId);
 
@@ -808,12 +846,58 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     dataType: 'json',
                     success: function(response) {
                         console.log("Already Assigned Employees:", response);
+
+                        // Convert timeSchedule from JSON string to object
+                        var scheduleObject;
+                        try {
+                            // Only parse if it's a string
+                            scheduleObject = typeof timeSchedule === "string" ? JSON.parse(timeSchedule) : timeSchedule;
+                        } catch (error) {
+                            console.error("Failed to parse time_schedule:", error);
+                            return; // Stop further execution if parsing fails
+                        }
+
+                        // Format the time schedule for display
+                        var scheduleRow = document.getElementById('time-schedule-row');
+                        var scheduleData = [
+                            scheduleObject['monday'],
+                            scheduleObject['tuesday'],
+                            scheduleObject['wednesday'],
+                            scheduleObject['thursday'],
+                            scheduleObject['friday'],
+                            scheduleObject['saturday'],
+                            scheduleObject['sunday']
+                        ];
+
+                        // Prepare a row with the times
+                        var rowHtml = '';
+                        scheduleData.forEach((daySchedule, index) => {
+                            if (daySchedule) {
+                                var fromTime = daySchedule.from;
+                                var toTime = daySchedule.to;
+
+                                // Check for "RD" or "NWD" and display accordingly
+                                if (fromTime === "RD" || fromTime === "NWD") {
+                                    rowHtml += `<td>${fromTime}</td>`; // Only display "RD" or "NWD"
+                                } else {
+                                    rowHtml += `<td>${fromTime} to ${toTime}</td>`;
+                                }
+                            } else {
+                                rowHtml += `<td>--</td>`; // Empty cell for days with no schedule
+                            }
+                        });
+
+                        // Insert the row into the table
+                        scheduleRow.innerHTML = rowHtml;
+
                         // Set modal content
                         $('#schedNamePattern').html(`<strong>Schedule Pattern Name:</strong> ${schedNamePattern}`);
                         $('#schedType').html(`<strong>Schedule Type:</strong> ${schedType}`);
-                        // Update No Break label dynamically
                         $('#noBreak').html(`<strong>No Break Type:</strong> ${noBreak === 1 ? 'Yes' : 'No'}`);
                         // Show the modal
+
+
+
                         $('#assignEmployee').modal('show');
                         // Populate Assigned Employees container
                         var assignedContainer = $('#assignedEmployees');
@@ -828,6 +912,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                             onclick="removeEmployee('${employee.empno}', this)">X</button>
                     </div>
                 `);
+
                             console.log(`Employee Added to Assigned: Empno: ${employee.empno}, Name: ${employee.name}`);
                         });
 
