@@ -767,8 +767,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
 
 
-
-
         // Handle Assigned to Unassigned Employees
         $(document).ready(function() {
 
@@ -1169,8 +1167,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
 
 
-
-
             $(document).ready(function() {
                 $('#btnSaveAssign').on('click', function() {
                     const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
@@ -1193,7 +1189,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
                     // Determine the appropriate confirmation message
                     let message = startSelectedDate ?
-                        'You selected a date. Do you want to proceed?' :
+                        `You selected a date. Do you want to update the schedule starting ${startSelectedDate}?` :
                         'Do you want to continue to save?';
 
                     // Show the confirmation alert
@@ -1268,6 +1264,118 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     });
                 });
             });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // $(document).ready(function() {
+            //     $('#btnSaveAssign').on('click', function() {
+            //         const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
+            //         const assignedData = [];
+
+            //         // Collect assigned employee data
+            //         assignedEmployees.forEach(emp => {
+            //             const empno = emp.getAttribute('data-empno');
+            //             let name = emp.textContent.trim().replace(/\s*X\s*$/, '');
+
+            //             assignedData.push({
+            //                 empno,
+            //                 name
+            //             });
+            //         });
+
+            //         const patternId = $('#hiddenPatternId').val();
+            //         const startSelectedDate = $('#startSelectedDate').val(); // Get selected date
+            //         const cutoffEndDate = cutoffEnd; // Use the PHP value embedded earlier
+
+            //         // Determine the appropriate confirmation message
+            //         let message = startSelectedDate ?
+            //             'You selected a date. Do you want to proceed?' :
+            //             'Do you want to continue to save?';
+
+            //         // Show the confirmation alert
+            //         Swal.fire({
+            //             title: 'Confirmation',
+            //             text: message,
+            //             icon: 'question',
+            //             showCancelButton: false, // Disable the "No" button
+            //             showCloseButton: true, // Enable the "X" button in the top corner
+            //             confirmButtonColor: '#d33',
+            //             confirmButtonText: 'Yes',
+            //             customClass: {
+            //                 confirmButton: 'swal-button-green'
+            //             },
+            //             didOpen: () => {
+            //                 // Prevent datepicker interference by hiding or blurring
+            //                 $('#startSelectedDate').datepicker('hide');
+            //                 document.activeElement.blur();
+            //             },
+            //             willClose: () => {
+            //                 $('#startSelectedDate').datepicker('hide');
+            //                 document.activeElement.blur();
+            //             }
+            //         }).then((result) => {
+            //             if (result.isConfirmed) {
+            //                 // If confirmed, proceed with the AJAX request
+            //                 $.ajax({
+            //                     url: 'update-pattern-schedules.php',
+            //                     type: 'POST',
+            //                     data: {
+            //                         pattern_id: patternId,
+            //                         assigned_employees: JSON.stringify(assignedData),
+            //                         start_date: startSelectedDate,
+            //                         end_date: cutoffEndDate
+            //                     },
+            //                     success: function(response) {
+            //                         const res = JSON.parse(response);
+            //                         if (res.status === 'success') {
+            //                             Swal.fire({
+            //                                 icon: 'success',
+            //                                 title: 'Saved!',
+            //                                 text: 'Employees have been successfully assigned.',
+            //                                 timer: 2000,
+            //                                 timerProgressBar: true,
+            //                                 showConfirmButton: false,
+            //                                 customClass: {
+            //                                     confirmButton: 'swal-button-green'
+            //                                 },
+            //                                 didOpen: () => {
+            //                                     $('#startSelectedDate').datepicker('hide');
+            //                                     document.activeElement.blur();
+            //                                 },
+            //                             }).then(() => location.reload());
+            //                         } else {
+            //                             Swal.fire({
+            //                                 icon: 'error',
+            //                                 title: 'Error',
+            //                                 text: res.message,
+            //                             });
+            //                         }
+            //                     },
+            //                     error: function(xhr, status, error) {
+            //                         Swal.fire({
+            //                             icon: 'error',
+            //                             title: 'Error',
+            //                             text: 'An error occurred while saving.',
+            //                         });
+            //                         console.error('AJAX error:', error);
+            //                     }
+            //                 });
+            //             }
+            //         });
+            //     });
+            // });
 
 
 
