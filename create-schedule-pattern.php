@@ -277,6 +277,31 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
             /* Optional: Adjust line height */
         }
 
+        .custom-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .swal-html-content {
+            text-align: center;
+        }
+
+
 
         .swal-button-green {
             background-color: #48BF81 !important;
@@ -551,7 +576,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                 <div class="modal-content">
 
                     <h5 class="modal-title pr-3 pl-3 pb-2 pt-2" style="font-weight: bold; color: #2E59D9;" id="assignEmployesModalLabel">
-                        Assigning of Schedule Pattern to Employee
+                        Assigning of Schedule Pattern to Employees
                     </h5>
                     <hr style="margin: 0;">
 
@@ -871,7 +896,7 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                                 if (fromTime === "RD" || fromTime === "NWD") {
                                     rowHtml += `<td>${fromTime}</td>`; // Only display "RD" or "NWD"
                                 } else {
-                                    rowHtml += `<td>${fromTime} to ${toTime}</td>`;
+                                    rowHtml += `<td>${fromTime} - ${toTime}</td>`;
                                 }
                             } else {
                                 rowHtml += `<td>--</td>`; // Empty cell for days with no schedule
@@ -1086,10 +1111,10 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     if (result.isConfirmed) {
                         // Move the employee back to UnassignedEmployees
                         unassignedContainer.innerHTML += `
-                <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
-                    <input type="checkbox" class="mr-2 employee-checkbox" value="${empno}" />
-                    ${employeeName}
-                </div>`;
+                        <div class="draggable" draggable="true" ondragstart="drag(event)" data-empno="${empno}">
+                            <input type="checkbox" class="mr-2 employee-checkbox" value="${empno}" />
+                            ${employeeName}
+                        </div>`;
 
                         // Remove from assigned
                         button.parentElement.remove();
@@ -1155,6 +1180,9 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
 
 
 
+
+
+
             $(document).ready(function() {
                 $('#btnSaveAssign').on('click', function() {
                     const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
@@ -1202,15 +1230,20 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
+
                             // Show loading modal while processing the AJAX request
                             Swal.fire({
                                 title: 'Processing...',
-                                html: 'Updating your data. Please do not refresh or close the window to avoid interrupting the process.',
+                                html: `
+                                    <div class="custom-spinner"></div>
+                                    <p>Updating each employee's schedule. Please do not refresh or close the window to avoid interrupting the process.</p>
+                                `,
+                                footer: '<b>This may take a few moments.</b>',
                                 allowOutsideClick: false,
                                 allowEscapeKey: false,
-                                footer: '<b>This may take a few moments.</b>', // Added footer
-                                didOpen: () => {
-                                    Swal.showLoading();
+                                showConfirmButton: false, // Hide the OK button
+                                customClass: {
+                                    htmlContainer: 'swal-html-content'
                                 }
                             });
 
@@ -1263,109 +1296,6 @@ if ($queryCutOffRange && $rowCutOffRange = $queryCutOffRange->fetch_array()) {
                     });
                 });
             });
-
-
-
-            // $(document).ready(function() {
-            //     $('#btnSaveAssign').on('click', function() {
-            //         const assignedEmployees = document.querySelectorAll('#assignedEmployees .assigned-employee');
-            //         const assignedData = [];
-
-            //         // Collect assigned employee data
-            //         assignedEmployees.forEach(emp => {
-            //             const empno = emp.getAttribute('data-empno');
-            //             let name = emp.textContent.trim().replace(/\s*X\s*$/, '');
-
-            //             assignedData.push({
-            //                 empno,
-            //                 name
-            //             });
-            //         });
-
-            //         const patternId = $('#hiddenPatternId').val();
-            //         const startSelectedDate = $('#startSelectedDate').val(); // Get selected date
-            //         const cutoffEndDate = cutoffEnd; // Use the PHP value embedded earlier
-
-            //         // Determine the appropriate confirmation message
-            //         let message = startSelectedDate ?
-            //             `You selected a date. Do you want to update the schedule starting ${startSelectedDate}?` :
-            //             'Do you want to continue to save?';
-
-            //         // Show the confirmation alert
-            //         Swal.fire({
-            //             title: 'Confirmation',
-            //             text: message,
-            //             icon: 'question',
-            //             showCancelButton: false, // Disable the "No" button
-            //             showCloseButton: true, // Enable the "X" button in the top corner
-            //             confirmButtonColor: '#d33',
-            //             confirmButtonText: 'Yes',
-            //             customClass: {
-            //                 confirmButton: 'swal-button-green'
-            //             },
-            //             didOpen: () => {
-            //                 // Prevent datepicker interference by hiding or blurring
-            //                 $('#startSelectedDate').datepicker('hide');
-            //                 document.activeElement.blur();
-            //             },
-            //             willClose: () => {
-            //                 $('#startSelectedDate').datepicker('hide');
-            //                 document.activeElement.blur();
-            //             }
-            //         }).then((result) => {
-            //             if (result.isConfirmed) {
-            //                 // If confirmed, proceed with the AJAX request
-            //                 $.ajax({
-            //                     url: 'update-pattern-schedules.php',
-            //                     type: 'POST',
-            //                     data: {
-            //                         pattern_id: patternId,
-            //                         assigned_employees: JSON.stringify(assignedData),
-            //                         start_date: startSelectedDate,
-            //                         end_date: cutoffEndDate
-            //                     },
-            //                     success: function(response) {
-            //                         const res = JSON.parse(response);
-            //                         if (res.status === 'success') {
-            //                             Swal.fire({
-            //                                 icon: 'success',
-            //                                 title: 'Saved!',
-            //                                 text: 'Employees have been successfully assigned.',
-            //                                 timer: 2000,
-            //                                 timerProgressBar: true,
-            //                                 showConfirmButton: false,
-            //                                 customClass: {
-            //                                     confirmButton: 'swal-button-green'
-            //                                 },
-            //                                 didOpen: () => {
-            //                                     $('#startSelectedDate').datepicker('hide');
-            //                                     document.activeElement.blur();
-            //                                 },
-            //                             }).then(() => location.reload());
-            //                         } else {
-            //                             Swal.fire({
-            //                                 icon: 'error',
-            //                                 title: 'Error',
-            //                                 text: res.message,
-            //                             });
-            //                         }
-            //                     },
-            //                     error: function(xhr, status, error) {
-            //                         Swal.fire({
-            //                             icon: 'error',
-            //                             title: 'Error',
-            //                             text: 'An error occurred while saving.',
-            //                         });
-            //                         console.error('AJAX error:', error);
-            //                     }
-            //                 });
-            //             }
-            //         });
-            //     });
-            // });
-
-
-
 
 
 
